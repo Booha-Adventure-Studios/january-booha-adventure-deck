@@ -1,5 +1,875 @@
-<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Loading…</title></head>
-<body style="background:#000;color:#fff;font-family:system-ui;text-align:center;padding-top:4rem">
-<h1>Coming soon</h1>
-<p>This game is being added.</p>
-</body></html>
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1,viewport-fit=cover" />
+<title>Booha Eigo Pera Pera – January Week 1</title>
+<meta name="theme-color" content="#0b1530" />
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Noto+Sans+JP:wght@500;700&display=swap" rel="stylesheet" />
+
+<!-- Preload all audio (per-question + results) -->
+<link rel="preload" as="audio" href="assets/audio/0-43.mp3" />
+<link rel="preload" as="audio" href="assets/audio/44-74.mp3" />
+<link rel="preload" as="audio" href="assets/audio/75-99.mp3" />
+<link rel="preload" as="audio" href="assets/audio/100.mp3" />
+<link rel="preload" as="audio" href="assets/audio/result_0-5.mp3" />
+<link rel="preload" as="audio" href="assets/audio/result_6-10.mp3" />
+<link rel="preload" as="audio" href="assets/audio/result_11-14.mp3" />
+<link rel="preload" as="audio" href="assets/audio/result_15.mp3" />
+
+<style>
+:root{--bg:#0b1530;--ink:#fff;--outline:#ffffff26;--radius:26px}
+*{box-sizing:border-box;margin:0}
+body{background:var(--bg);color:var(--ink);font-family:"Noto Sans JP",sans-serif}
+header{text-align:center;padding:24px 10px}
+.h1{font-family:'Cinzel',serif;font-weight:900;font-size:clamp(34px,6vw,54px)}
+.h2{font-family:'Cinzel',serif;font-weight:900;font-size:clamp(22px,4.5vw,36px)}
+.h3{font-family:'Cinzel',serif;font-weight:900;font-size:clamp(16px,3.6vw,22px)}
+.h4{font-weight:800;font-size:clamp(14px,3.4vw,20px);color:#cfe1ff}
+footer{text-align:center;color:#c9d4ec;font-family:'Cinzel',serif;font-weight:700;padding:30px 10px}
+.wrap{max-width:1100px;margin:auto;padding:0 16px 80px}
+.panel{position:relative;z-index:1;padding:20px;border:1px solid var(--outline);border-radius:var(--radius);
+background:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.02));overflow:visible}
+.card{position:relative;z-index:1;border:1px solid var(--outline);border-radius:var(--radius);
+padding:22px 16px 22px 80px;margin-bottom:10px;overflow:hidden;background:rgba(255,255,255,.04)}
+
+/* Sweeping yellow meter */
+.sweep{position:absolute;inset:0;width:100%;height:100%;background:linear-gradient(0deg,rgba(255,246,128,.9),rgba(255,246,128,.7));mix-blend-mode:screen;opacity:.8;border-radius:6px;transform:translateX(-100%);z-index:0}
+@keyframes sweepAcross{from{transform:translateX(-100%)}to{transform:translateX(0)}}
+.sweep.run{animation:sweepAcross var(--dur,6s) linear forwards}
+
+.en{font-weight:900;font-size:clamp(26px,7.4vw,48px);text-align:center;line-height:1.25;position:relative;z-index:2}
+.en .word{
+display:inline-block;
+padding:0 .06em;
+color:#fff;
+transition:color .2s,transform .2s;
+text-shadow:0 0 6px rgba(255,255,255,.4);
+}
+.en .word.blue{color:#3aa0ff;text-shadow:0 0 2px #000,0 0 12px #3aa0ff,0 0 24px #3aa0ff;transform:translateY(-8px) scale(1.08)}
+.en .word.red{color:#ff2a2a;text-shadow:0 0 2px #000,0 0 10px #ff2a2a,0 0 18px #ff2a2a}
+
+.heart{position:fixed;left:0;top:0;transform:translate(-50%,0);font-size:24px;color:#ff7eb9;opacity:0;z-index:9999;animation:heartUp .9s ease-out forwards;pointer-events:none}
+@keyframes heartUp{0%{transform:translate(-50%,0) scale(1);opacity:1}100%{transform:translate(-50%,-90px) scale(1.5);opacity:0}}
+
+.playBtn{position:absolute;left:16px;top:50%;transform:translateY(-50%);width:48px;height:48px;border-radius:50%;border:none;cursor:pointer;display:grid;place-items:center;font-weight:900;font-size:20px;color:#351b00;z-index:3;background:radial-gradient(circle at 30% 30%,#ffe8a3,#ffd36a 60%,#ffb800 100%);box-shadow:0 0 0 3px rgba(255,213,120,.35),0 0 16px rgba(255,214,120,.45),inset 0 3px 6px rgba(255,255,255,.6),inset 0 -6px 14px rgba(201,112,0,.55);animation:goldPulse 1.8s ease-in-out infinite}
+@keyframes goldPulse{0%,100%{box-shadow:0 0 0 3px rgba(255,213,120,.25),0 0 10px rgba(255,214,120,.35),inset 0 2px 5px rgba(255,255,255,.55),inset 0 -6px 14px rgba(201,112,0,.55)}50%{box-shadow:0 0 0 4px rgba(255,213,120,.45),0 0 22px rgba(255,214,120,.85),inset 0 4px 8px rgba(255,255,255,.85),inset 0 -8px 18px rgba(201,112,0,.75)}}
+
+.jp{text-align:center;font-weight:700;font-size:clamp(16px,3.8vw,22px);color:#d8e7ff}
+.hira{text-align:center;font-size:clamp(14px,3.4vw,18px);color:#bcd3ff;margin-top:6px}
+
+.meterWrap{display:flex;flex-direction:column;align-items:center;justify-content:center;margin:22px 0}
+.meter{position:relative;width:min(64vw,280px);height:min(64vw,280px);display:grid;place-items:center}
+.ring{position:absolute;inset:0;border-radius:50%;background:conic-gradient(#ff7eb9,#a6f7b2,#7dd3fc,#fff680,#c77dff,#8aff80,#ff7eb9);-webkit-mask:radial-gradient(circle,transparent 60%,black 62%);mask:radial-gradient(circle,transparent 60%,black 62%);animation:rainbowCycle 3s linear infinite}
+@keyframes rainbowCycle{0%{filter:hue-rotate(0)}100%{filter:hue-rotate(360deg)}}
+.meterCore{position:absolute;inset:12%;border-radius:50%;background:radial-gradient(circle at 50% 40%,rgba(255,255,255,.2),rgba(255,255,255,.05));display:grid;place-items:center;text-align:center;transition:transform .3s ease}
+.meterText{font-weight:900;font-size:clamp(28px,8vw,42px);line-height:1.25}
+.counter{margin-top:8px;font-weight:700;font-size:clamp(16px,4vw,22px);color:#fff;opacity:.9}
+
+/* GO! pulse/glow in center of circle */
+.flashGo{animation:flashGlow .85s ease-in-out 2}
+@keyframes flashGlow{0%{text-shadow:0 0 0 #fff680;transform:scale(.9)}50%{text-shadow:0 0 30px #fff680;transform:scale(1.06)}100%{text-shadow:0 0 0 #fff680;transform:scale(1)}}
+
+.popNum{animation:pop .5s ease;transform-origin:center;font-size:clamp(80px,18vw,120px)}
+@keyframes pop{0%{transform:scale(.2);opacity:0}50%{transform:scale(1.35);opacity:1}100%{transform:scale(1)}}
+
+.btnRow{display:flex;justify-content:center;gap:10px;margin-top:10px}
+.btn{border:none;border-radius:999px;padding:14px 20px;font-weight:900;font-size:clamp(18px,4vw,22px);cursor:pointer}
+.btn.begin{background:linear-gradient(180deg,#1ee99a,#0ea85d);color:#002a11}
+.btn.retry{background:linear-gradient(180deg,#8ec5ff,#1e6eff);color:#00163a}
+.btn.next{background:linear-gradient(180deg,#ff9ad7,#ff4fa6);color:#38001a}
+.scoreBox{margin:14px auto 6px;max-width:620px;text-align:center;padding:14px 16px;border-radius:18px;background:rgba(255,255,255,.05);font-weight:900;font-size:clamp(18px,4.2vw,24px)}
+
+/* FULL-SCREEN RESULT PAGES (glow + header + footer) */
+.resultPage{display:none;position:fixed;inset:0;z-index:9999;color:#fff}
+.resultInner{min-height:100vh;display:flex;flex-direction:column}
+.resultCenter{flex:1;display:flex;align-items:center;justify-content:center;text-align:center;padding:24px}
+.resultMsg{font-family:'Cinzel',serif;font-weight:900;font-size:clamp(44px,10vw,96px);margin-bottom:16px;text-shadow:0 0 28px rgba(255,255,255,.9)}
+.resultScore{font-weight:900;font-size:clamp(40px,9vw,78px);margin-bottom:28px;text-shadow:0 0 26px rgba(255,255,255,.9)}
+.btnSmall{font-size:clamp(14px,3vw,20px);padding:10px 18px;margin:6px;border-radius:999px;font-weight:900;border:none;cursor:pointer}
+.btnRestart{background:#00e676;color:#002a11}
+.btnMenu{background:#1ee99a;color:#002a11}
+.glowRed{background:radial-gradient(circle at center,#ff1a1a,#3b0d0d 60%);animation:glowRed 3s ease-in-out infinite}
+.glowOrange{background:radial-gradient(circle at center,#ffae00,#3b2a0d 60%);animation:glowOrange 3s ease-in-out infinite}
+.glowBlue{background:radial-gradient(circle at center,#00c0ff,#0b1530 60%);animation:glowBlue 3s ease-in-out infinite}
+.glowGold{background:radial-gradient(circle at center,#ffd700,#2b2509 60%);animation:glowGold 3s ease-in-out infinite}
+@keyframes glowRed{0%,100%{filter:brightness(1)}50%{filter:brightness(1.3)}}
+@keyframes glowOrange{0%,100%{filter:brightness(1)}50%{filter:brightness(1.3)}}
+@keyframes glowBlue{0%,100%{filter:brightness(1)}50%{filter:brightness(1.3)}}
+@keyframes glowGold{0%,100%{filter:brightness(1)}50%{filter:brightness(1.3)}}
+
+/* Confetti */
+.confetti{position:fixed;top:-12px;width:10px;height:14px;opacity:.9;animation:fall linear forwards}
+@keyframes fall{to{transform:translateY(110vh) rotate(720deg);opacity:1}}
+
+/* 🔘 Standard Booha QUIT button (small version) */
+.top-nav-btn{
+position:fixed;
+top:10px;
+left:10px;
+z-index:12001;
+border-radius:999px;
+padding:6px 14px;
+border:1px solid #ffffff66;
+background:rgba(15,23,42,.95);
+color:#fff;
+font-size:.78rem;
+font-weight:700;
+letter-spacing:.04em;
+cursor:pointer;
+display:flex;
+align-items:center;
+gap:4px;
+box-shadow:0 0 12px rgba(0,0,0,.6);
+backdrop-filter:blur(4px);
+}
+.top-nav-btn .jp{font-size:.72em;}
+.top-nav-btn .en{font-size:.8em;}
+
+/* ❓ Glowing help button */
+.help-btn{
+position:fixed;
+top:10px;
+right:10px;
+z-index:12001;
+width:40px;
+height:40px;
+border-radius:999px;
+border:1px solid #ffffff88;
+background:radial-gradient(circle at 30% 30%,#7dd3fc,#1e3a8a 65%,#020617 100%);
+color:#fff;
+font-weight:900;
+font-size:20px;
+cursor:pointer;
+display:flex;
+align-items:center;
+justify-content:center;
+box-shadow:
+0 0 12px rgba(125,211,252,.9),
+0 0 28px rgba(59,130,246,.9),
+0 0 52px rgba(56,189,248,.9);
+backdrop-filter:blur(4px);
+}
+
+/* 🪟 Help modal */
+.help-modal{
+position:fixed;
+inset:0;
+z-index:12000;
+display:none;
+align-items:center;
+justify-content:center;
+}
+.help-modal.show{display:flex;}
+.help-backdrop{
+position:absolute;
+inset:0;
+background:rgba(15,23,42,.8);
+backdrop-filter:blur(6px);
+}
+.help-dialog{
+position:relative;
+z-index:1;
+max-width:720px;
+width:calc(100% - 32px);
+max-height:80vh;
+border-radius:20px;
+border:1px solid #ffffff33;
+background:radial-gradient(circle at top,#111827,#020617 55%);
+box-shadow:0 22px 70px rgba(0,0,0,.9);
+padding:18px 18px 20px;
+display:flex;
+flex-direction:column;
+}
+.help-dialog h2{
+font-family:'Cinzel',serif;
+font-size:1.2rem;
+text-align:center;
+margin-bottom:6px;
+}
+.help-sub{
+font-size:.85rem;
+text-align:center;
+color:#c7d2fe;
+margin-bottom:10px;
+}
+.help-body{
+margin-top:6px;
+padding-right:4px;
+font-size:.9rem;
+line-height:1.6;
+color:#e5e7f5;
+overflow-y:auto;
+}
+.help-body h3{
+font-size:.9rem;
+margin:10px 0 4px;
+color:#bfdbfe;
+}
+.help-body ul{
+padding-left:1.1rem;
+margin:4px 0 10px;
+}
+.help-body li{
+margin-bottom:4px;
+}
+.help-close{
+position:absolute;
+top:8px;
+right:10px;
+border:none;
+background:transparent;
+color:#e5e7f5;
+font-size:22px;
+cursor:pointer;
+}
+@media (max-width:480px){
+.help-dialog{
+max-height:82vh;
+padding:16px 14px 18px;
+}
+}
+
+/* 🍎 iOS-only overlay */
+.ios-overlay{
+position:fixed;
+inset:0;
+background:rgba(15,23,42,.94);
+display:none;
+align-items:center;
+justify-content:center;
+z-index:13000;
+}
+.ios-overlay.show{display:flex;}
+.ios-dialog{
+max-width:520px;
+width:calc(100% - 40px);
+border-radius:22px;
+padding:18px 20px 20px;
+background:radial-gradient(circle at top,#111827,#020617 60%);
+border:1px solid #ffffff44;
+box-shadow:0 24px 70px rgba(0,0,0,.9);
+color:#e5e7eb;
+font-size:.9rem;
+line-height:1.7;
+}
+.ios-title{
+font-weight:800;
+font-size:1rem;
+margin-bottom:10px;
+text-align:center;
+}
+.ios-body{
+font-size:.9rem;
+line-height:1.7;
+white-space:pre-line;
+}
+.ios-ok-btn{
+margin-top:14px;
+display:block;
+margin-left:auto;
+margin-right:auto;
+border:none;
+border-radius:999px;
+padding:10px 24px;
+font-weight:800;
+font-size:.95rem;
+background:#22c55e;
+color:#022c16;
+cursor:pointer;
+box-shadow:0 0 14px rgba(34,197,94,.7);
+}
+</style>
+</head>
+<body>
+
+<!-- 🔘 Quit + ❓ Help -->
+<button type="button" class="top-nav-btn" onclick="window.location.href='index.html'">
+<span class="jp">やめる</span>
+<span class="en">QUIT</span>
+</button>
+<button id="helpBtn" type="button" class="help-btn">?</button>
+
+<header>
+<div class="h1">THE BOO-RICULUM</div>
+<div class="h2">EIGO PERA PERA</div>
+<div class="h3">January Week 1 – Speaking Practice</div>
+<div class="h4">１月第１週 – スピーキング練習</div>
+</header>
+
+<div class="wrap">
+<div class="panel">
+<div class="card">
+<div id="sweep" class="sweep"></div>
+<button id="playBtn" class="playBtn">▶</button>
+<div id="en" class="en">Press スタート to start</div>
+</div>
+<div id="jp" class="jp"></div>
+<div id="hira" class="hira"></div>
+
+<div class="meterWrap">
+<div class="meter">
+<div class="ring"></div>
+<div id="meterCore" class="meterCore"><div id="meterText" class="meterText">Ready<br><small>スタンバイ</small></div></div>
+</div>
+<div id="counter" class="counter">1 / 15</div>
+</div>
+
+<div class="btnRow">
+<button id="beginBtn" class="btn begin">スタート<br><small>Start</small></button>
+<button id="retryBtn" class="btn retry" style="display:none">もう一回<br><small>Retry</small></button>
+<button id="nextBtn" class="btn next" style="display:none">つぎへ<br><small>Next</small></button>
+</div>
+<div id="scoreBox" class="scoreBox" style="display:none"></div>
+</div>
+</div>
+
+<!-- ❓ Help popup -->
+<div id="helpModal" class="help-modal" aria-hidden="true">
+<div class="help-backdrop" data-close-help></div>
+<div class="help-dialog">
+<button class="help-close" type="button" data-close-help>×</button>
+<h2>How to Play ／ 遊び方</h2>
+<div class="help-sub">Booha Eigo Pera Pera Game</div>
+<div class="help-body">
+<h3>English</h3>
+<ul>
+<li>Tap <strong>Start</strong> to show the first speaking question.</li>
+<li>Tap the <strong>gold ▶ button</strong> to hear Sage read the question.</li>
+<li>Watch the circle in the middle. When it says <strong>Listening</strong>, answer aloud in English the whole time.</li>
+<li>Important keywords you say correctly turn <strong>blue</strong> with hearts. Missed words turn <strong>red</strong> after the timer.</li>
+<li>You get a score from <strong>0–100%</strong> for each question (first try only).</li>
+<li>If you get <strong>100%</strong>, tap <strong>Next</strong>. If not, tap <strong>Retry</strong> and try again.</li>
+<li>After all <strong>15 questions</strong>, your average score and number of perfect answers decide your final result color and sound.</li>
+</ul>
+
+<h3>日本語</h3>
+<ul>
+<li><strong>スタート</strong>ボタンを押すと、最初のスピーキング質問が出ます。</li>
+<li><strong>金色の ▶ ボタン</strong>を押すと、Sage が英語の質問を読んでくれます。</li>
+<li>まんなかの丸いメーターが<strong>Listening</strong>（聞き取り中）になったら、そのあいだずっと英語で答えを話します。</li>
+<li>言えた大事なキーワードは<strong>青色</strong>になり、ハートが出ます。言えなかった単語は、タイマーの後に<strong>赤色</strong>になります。</li>
+<li>各質問は、<strong>最初のチャレンジだけ</strong>スコア（0〜100％）がつきます。</li>
+<li><strong>100％</strong>を取ったら <strong>Next（つぎへ）</strong> を押します。100％でなければ <strong>Retry（もう一回）</strong> を押してチャレンジできます。</li>
+<li><strong>15問</strong>ぜんぶ終わると、平均パーセントと「パーフェクトの回数」で、最後の結果画面（色と音）が決まります。</li>
+</ul>
+
+<h3>Mic & Browser ／ マイクとブラウザ</h3>
+<ul>
+<li>マイクのアクセスを<strong>許可</strong>しないと、ゲームは動きません。</li>
+<li>Chrome か Edge の<strong>最新バージョン</strong>でのプレイをおすすめします。</li>
+</ul>
+</div>
+</div>
+</div>
+
+<!-- 🍎 iOS-only notice -->
+<div id="iosNotice" class="ios-overlay" aria-hidden="true">
+<div class="ios-dialog">
+<div class="ios-title">iPad / iPhone をお使いのみなさんへ</div>
+<div class="ios-body">
+このゲームの「本気モード（マイクで声をききとってジャッジするモード）」は、
+Androidスマホ と パソコン だけで遊べます。
+
+iPad / iPhone 版は、
+ブーハー流・ペラペラれんしゅうモード になっています。
+
+① きんいろの ▶ ボタンを押して、文をよく聞こう。
+② スタート ボタンを押す。
+③ メーターが動いているあいだ、
+下線つきの英語を声に出して読んでみよう。
+
+声はジャッジされないけど、
+ちゃんと「話す力」のレベルアップはできています！
+</div>
+<button id="iosNoticeBtn" type="button" class="ios-ok-btn">OK ／ はじめる</button>
+</div>
+</div>
+
+<footer>Bryan’s English School</footer>
+
+<!-- RESULT PAGES (4 colors) with header/footer, full glow -->
+<div id="resRed" class="resultPage">
+<div class="resultInner glowRed">
+<header>
+<div class="h1">THE BOO-RICULUM</div>
+<div class="h2">EIGO PERA PERA</div>
+<div class="h3">January Week 1 – Speaking Practice</div>
+</header>
+<div class="resultCenter">
+<div>
+<div id="msgRed" class="resultMsg">ブーリキュラム見てないでしょ！</div>
+<div id="scoreRed" class="resultScore">0/15（0%）</div>
+<div>
+<button class="btnSmall btnRestart" data-restart>もう一度</button>
+<a class="btnSmall btnMenu" href="index.html">メニューへ</a>
+</div>
+</div>
+</div>
+<footer>Bryan’s English School</footer>
+</div>
+</div>
+<div id="resOrange" class="resultPage">
+<div class="resultInner glowOrange">
+<header>
+<div class="h1">THE BOO-RICULUM</div>
+<div class="h2">EIGO PERA PERA</div>
+<div class="h3">January Week 1 – Speaking Practice</div>
+</header>
+<div class="resultCenter">
+<div>
+<div id="msgOrange" class="resultMsg">YouTube見すぎ！ブーリキュラムもやろう！</div>
+<div id="scoreOrange" class="resultScore">0/15（0%）</div>
+<div>
+<button class="btnSmall btnRestart" data-restart>もう一度</button>
+<a class="btnSmall btnMenu" href="index.html">メニューへ</a>
+</div>
+</div>
+</div>
+<footer>Bryan’s English School</footer>
+</div>
+</div>
+<div id="resBlue" class="resultPage">
+<div class="resultInner glowBlue">
+<header>
+<div class="h1">THE BOO-RICULUM</div>
+<div class="h2">EIGO PERA PERA</div>
+<div class="h3">January Week 1 – Speaking Practice</div>
+</header>
+<div class="resultCenter">
+<div>
+<div id="msgBlue" class="resultMsg">いいね！あと少しでパーフェクト！</div>
+<div id="scoreBlue" class="resultScore">0/15（0%）</div>
+<div>
+<button class="btnSmall btnRestart" data-restart>もう一度</button>
+<a class="btnSmall btnMenu" href="index.html">メニューへ</a>
+</div>
+</div>
+</div>
+<footer>Bryan’s English School</footer>
+</div>
+</div>
+<div id="resGold" class="resultPage">
+<div class="resultInner glowGold">
+<header>
+<div class="h1">THE BOO-RICULUM</div>
+<div class="h2">EIGO PERA PERA</div>
+<div class="h3">January Week 1 – Speaking Practice</div>
+</header>
+<div class="resultCenter">
+<div>
+<div id="msgGold" class="resultMsg">すごい！あなたは地球で一番頭がいい！</div>
+<div id="scoreGold" class="resultScore">15/15（100%）</div>
+<div>
+<button class="btnSmall btnRestart" data-restart>もう一度</button>
+<a class="btnSmall btnMenu" href="index.html">メニューへ</a>
+</div>
+</div>
+</div>
+<footer>Bryan’s English School</footer>
+</div>
+</div>
+
+<!-- Final result sounds -->
+<audio id="a_r05" src="assets/audio/result_0-5.mp3" preload="auto"></audio>
+<audio id="a_r610" src="assets/audio/result_6-10.mp3" preload="auto"></audio>
+<audio id="a_r1114" src="assets/audio/result_11-14.mp3" preload="auto"></audio>
+<audio id="a_r15" src="assets/audio/result_15.mp3" preload="auto"></audio>
+
+<script>
+const DUR_MS=7500; // sweep/mic window
+let idx=0, SR=null, listening=false, streamAllowed=false, isBusy=false;
+const firstScores=new Array(15).fill(null); let firstPerfectCount=0;
+
+function $(sel){return document.querySelector(sel)}
+
+const enEl=$('#en'), jpEl=$('#jp'), hiraEl=$('#hira');
+const beginBtn=$('#beginBtn'), retryBtn=$('#retryBtn'), nextBtn=$('#nextBtn');
+const scoreBox=$('#scoreBox'), meterText=$('#meterText'), sweep=$('#sweep'), counter=$('#counter');
+const playBtn=$('#playBtn');
+
+// 🍎 Platform detection
+const ua = navigator.userAgent || '';
+const platform = navigator.platform || '';
+const isIpad = /iPad/.test(ua) || (platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+const isIOSPhone = /iPhone|iPod/.test(ua);
+const isIOS = isIpad || isIOSPhone;
+
+// Sage filenames
+const sage=["whatisyourgoalthisyear","whyisitimportanttoyou","howwillyoureachyourgoal","whohelpsyoustaymotivated","whathabitdoyouwanttochange","doyoulikemakingresolutions","whatdoyouwanttotrythisyear","whatssomethingnewyoulearnedrecently","isiteasytokeepgoals","whathappenswhenyoudonttry","whatmakesyoufeelproud","whatsyourdreamforthefuture","howdoyoustaypositive","whoinspiresyou","howcanenglishhelpyourgoals"];
+// Preload Sage
+const sageBank={}; sage.forEach(f=>{const a=new Audio('./audio/'+f+'.mp3'); a.preload='auto'; a.load(); sageBank[f]=a;});
+
+// Per-question score sounds
+const SFX={low:new Audio('assets/audio/0-43.mp3'), mid:new Audio('assets/audio/44-74.mp3'), high:new Audio('assets/audio/75-99.mp3'), max:new Audio('assets/audio/100.mp3')};
+Object.values(SFX).forEach(a=>{a.preload='auto'; a.load();});
+
+// Results audio
+const RES={red:$('#a_r05'), orange:$('#a_r610'), blue:$('#a_r1114'), gold:$('#a_r15')};
+
+const ITEMS=[
+{en:"What is your goal this year?",jp:"今年の目標は何ですか。",hira:"(ことし の もくひょう は なん です か)"},
+{en:"Why is it important to you?",jp:"あなたにとってなぜ大切ですか。",hira:"(あなた に とって なぜ たいせつ です か)"},
+{en:"How will you reach your goal?",jp:"どうやって目標を達成しますか。",hira:"(どうやって もくひょう を たっせい します か)"},
+{en:"Who helps you stay motivated?",jp:"やる気を保つのを誰が助けてくれますか。",hira:"(やるき を たもつ の を だれ が たすけて くれ ます か)"},
+{en:"What habit do you want to change?",jp:"変えたい習慣は何ですか。",hira:"(かえたい しゅうかん は なん です か)"},
+{en:"Do you like making resolutions?",jp:"新年の目標を立てるのは好きですか。",hira:"(しんねん の もくひょう を たてる の は すき です か)"},
+{en:"What do you want to try this year?",jp:"今年挑戦したいことは何ですか。",hira:"(ことし ちょうせん したい こと は なん です か)"},
+{en:"What’s something new you learned recently?",jp:"最近新しく学んだことは何ですか。",hira:"(さいきん あたらしく まなんだ こと は なん です か)"},
+{en:"Is it easy to keep goals?",jp:"目標を続けるのは簡単ですか。",hira:"(もくひょう を つづける の は かんたん です か)"},
+{en:"What happens when you don’t try?",jp:"挑戦しないとどうなりますか。",hira:"(ちょうせん しない と どう なり ます か)"},
+{en:"What makes you feel proud?",jp:"何があなたを誇らしくさせますか。",hira:"(なに が あなた を ほこらしく させ ます か)"},
+{en:"What’s your dream for the future?",jp:"将来の夢は何ですか。",hira:"(しょうらい の ゆめ は なん です か)"},
+{en:"How do you stay positive?",jp:"どうやって前向きでいられますか。",hira:"(どうやって まえむき で いられ ます か)"},
+{en:"Who inspires you?",jp:"あなたに影響を与える人は誰ですか。",hira:"(あなた に えいきょう を あたえる ひと は だれ です か)"},
+{en:"How can English help your goals?",jp:"英語はあなたの目標にどう役立ちますか。",hira:"(えいご は あなた の もくひょう に どう やくだち ます か)"}
+].sort(()=>Math.random()-0.5);
+
+/* ---------- UTIL ---------- */
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+function normalize(s){return s.toLowerCase().replace(/[’‘´`]/g,"'").replace(/[^a-z0-9'\s]/g,' ').replace(/\s+/g,' ').trim()}
+function toSet(s){return new Set(normalize(s).split(' ').filter(Boolean))}
+function mountWords(t){enEl.innerHTML=t.split(/\s+/).map(w=>`<span class="word">${w}</span>`).join(' ')}
+function clearHearts(){document.querySelectorAll('.heart').forEach(h=>h.remove())}
+function popHeartAt(el){const h=document.createElement('span');h.className='heart';h.textContent='❤';const r=el.getBoundingClientRect();h.style.left=(r.left+r.width/2)+'px';h.style.top=r.top+'px';document.body.appendChild(h);setTimeout(()=>h.remove(),900)}
+function markSpoken(sp){const set=toSet(sp);enEl.querySelectorAll('.word').forEach(w=>{const v=normalize(w.textContent);if(set.has(v)&&!w.classList.contains('blue')){w.classList.add('blue');popHeartAt(w)}})}
+function finalizeColors(){enEl.querySelectorAll('.word').forEach(w=>{if(!w.classList.contains('blue'))w.classList.add('red')})}
+function keywordScore(t,sp){const k=toSet(t),said=toSet(sp);let hit=0,total=0;k.forEach(x=>{if(x.length>2){total++;if(said.has(x))hit++}});return total?Math.round((hit/total)*100):0}
+function stripForFile(s){return s.toLowerCase().replace(/[^a-z0-9]/g,'')}
+
+function setReady(){meterText.innerHTML='Ready<br><small>スタンバイ</small>'}
+function setListening(){meterText.textContent='Listening'}
+function setFinished(){meterText.innerHTML='Finished<br><small>おわり！</small>'}
+
+function startSweep(){sweep.style.setProperty('--dur',DUR_MS+'ms');sweep.classList.remove('run');void sweep.offsetWidth;sweep.classList.add('run')}
+function stopSweep(){sweep.classList.remove('run')}
+function updateCounter(){counter.textContent=`${idx+1} / 15`}
+
+async function countdown321(){
+const colors=['#ff7eb9','#7dd3fc','#a6f7b2'];
+const nums=[3,2,1];
+for(let i=0;i<nums.length;i++){
+meterText.innerHTML=`<span class="popNum" style="color:${colors[i]}">${nums[i]}</span>`;
+await sleep(700);
+}
+}
+
+async function ensureMicPermission(){
+try{
+const s=await navigator.mediaDevices.getUserMedia({audio:true});
+s.getTracks().forEach(t=>t.stop());
+streamAllowed=true;
+}catch(e){
+alert('マイクが使えません。Chrome を使用してください。');
+}
+}
+function makeRecognizer(){
+const R=window.SpeechRecognition||window.webkitSpeechRecognition;
+if(!R)return null;
+const r=new R();
+r.lang='en-US';
+r.continuous=true;
+r.interimResults=true;
+try{r.maxAlternatives=5;}catch(_){}return r;
+}
+
+function playAudioWithWait(a){
+return new Promise(resolve=>{
+try{a.pause();a.currentTime=0;}catch(_){}
+const done=()=>{a.onended=null;resolve()};
+const tryPlay=()=>{
+const p=a.play();
+if(p&&p.then){p.then(()=>{}).catch(()=>{setTimeout(tryPlay,120);});}
+};
+const safety=setTimeout(()=>{a.onended=null;resolve()},Math.max(3000,(a.duration||3)*1000+200));
+a.addEventListener('ended',()=>clearTimeout(safety),{once:true});
+a.onended=done;
+tryPlay();
+});
+}
+
+function chooseScoreSfx(score){
+if(score===100) return SFX.max;
+if(score>=75) return SFX.high;
+if(score>=44) return SFX.mid;
+return SFX.low;
+}
+
+function disableControls(disabled){
+[beginBtn,retryBtn,nextBtn,playBtn].forEach(b=>{ if(b){ b.disabled=disabled; } });
+}
+function resetVisuals(){
+stopSweep(); void sweep.offsetWidth;
+clearHearts();
+enEl.querySelectorAll('.word').forEach(w=>w.classList.remove('blue','red'));
+scoreBox.style.display='none';
+setReady();
+}
+function showItem(){
+const it=ITEMS[idx];
+mountWords(it.en);
+jpEl.textContent=it.jp;
+hiraEl.textContent=it.hira;
+resetVisuals();
+updateCounter();
+}
+
+/* ---------- ROUND FLOW: iOS shadowing (no mic) ---------- */
+async function beginRoundIOS(){
+if(isBusy) return;
+isBusy = true;
+
+resetVisuals();
+disableControls(true);
+
+// 3,2,1
+await countdown321();
+
+// GO + meter only (no speech recognition)
+meterText.innerHTML=`<span class="popNum flashGo" style="color:#fff680">GO!</span>`;
+await sleep(120);
+setListening();
+startSweep();
+
+await sleep(DUR_MS);
+
+setFinished();
+stopSweep();
+
+// No score, just practice. Show BOTH Retry & Next.
+scoreBox.style.display='none';
+beginBtn.style.display='none';
+retryBtn.style.display='inline-block';
+nextBtn.style.display='inline-block';
+
+disableControls(false);
+isBusy = false;
+}
+
+/* ---------- ROUND FLOW: full mic mode (Android / desktop) ---------- */
+async function beginRound(){
+if(isIOS){
+return beginRoundIOS();
+}
+
+if(isBusy) return;
+isBusy=true;
+
+const R=window.SpeechRecognition||window.webkitSpeechRecognition;
+if(!R){
+alert('このブラウザでは音声認識が使えません。Chrome を使用してください。');
+isBusy=false;
+return;
+}
+if(!streamAllowed){
+await ensureMicPermission();
+if(!streamAllowed){ isBusy=false; return; }
+}
+
+resetVisuals();
+disableControls(true);
+
+// Countdown 3,2,1
+await countdown321();
+
+// GO! — pulse + start mic exactly now
+meterText.innerHTML=`<span class="popNum flashGo" style="color:#fff680">GO!</span>`;
+
+let heard=""; listening=true; SR=makeRecognizer();
+if(SR){
+SR.onresult=(e)=>{
+let txt="";
+for(let i=e.resultIndex;i<e.results.length;i++){
+txt+=e.results[i][0].transcript+" ";
+}
+heard=(heard+" "+txt).trim();
+markSpoken(heard);
+};
+SR.onend=()=>{ if(listening){ try{ SR.start(); }catch(_){ } } };
+try{ SR.start(); }catch(_){}
+}
+
+await sleep(120);
+setListening();
+startSweep();
+
+await sleep(DUR_MS);
+
+listening=false;
+try{ SR && SR.stop(); }catch(_){}
+setFinished();
+stopSweep();
+finalizeColors();
+
+const s=keywordScore(ITEMS[idx].en,heard);
+scoreBox.textContent='スコア：'+s+'％';
+scoreBox.style.display='block';
+
+if(firstScores[idx]===null){
+firstScores[idx]=s;
+if(s===100) firstPerfectCount++;
+await playAudioWithWait(chooseScoreSfx(s));
+}
+
+if(s===100){
+nextBtn.style.display='inline-block';
+retryBtn.style.display='none';
+beginBtn.style.display='none';
+}else{
+retryBtn.style.display='inline-block';
+nextBtn.style.display='none';
+beginBtn.style.display='none';
+}
+
+disableControls(false);
+isBusy=false;
+}
+
+/* ---------- RESULTS ---------- */
+function avgPercent(){
+const sum=firstScores.reduce((a,b)=>a+(b??0),0);
+return Math.round(sum/15);
+}
+function hideAllResults(){
+['resRed','resOrange','resBlue','resGold'].forEach(id=>{
+const el=$('#'+id);
+if(el) el.style.display='none';
+});
+}
+
+async function showResults(){
+// 🍎 iOS: no score, just cute message
+if(isIOS){
+hideAllResults();
+const msgBlue = document.getElementById('msgBlue');
+const scoreBlue = document.getElementById('scoreBlue');
+if(msgBlue){
+msgBlue.textContent =
+"おつかれさま！\n\nもし今、このゲームを Android や パソコン で遊んでいたら、\n" +
+"マイクで本気バトルができて、もっとドキドキのゲームになります。\n\n" +
+"でも、iPad / iPhone の ペラペラれんしゅうモード でも、\n" +
+"ちゃんと「話す力」のレベルアップはできています。\n\n" +
+"いつか Android や パソコン で遊んだら、\n" +
+"そのときはブーハーもビックリするくらい、\n" +
+"もっともっと楽しくなるよ！";
+}
+if(scoreBlue){
+scoreBlue.textContent = "";
+}
+$('#resBlue').style.display='block';
+await playAudioWithWait(RES.blue);
+return;
+}
+
+// Normal (Android / desktop) scoring
+const pct=avgPercent();
+const xOf15=firstPerfectCount;
+let page='resBlue', snd=RES.blue, scoreSel='#scoreBlue';
+if(pct<=43){page='resRed'; snd=RES.red; scoreSel='#scoreRed';}
+else if(pct<=74){page='resOrange'; snd=RES.orange; scoreSel='#scoreOrange';}
+else if(pct===100){page='resGold'; snd=RES.gold; scoreSel='#scoreGold';}
+
+const se=$(scoreSel);
+if(se) se.textContent=`${xOf15}/15（${pct}%）`;
+
+hideAllResults();
+$('#'+page).style.display='block';
+await playAudioWithWait(snd);
+
+if(page==='resGold'){
+for(let i=0;i<160;i++){
+setTimeout(()=>{
+const c=document.createElement('div');
+c.className='confetti';
+c.style.left=(Math.random()*100)+'vw';
+c.style.background=`hsl(${Math.random()*360},100%,60%)`;
+c.style.animationDuration=(0.9+Math.random()*0.9)+'s';
+document.body.appendChild(c);
+setTimeout(()=>c.remove(),1900);
+}, i*10);
+}
+}
+}
+
+/* ---------- BUTTONS ---------- */
+beginBtn.addEventListener('click', async()=>{
+if(isIOS){
+showItem();
+beginRound();
+return;
+}
+if(!streamAllowed) await ensureMicPermission();
+if(!streamAllowed) return;
+showItem();
+beginRound();
+});
+retryBtn.addEventListener('click', ()=>{
+showItem();
+beginRound();
+});
+nextBtn.addEventListener('click', ()=>{
+if(isBusy) return;
+idx++;
+if(idx>=ITEMS.length){
+nextBtn.style.display='none';
+retryBtn.style.display='none';
+beginBtn.style.display='none';
+showResults();
+return;
+}
+showItem();
+nextBtn.style.display='none';
+retryBtn.style.display='none';
+beginBtn.style.display='inline-block';
+});
+
+playBtn.addEventListener('click', ()=>{
+const it=ITEMS[idx];
+const key=stripForFile(it.en);
+const a=sageBank[key]||new Audio('./audio/'+key+'.mp3');
+a.preload='auto';
+a.play().catch(()=>{});
+});
+
+// Restart on all result pages
+Array.from(document.querySelectorAll('[data-restart]')).forEach(b=>b.addEventListener('click', ()=>{
+hideAllResults();
+for(let i=0;i<firstScores.length;i++) firstScores[i]=null;
+firstPerfectCount=0;
+idx=0;
+showItem();
+beginBtn.style.display='inline-block';
+retryBtn.style.display='none';
+nextBtn.style.display='none';
+}));
+
+/* ---------- INIT ---------- */
+showItem();
+
+/* ---------- HELP MODAL ---------- */
+const helpBtnEl=$('#helpBtn');
+const helpModal=$('#helpModal');
+if(helpBtnEl && helpModal){
+const closeEls=helpModal.querySelectorAll('[data-close-help]');
+const openHelp=()=>{helpModal.classList.add('show');helpModal.setAttribute('aria-hidden','false');};
+const closeHelp=()=>{helpModal.classList.remove('show');helpModal.setAttribute('aria-hidden','true');};
+helpBtnEl.addEventListener('click',openHelp);
+closeEls.forEach(el=>el.addEventListener('click',closeHelp));
+helpModal.addEventListener('click',e=>{if(e.target===helpModal)closeHelp();});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeHelp();});
+}
+
+/* ---------- iOS notice overlay ---------- */
+const iosNotice = document.getElementById('iosNotice');
+const iosNoticeBtn = document.getElementById('iosNoticeBtn');
+if(isIOS && iosNotice && iosNoticeBtn){
+iosNotice.classList.add('show');
+iosNotice.setAttribute('aria-hidden','false');
+iosNoticeBtn.addEventListener('click', ()=>{
+iosNotice.classList.remove('show');
+iosNotice.setAttribute('aria-hidden','true');
+});
+}
+</script>
+</body>
+</html>
