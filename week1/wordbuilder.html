@@ -340,6 +340,14 @@ const $=s=>document.querySelector(s);
 
 /* ====== Data ====== */
 const MASTER_BASE=["goal","plan","future","dream","challenge","try","change","habit","exercise","study","learn","practice","success","focus","motivation"];
+
+// Sage vocab files are numbered: v01_goal.mp3, v02_plan.mp3, ...
+// Build a lookup so WORD index → correct file
+const SAGE_INDEX = MASTER_BASE.reduce((acc, word, i) => {
+  const num = String(i + 1).padStart(2, '0');
+  acc[word] = `audio/vocab/v${num}_${word}.mp3`;
+  return acc;
+}, {});
 let WORDS=[]; // shuffled on load
 let index=0,totalScore=0,firstTry=true;
 
@@ -383,22 +391,42 @@ function playSfx(audio){
   }catch{}
 }
 
-/* Sage voice */
+/* Sage voice (LOCAL)
+   ✅ Vocab audio lives in: week1/audio/vocab/
+   This HTML file lives in week1/, so the relative path is: audio/vocab/<word>.mp3
+*/
 const sage=new Map();
-MASTER_BASE.forEach(w=>{
-  const a=new Audio(`audio/${w}.mp3`);
-  a.preload='auto'; a.load(); a.loop=false;
-  sage.set(w,a);
+MASTER_BASE.forEach(word=>{
+  const src = SAGE_INDEX[word];
+  const a = new Audio(src);
+  a.preload = 'auto';
+  a.loop = false;
+  try{ a.load(); }catch{}
+  sage.set(word, a);
 });
-function speak(){
-  const w=WORDS[index], a=sage.get(w);
-  if(!a) return;
-  a.currentTime=0;
-  play.classList.add("fizzy");
-  a.play().catch(()=>{});
-  a.onended=()=>play.classList.remove("fizzy");
+
+function stopAllSage(){
+  sage.forEach(a=>{ try{ a.pause(); a.currentTime = 0; }catch{} });
 }
-play.addEventListener("click", speak);
+
+function speak(){
+  const word = WORDS[index];
+  const a = sage.get(word);
+  if(!a){ console.warn('[Sage] missing audio for:', word); return; }
+
+  stopAllSage();
+  play.classList.add('fizzy');
+
+  try{ a.currentTime = 0; }catch{}
+  const clear = ()=>play.classList.remove('fizzy');
+  a.onended = clear;
+
+  const p = a.play();
+  if(p && typeof p.catch === 'function'){
+    p.catch(err=>{ console.warn('[Sage] play blocked or missing:', err); clear(); });
+  }
+}
+play.addEventListener('click', speak);("click", speak);
 
 /* ====== Visual FX ====== */
 function flashRedScreen(){
