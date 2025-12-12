@@ -33,6 +33,11 @@ font-family:'Noto Sans JP',system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Ari
 display:flex;
 flex-direction:column;
 align-items:center;
+
+/* ✅ Restore native scrolling (Android likes body scroll) */
+overflow-y:auto;
+overflow-x:hidden;
+
 overscroll-behavior-y: contain;
 padding-bottom:env(safe-area-inset-bottom);
 }
@@ -109,19 +114,23 @@ display:flex;gap:26px;align-items:flex-start;justify-content:center;flex-wrap:wr
 
 /* MOBILE layout improvements */
 @media (max-width:700px){
-:root{ --cardH: 92px; }
-#page-round.page.active{display:flex; flex-direction:column; padding-bottom:0;}
+/* ✅ slightly smaller tiles on mobile */
+:root{ --cardH: 86px; }
+
+/* ✅ IMPORTANT: stop inner div scrolling (Android hates nested scrollbars) */
 .round-viewport{
-flex:1 1 auto;
-min-height:0;
-overflow-y:auto;
--webkit-overflow-scrolling:touch;
-overscroll-behavior-y:contain;
-scrollbar-gutter: stable both-edges;
-padding-bottom: calc(var(--actionsH) + env(safe-area-inset-bottom) + 14px);
+  overflow:visible;
+  min-height:auto;
+  padding-bottom: 0;
 }
+
+/* Keep layout as two columns */
+#page-round.page.active{display:flex; flex-direction:column; padding-bottom:0;}
 .round-wrap{flex-wrap:nowrap;gap:10px}
-.col{flex:0 0 50%;max-width:50%}
+
+/* ✅ more side grab space */
+.col{flex:0 0 48%;max-width:48%}
+
 .card{
 height:var(--cardH);
 padding:10px 12px;
@@ -129,6 +138,8 @@ font-size:1.1rem;
 }
 .card.en{font-size:1.4rem;}
 .card.jp{font-size:.9rem;line-height:1.35;}
+
+/* Sticky actions stays */
 .actions{
 position:sticky; bottom:0; z-index:5;
 height: var(--actionsH);
@@ -477,11 +488,11 @@ text-align:center;
 <audio id="s_r1114" src="assets/audio/result_11-14.mp3" preload="auto"></audio>
 <audio id="s_r15" src="assets/audio/result_15.mp3" preload="auto"></audio>
 
-<!-- ✅ One reusable vocab player (reliable on iOS) -->
+<!-- ✅ One reusable vocab player -->
 <audio id="vocabPlayer" preload="auto" playsinline></audio>
 
 <script>
-/* DATA (add id for audio index) */
+/* DATA */
 const MASTER = [
 {id:1, en:"goal",jp:"目標",hira:"もくひょう"},
 {id:2, en:"plan",jp:"計画",hira:"けいかく"},
@@ -503,9 +514,9 @@ const MASTER = [
 /* State */
 let rounds=[], roundIndex=0, totalScore=0, connections={}, jpOrder=[];
 let audioUnlocked=false;
-let selectedEn = null;      // string
-let selectedEnId = null;    // number
-let selectedEnEl = null;    // element
+let selectedEn = null;
+let selectedEnId = null;
+let selectedEnEl = null;
 let isGrading = false;
 
 /* Helpers */
@@ -544,7 +555,7 @@ p.style.left=x+'px'; p.style.top=y+'px';
 document.body.appendChild(p); setTimeout(()=>p.remove(),980);
 }
 
-/* ✅ Local vocab audio (week1/audio/vocab/v01_goal.mp3) */
+/* Local vocab audio */
 function pad2(n){ return String(n).padStart(2,'0'); }
 function safeWord(s){
 return (s||"").toLowerCase().trim().replace(/\s+/g,'_').replace(/[^a-z0-9_'-]/g,'');
@@ -562,18 +573,20 @@ p.src = vocabSrc(id, en);
 p.play().catch(()=>{});
 }
 
-/* Mobile audio unlock */
+/* ✅ FIX: remove “autoplay blip”
+   We DO NOT play/pause on a global touch anymore.
+   We unlock only on the first real game action (tap EN/JP/CHECK). */
 function unlockAudioOnce(){
 if(audioUnlocked) return;
-["s_ding","s_fart","s_r05","s_r610","s_r1114","s_r15","vocabPlayer"].forEach(id=>{
-const el=document.getElementById(id);
-try{ el.volume=1.0; el.currentTime=0; el.play().then(()=>el.pause()).catch(()=>{});}catch(e){}
-});
-audioUnlocked=true;
+audioUnlocked = true;
+/* no play() here — just marking unlocked */
 }
-['pointerdown','touchstart','mousedown'].forEach(evt=>{
-window.addEventListener(evt, unlockAudioOnce, {once:true, passive:true});
-});
+
+/* Attach unlock to real actions */
+function armUnlockOn(el, evt="pointerdown"){
+if(!el) return;
+el.addEventListener(evt, unlockAudioOnce, {once:true, passive:true});
+}
 
 /* Selection UI */
 function setJpAwake(on){
@@ -681,7 +694,10 @@ c.textContent=item.en.toLowerCase();
 c.dataset.en=item.en.toLowerCase();
 c.dataset.id=String(item.id);
 
-/* Tap EN: select + ALWAYS replay */
+/* Unlock on first real tap */
+armUnlockOn(c);
+
+/* Tap EN: select + replay */
 c.addEventListener('click', ()=>{
 if(isGrading) return;
 if(c.style.visibility === 'hidden') return;
@@ -689,7 +705,6 @@ if(c.style.visibility === 'hidden') return;
 playVocabById(item.id, item.en);
 
 if(selectedEnEl === c){
-/* keep selection, just replay */
 return;
 }
 clearEnSelection();
@@ -709,6 +724,9 @@ c.className='card jp';
 c.dataset.jp=item.jp; c.dataset.hira=item.hira; c.dataset.connected=""; c.dataset.connectedId="";
 c.textContent=`${item.jp}\n(${item.hira})`;
 
+/* Unlock on first real tap */
+armUnlockOn(c);
+
 c.addEventListener('click', ()=>{
 if(isGrading) return;
 if(c.classList.contains('correct') || c.classList.contains('wrong')) return;
@@ -720,7 +738,7 @@ return;
 if(!selectedEn) return;
 
 combineIntoJP(c, selectedEn, selectedEnId);
-/* optional: audio again on place (feel-good) */
+/* feel-good replay */
 playVocabById(selectedEnId, selectedEn);
 });
 
@@ -729,10 +747,14 @@ colJp.appendChild(c);
 
 jpOrder=[...colJp.querySelectorAll('[data-jp]')];
 $("#checkBtn").disabled=true;
+
+/* Unlock on CHECK as well */
+armUnlockOn($("#checkBtn"));
 }
 
 /* Check flow */
 $("#checkBtn").addEventListener('click',()=>{
+unlockAudioOnce(); /* in case first action is CHECK */
 if(isGrading) return;
 isGrading = true;
 $("#checkBtn").disabled=true;
