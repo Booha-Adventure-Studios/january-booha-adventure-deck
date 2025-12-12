@@ -159,10 +159,7 @@ footer{margin-top:auto;padding:14px 10px;opacity:.9;font-size:1rem;font-family:'
   font-weight:900;
   letter-spacing:.02em;
 
-  /* black text */
   color:#0b1530;
-
-  /* “Tap Match-ish” readability glow (white outline feel) */
   text-shadow:
     0 1px 0 rgba(255,255,255,.55),
     0 0 10px rgba(255,255,255,.35),
@@ -205,7 +202,7 @@ footer{margin-top:auto;padding:14px 10px;opacity:.9;font-size:1rem;font-family:'
   transition:all .3s ease;
 }
 
-/* English size: match JP size feel (especially for iOS request) */
+/* English size: match JP size feel */
 #answerText{
   font-size:clamp(1.65rem,4.2vw,2.25rem);
   line-height:1.05;
@@ -261,8 +258,7 @@ footer{margin-top:auto;padding:14px 10px;opacity:.9;font-size:1rem;font-family:'
 }
 .micBtn:disabled{opacity:.5;filter:saturate(.6);cursor:not-allowed}
 
-/* iOS layout overrides:
-   JP stripe -> English box -> purple check UNDER -> counter under check */
+/* iOS layout overrides */
 body.ios .answerRow{
   grid-template-columns:1fr;
   gap:14px;
@@ -329,7 +325,7 @@ body.ios #counter{
   opacity:.9;
 }
 
-/* 🌌 Help overlay – standard Booha popup */
+/* 🌌 Help overlay */
 .help-overlay{
   position:fixed;
   inset:0;
@@ -482,7 +478,6 @@ body.ios #counter{
     </div>
 
     <button id="micBtn" class="micBtn idle" aria-label="Speak or Check">
-      <!-- Default mic icon (Android + desktop) -->
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
         <path d="M12 14a3 3 0 0 0 3-3V5a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3z"/>
         <path d="M19 11a1 1 0 0 0-2 0 5 5 0 0 1-10 0 1 1 0 0 0-2 0 7 7 0 0 0 6 6.93V21h-3a1 1 0 0 0 0 2h8a1 1 0 0 0 0-2h-3v-3.07A7 7 0 0 0 19 11z"/>
@@ -521,7 +516,7 @@ body.ios #counter{
         <li>上の日本語（＋ひらがな）を見て、英語を声に出して言います。</li>
         <li><strong>Android / パソコン</strong>：むらさきの<strong>マイク</strong>を押して、英語をはっきり1回言います（自動チェック）。</li>
         <li><strong>iPad / iPhone</strong>：むらさきの<strong>✔</strong>を押して、こたえを表示します（声の自動チェックはしません）。</li>
-        <li>正解のとき：みどり + コンフェッティ + Sage の音声。</li>
+        <li>正解のとき：みどり + コンフェッティ + Sage の音声（英単語）。</li>
         <li><strong>NEXT / 次へ</strong>で次の単語へ。</li>
       </ul>
 
@@ -532,7 +527,7 @@ body.ios #counter{
         <li>Look at the Japanese (and hiragana), then say the English word out loud.</li>
         <li><strong>Android / Desktop</strong>: tap the <strong>mic</strong>, say the word once (auto-check).</li>
         <li><strong>iPad / iPhone</strong>: tap the <strong>✔</strong> to reveal the answer (no live voice judging).</li>
-        <li>When correct: green box + confetti + Sage voice.</li>
+        <li>When correct: green box + confetti + Sage voice (the English word).</li>
         <li>Tap <strong>NEXT</strong> to continue.</li>
       </ul>
 
@@ -561,17 +556,13 @@ body.ios #counter{
   </div>
 </div>
 
-<!-- audio -->
-<audio id="s_ding" src="assets/audio/ding.mp3" preload="auto"></audio>
-<audio id="s_fart" src="assets/audio/fart.mp3" preload="auto"></audio>
+<!-- results audio only -->
 <audio id="s_r05" src="assets/audio/result_0-5.mp3" preload="auto"></audio>
 <audio id="s_r610" src="assets/audio/result_6-10.mp3" preload="auto"></audio>
 <audio id="s_r1114" src="assets/audio/result_11-14.mp3" preload="auto"></audio>
 <audio id="s_r15" src="assets/audio/result_15.mp3" preload="auto"></audio>
 
-<audio id="s_micOn" src="assets/audio/mic_on.mp3" preload="auto"></audio>
-<audio id="s_micDone" src="assets/audio/mic_done.mp3" preload="auto"></audio>
-
+<!-- 🔊 Shared Sage voice element -->
 <audio id="sageVoice" preload="auto"></audio>
 
 <script>
@@ -595,12 +586,6 @@ const MASTER=[
 
 const $=s=>document.querySelector(s);
 function shuffle(a){return a.map(v=>[Math.random(),v]).sort((x,y)=>x[0]-y[0]).map(x=>x[1]);}
-function playSound(id){
-  const s=$("#"+id);
-  if(!s)return;
-  s.currentTime=0;
-  s.play().catch(()=>{});
-}
 
 /* 🔁 Shared Sage voice element */
 const sageVoice=document.getElementById('sageVoice');
@@ -731,7 +716,8 @@ if(SR && !isIOS){
   };
 }
 
-/* 🎧 Unlock audio session on first Apple tap with a silent ding */
+/* 🎧 Unlock audio session on Apple (no ding file) */
+let audioCtx = null;
 function unlockAudio(cb){
   if(!isApple){
     if(cb) cb();
@@ -744,26 +730,15 @@ function unlockAudio(cb){
   audioUnlocked = true;
 
   try{
-    const ding = document.getElementById('s_ding');
-    if(!ding){
+    const AC = window.AudioContext || window.webkitAudioContext;
+    if(!AC){
       if(cb) cb();
       return;
     }
-    const originalVolume = ding.volume;
-    ding.volume = 0;
-    const p = ding.play();
-    if(p && p.then){
-      p.then(()=>{
-        ding.pause();
-        ding.currentTime = 0;
-        ding.volume = originalVolume;
-        if(cb) cb();
-      }).catch(()=>{
-        ding.volume = originalVolume;
-        if(cb) cb();
-      });
+    audioCtx = audioCtx || new AC();
+    if(audioCtx.state === 'suspended'){
+      audioCtx.resume().then(()=>{ if(cb) cb(); }).catch(()=>{ if(cb) cb(); });
     }else{
-      ding.volume = originalVolume;
       if(cb) cb();
     }
   }catch(e){
@@ -790,10 +765,8 @@ function startRecognitionCore(){
 }
 
 /* 🎙️ iOS check-flow (no real speech recognition)
-   - Reveal English in the white box (same size feel as JP)
-   - Ding + confetti
-   - Wait ~1s
-   - Sage speaks
+   - Confetti
+   - Sage says the word
    - NEXT appears AFTER Sage finishes */
 function iosCheckFlow(){
   if(answered) return;
@@ -805,7 +778,6 @@ function iosCheckFlow(){
   answerBox.classList.remove('pulsing');
   answerBox.classList.add('correct');
 
-  playSound('s_ding');
   confettiBurst(answerBox,60);
 
   nextBtn.style.display = 'none';
@@ -816,7 +788,7 @@ function iosCheckFlow(){
       nextBtn.style.display = 'inline-block';
       nextBtn.disabled = false;
     });
-  },1000);
+  }, 300);
 }
 
 /* 🎙️ Called when user taps mic / check button */
@@ -863,7 +835,9 @@ function showCard(){
   updateCounter();
 }
 
-/* ✅ Evaluate result – real check only for non-iOS */
+/* ✅ Evaluate result – real check only for non-iOS
+   Correct: confetti + Sage speaks + NEXT after Sage
+   Wrong: shake only */
 function evaluate(heard){
   const correct=order[idx].en.toLowerCase().replace(/[^a-z]/g,'');
   if(heard===correct){
@@ -871,20 +845,22 @@ function evaluate(heard){
     micBtn.classList.remove('pulsing');
     answerBox.classList.remove('pulsing');
     answerBox.classList.add('correct');
-    playSound('s_ding');
-    confettiBurst(answerBox,60);
 
+    confettiBurst(answerBox,60);
     score++;
 
-    /* Non-iOS unchanged behavior */
+    nextBtn.style.display = 'none';
+    nextBtn.disabled = true;
+
     setTimeout(()=>{
-      nextBtn.style.display='inline-block';
-      playSage(order[idx].en);
-    },1000);
+      playSage(order[idx].en, ()=>{
+        nextBtn.style.display='inline-block';
+        nextBtn.disabled = false;
+      });
+    }, 300);
 
   }else{
     answerBox.classList.add('wrong');
-    playSound('s_fart');
     setTimeout(()=>{
       answerBox.classList.remove('wrong');
       answerBox.style.background='#fff';
@@ -941,7 +917,7 @@ function preloadAll(){
     const a=new Audio(`audio/${i.en.toLowerCase()}.mp3`);
     a.load();
   });
-  ['s_ding','s_fart','s_r05','s_r610','s_r1114','s_r15'].forEach(id=>{
+  ['s_r05','s_r610','s_r1114','s_r15'].forEach(id=>{
     const el=$("#"+id);
     if(el) el.load();
   });
