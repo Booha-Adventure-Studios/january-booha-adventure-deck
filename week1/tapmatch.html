@@ -18,8 +18,8 @@
 --gold:#ffd166;
 --cuteBlue:#60a5fa;
 --cuteBlueGlow:0 0 14px rgba(96,165,250,.9), 0 0 36px rgba(96,165,250,.55);
---cardH: 140px; /* desktop card height */
---actionsH: 72px; /* mobile sticky actions height */
+--cardH: 140px;
+--actionsH: 72px;
 }
 
 /* base */
@@ -49,7 +49,6 @@ font-family:'Cinzel',serif;letter-spacing:1px;margin-top:6px;
 font-size:clamp(2.0rem,6.2vw,3rem);
 text-shadow:0 0 10px rgba(255,255,255,.12)
 }
-/* Mobile: two lines; Desktop: single line with slash */
 .subtitle-stack{opacity:.85;font-size:.95rem;letter-spacing:.08em;display:flex;gap:.4rem;justify-content:center;flex-wrap:wrap}
 .subtitle-stack .en::after{content:" / "; opacity:.8}
 @media (max-width:700px){
@@ -73,11 +72,9 @@ padding:3px 8px;
 border:1px solid #ffffff66;
 background:rgba(15,23,42,.95);
 color:#fff;
-
 font-size:0.55rem;
 font-weight:700;
 letter-spacing:.04em;
-
 cursor:pointer;
 display:flex;
 align-items:center;
@@ -125,21 +122,13 @@ padding-bottom: calc(var(--actionsH) + env(safe-area-inset-bottom) + 14px);
 }
 .round-wrap{flex-wrap:nowrap;gap:10px}
 .col{flex:0 0 50%;max-width:50%}
-
-/* smaller cards & text on mobile */
 .card{
 height:var(--cardH);
 padding:10px 12px;
 font-size:1.1rem;
 }
-.card.en{
-font-size:1.4rem;
-}
-.card.jp{
-font-size:.9rem;
-line-height:1.35;
-}
-
+.card.en{font-size:1.4rem;}
+.card.jp{font-size:.9rem;line-height:1.35;}
 .actions{
 position:sticky; bottom:0; z-index:5;
 height: var(--actionsH);
@@ -159,7 +148,7 @@ padding:18px 20px;
 display:flex; align-items:center; justify-content:center; text-align:center;
 font-size:clamp(1.4rem,4.6vw,2.4rem); font-weight:700; line-height:1.2;
 user-select:none;
-transition:transform .15s ease, box-shadow .2s ease, background .2s ease, border-color .2s ease, color .2s ease;
+transition:transform .15s ease, box-shadow .2s ease, background .2s ease, border-color .2s ease, color .2s ease, filter .2s ease;
 word-break:break-word;
 cursor:pointer;
 }
@@ -175,7 +164,6 @@ hyphens: none;
 background:transparent; border:3px dashed var(--outline); color:var(--ink);
 white-space:pre-line;
 }
-.card.locked{pointer-events:none}
 
 /* ✅ Selected glow (tap) */
 .card.selected{
@@ -185,6 +173,13 @@ box-shadow:
 0 0 18px rgba(255,255,255,.55),
 0 0 36px rgba(255,209,102,.55);
 border-color:#fff !important;
+}
+
+/* ✅ JP “wake up” when an English is selected */
+.jpAwake .card.jp:not(.combined):not(.correct):not(.wrong){
+filter: brightness(1.08);
+border-color:#ffffffdd;
+box-shadow: 0 0 10px rgba(255,255,255,.18);
 }
 
 /* Combined before grading */
@@ -197,9 +192,18 @@ box-shadow:var(--cuteBlueGlow)!important;
 .card.combined .enTxt{font-size:1.05em; font-weight:1000; letter-spacing:-.01em}
 .card.combined .jpTxt{font-size:.7em; opacity:.98}
 
-/* Grading wins over everything */
+/* ✅ Tiny “pop” feedback when pairing */
+@keyframes pairPop{
+0%{transform:scale(0.98)}
+60%{transform:scale(1.03)}
+100%{transform:scale(1)}
+}
+.card.pairedPop{ animation: pairPop .18s ease-out; }
+
+/* Grading wins */
 .card.correct{background:var(--green) !important; color:#062a12 !important; border:0 !important}
 .card.wrong {background:var(--red) !important; color:#fff !important; border:0 !important; animation:shake .45s}
+.card.locked{pointer-events:none}
 @keyframes shake{
 0%,100%{transform:translateX(0)}
 20%{transform:translateX(-8px)}
@@ -346,13 +350,8 @@ margin-bottom:10px;
 font-size:.92rem;
 line-height:1.6;
 }
-.help-content ul{
-padding-left:1.1em;
-margin:4px 0 10px;
-}
-.help-content li{
-margin-bottom:4px;
-}
+.help-content ul{padding-left:1.1em;margin:4px 0 10px;}
+.help-content li{margin-bottom:4px;}
 .help-close{
 position:absolute;
 top:8px;
@@ -368,108 +367,29 @@ cursor:pointer;
 font-size:1rem;
 }
 
-/* 🌸 Mobile-only fake scroll rail + hint */
-.scroll-rail,
-.scroll-hint{display:none;}
-@media (max-width:700px){
-.scroll-rail{
-position:fixed;
-top:0;
-bottom:0;
-right:0;
-width:10px;
-pointer-events:none;
-z-index:30;
-display:block;
+/* Round flash */
+.round-flash{
+position:fixed; inset:0; z-index:60;
+display:none; align-items:center; justify-content:center;
+background:radial-gradient(circle at center, rgba(255,209,102,.22), rgba(2,6,23,.78));
+backdrop-filter: blur(1px);
 }
-.scroll-rail::before{
-content:"";
-position:fixed;
-top:10px;
-bottom:10px;
-left:0;
-width:8px;
-background:linear-gradient(#ffb7df,#ff7acb,#ffb7df);
-opacity:0.16;
-border-radius:999px;
-box-shadow:0 0 6px #ff9ad7;
-animation:railGlow 2.4s infinite alternate;
-}
-.scroll-rail-inner{
-position:absolute;
-top:10px;
-bottom:10px;
-right:0;
-width:10px;
-background:linear-gradient(#ffb7df,#ff7acb,#ffb7df);
-opacity:0.18;
-border-radius:999px;
-box-shadow:0 0 6px #ff9ad7;
-animation:railGlow 2.4s infinite alternate;
-display:flex;
-flex-direction:column;
-align-items:center;
-justify-content:center;
-gap:6px;
-}
-.scroll-rail-arrow{
-width:4px;height:8px;border-radius:999px;
-background:rgba(255,255,255,.85);
-box-shadow:0 0 4px rgba(255,255,255,.8);
-}
-.scroll-rail-text{
-writing-mode:vertical-rl;
-text-orientation:mixed;
-font-size:.6rem;
-font-weight:800;
-letter-spacing:.12em;
-color:#fff;
-text-shadow:0 0 4px rgba(255,255,255,.8);
-}
-@keyframes railGlow{0%{opacity:.25;}100%{opacity:.55;}}
-.scroll-hint{
-position:fixed;
-bottom: calc(var(--actionsH) + env(safe-area-inset-bottom) + 40px);
-left:50%;
-transform:translateX(-50%);
-z-index:40;
-display:flex;
-align-items:center;
-justify-content:center;
-}
-.scroll-hint-bubble{
-background:#ffffff;
-padding:10px 18px;
-border-radius:999px;
+.round-flash.show{display:flex;}
+.round-flash .box{
+padding:18px 22px;
+border-radius:22px;
+border:1px solid #ffffff55;
+background:rgba(15,23,42,.95);
+box-shadow:0 0 30px rgba(0,0,0,.7);
 text-align:center;
-box-shadow:0 4px 14px rgba(15,23,42,.35);
-animation:bubblePulse 2.4s infinite ease-in-out;
 }
-.scroll-hint-arrow{
-font-size:1.4rem;
-display:block;
-margin-bottom:2px;
-color:#7c3aed;
-font-weight:900;
-}
-.scroll-hint-text{
-font-size:.9rem;
-font-weight:600;
-line-height:1.5;
-color:#111827;
-}
-.scroll-hint.hide{
-opacity:0;
-pointer-events:none;
-transition:opacity .5s ease;
-}
-@keyframes bubblePulse{0%{transform:scale(1); opacity:.9;}100%{transform:scale(1.04); opacity:1;}}
-}
+.round-flash .t1{font-family:'Cinzel',serif;font-size:1.4rem;letter-spacing:.06em}
+.round-flash .t2{margin-top:6px;opacity:.9}
 </style>
 </head>
+
 <body>
 
-<!-- Quit button (top-left) -->
 <button id="quitBtn" class="top-nav-btn">
 <span>Quit</span><span class="jp">／ やめる</span>
 </button>
@@ -484,7 +404,6 @@ transition:opacity .5s ease;
 <hr class="sep">
 </header>
 
-<!-- PAGE: Round container -->
 <section id="page-round" class="page active">
 <div class="round-viewport">
 <div class="round-wrap" id="tapArea">
@@ -497,7 +416,6 @@ transition:opacity .5s ease;
 </div>
 </section>
 
-<!-- PAGE: Results -->
 <section id="page-results" class="page">
 <div class="result-box">
 <div id="resultMsg" class="result-msg">結果</div>
@@ -511,10 +429,8 @@ transition:opacity .5s ease;
 
 <footer>Bryan's English School</footer>
 
-<!-- Help icon -->
 <button id="helpBtn" class="help-icon">?</button>
 
-<!-- Help overlay -->
 <div id="helpOverlay" class="help-overlay">
 <div class="help-dialog">
 <button id="helpClose" class="help-close">×</button>
@@ -527,7 +443,7 @@ transition:opacity .5s ease;
 <li>右の<strong>日本語カード</strong>をタップしてペアにします。</li>
 <li>ペアにすると青いカードになり、英語＋日本語（ふりがな）が表示されます。</li>
 <li>まちがえたら、青いカードをタップすると<strong>取り消し</strong>できます。</li>
-<li>5つすべてペアにできたら、<strong>CHECK（チェック）</strong>を押します。</li>
+<li>5つすべてペアにできたら、<strong>CHECK</strong>を押します。</li>
 <li><strong>3ラウンド（合計15問）</strong>あります。パーフェクトを目指してね！</li>
 </ul>
 
@@ -546,27 +462,14 @@ transition:opacity .5s ease;
 </div>
 </div>
 
-<!-- 🌸 Mobile scroll rail + hint -->
-<div id="scrollRail" class="scroll-rail">
-<div class="scroll-rail-inner">
-<span class="scroll-rail-arrow"></span>
-<span class="scroll-rail-text"></span>
-<span class="scroll-rail-arrow"></span>
+<div id="roundFlash" class="round-flash">
+<div class="box">
+<div class="t1" id="roundFlashT1">ROUND 1</div>
+<div class="t2" id="roundFlashT2">ラウンド１</div>
 </div>
 </div>
 
-<div id="scrollHint" class="scroll-hint">
-<div class="scroll-hint-bubble">
-<span class="scroll-hint-arrow">↑↓</span>
-<span class="scroll-hint-text">
-画面を上下にスイスイ動かすと<br>
-かくれているカードが出てきます。<br>
-※スマホをふっても出てきません。
-</span>
-</div>
-</div>
-
-<!-- Audio (SFX + results) -->
+<!-- SFX + results -->
 <audio id="s_ding" src="assets/audio/ding.mp3" preload="auto"></audio>
 <audio id="s_fart" src="assets/audio/fart.mp3" preload="auto"></audio>
 <audio id="s_r05" src="assets/audio/result_0-5.mp3" preload="auto"></audio>
@@ -574,41 +477,44 @@ transition:opacity .5s ease;
 <audio id="s_r1114" src="assets/audio/result_11-14.mp3" preload="auto"></audio>
 <audio id="s_r15" src="assets/audio/result_15.mp3" preload="auto"></audio>
 
+<!-- ✅ One reusable vocab player (reliable on iOS) -->
+<audio id="vocabPlayer" preload="auto" playsinline></audio>
+
 <script>
-/* DATA */
+/* DATA (add id for audio index) */
 const MASTER = [
-{en:"goal",jp:"目標",hira:"もくひょう"},
-{en:"plan",jp:"計画",hira:"けいかく"},
-{en:"future",jp:"未来",hira:"みらい"},
-{en:"dream",jp:"夢",hira:"ゆめ"},
-{en:"challenge",jp:"挑戦",hira:"ちょうせん"},
-{en:"try",jp:"挑戦する",hira:"ちょうせん する"},
-{en:"change",jp:"変える",hira:"かえる"},
-{en:"habit",jp:"習慣",hira:"しゅうかん"},
-{en:"exercise",jp:"運動",hira:"うんどう"},
-{en:"study",jp:"勉強",hira:"べんきょう"},
-{en:"learn",jp:"学ぶ",hira:"まなぶ"},
-{en:"practice",jp:"練習",hira:"れんしゅう"},
-{en:"success",jp:"成功",hira:"せいこう"},
-{en:"focus",jp:"集中",hira:"しゅうちゅう"},
-{en:"motivation",jp:"やる気",hira:"やるき"}
+{id:1, en:"goal",jp:"目標",hira:"もくひょう"},
+{id:2, en:"plan",jp:"計画",hira:"けいかく"},
+{id:3, en:"future",jp:"未来",hira:"みらい"},
+{id:4, en:"dream",jp:"夢",hira:"ゆめ"},
+{id:5, en:"challenge",jp:"挑戦",hira:"ちょうせん"},
+{id:6, en:"try",jp:"挑戦する",hira:"ちょうせん する"},
+{id:7, en:"change",jp:"変える",hira:"かえる"},
+{id:8, en:"habit",jp:"習慣",hira:"しゅうかん"},
+{id:9, en:"exercise",jp:"運動",hira:"うんどう"},
+{id:10,en:"study",jp:"勉強",hira:"べんきょう"},
+{id:11,en:"learn",jp:"学ぶ",hira:"まなぶ"},
+{id:12,en:"practice",jp:"練習",hira:"れんしゅう"},
+{id:13,en:"success",jp:"成功",hira:"せいこう"},
+{id:14,en:"focus",jp:"集中",hira:"しゅうちゅう"},
+{id:15,en:"motivation",jp:"やる気",hira:"やるき"}
 ];
 
 /* State */
 let rounds=[], roundIndex=0, totalScore=0, connections={}, jpOrder=[];
 let audioUnlocked=false;
-let selectedEn = null;     // string
-let selectedEnEl = null;   // element
+let selectedEn = null;      // string
+let selectedEnId = null;    // number
+let selectedEnEl = null;    // element
+let isGrading = false;
 
 /* Helpers */
 const $ = s=>document.querySelector(s);
 
 function playSfx(id){
 const src=document.getElementById(id); if(!src) return;
-const a=src.cloneNode(true);
-a.setAttribute('playsinline','');
-a.currentTime=0;
-a.volume=src.volume??1;
+const a=src.cloneNode(true); a.setAttribute('playsinline','');
+a.currentTime=0; a.volume=src.volume??1;
 document.body.appendChild(a);
 a.play().catch(()=>{}).finally(()=>setTimeout(()=>a.remove(),1800));
 }
@@ -638,126 +544,110 @@ p.style.left=x+'px'; p.style.top=y+'px';
 document.body.appendChild(p); setTimeout(()=>p.remove(),980);
 }
 
-/* ✅ Local Sage vocab playback (NO API CALLS) */
-function normalizeKey(s){
-return (s||"")
-.toLowerCase()
-.trim()
-.replace(/\s+/g,'_')
-.replace(/[^a-z0-9_'-]/g,''); // keep it simple
+/* ✅ Local vocab audio (week1/audio/vocab/v01_goal.mp3) */
+function pad2(n){ return String(n).padStart(2,'0'); }
+function safeWord(s){
+return (s||"").toLowerCase().trim().replace(/\s+/g,'_').replace(/[^a-z0-9_'-]/g,'');
 }
-
-/* Change this ONE function if your filenames differ */
-function getVocabSrc(enWord){
-const key = normalizeKey(enWord);
-return `audio/vocab/${key}.mp3`;
+function vocabSrc(id, en){
+return `audio/vocab/v${pad2(id)}_${safeWord(en)}.mp3`;
 }
-
-function playVocab(enWord){
-const src = getVocabSrc(enWord);
-const a = new Audio(src);
-a.setAttribute('playsinline','');
-a.preload = 'auto';
-a.play().catch(()=>{ /* silent fail if file missing */ });
+function playVocabById(id, en){
+if(!id || !en) return;
+const p = $("#vocabPlayer");
+if(!p) return;
+p.pause();
+p.currentTime = 0;
+p.src = vocabSrc(id, en);
+p.play().catch(()=>{});
 }
 
 /* Mobile audio unlock */
 function unlockAudioOnce(){
 if(audioUnlocked) return;
-["s_ding","s_fart","s_r05","s_r610","s_r1114","s_r15"].forEach(id=>{
+["s_ding","s_fart","s_r05","s_r610","s_r1114","s_r15","vocabPlayer"].forEach(id=>{
 const el=document.getElementById(id);
 try{ el.volume=1.0; el.currentTime=0; el.play().then(()=>el.pause()).catch(()=>{});}catch(e){}
 });
 audioUnlocked=true;
 }
-
-/* More robust on iPad / iframe contexts */
 ['pointerdown','touchstart','mousedown'].forEach(evt=>{
 window.addEventListener(evt, unlockAudioOnce, {once:true, passive:true});
 });
 
-/* iOS pull-to-refresh guard just on the scroll container */
-function installPullToRefreshGuard(){
-const scroller = document.querySelector('.round-viewport');
-if(!scroller) return;
-
-let startY=0;
-
-scroller.addEventListener('touchstart', (e)=>{
-if(e.touches.length!==1) return;
-startY = e.touches[0].clientY;
-}, {passive:true});
-
-scroller.addEventListener('touchmove', (e)=>{
-if(e.touches.length!==1) return;
-const y = e.touches[0].clientY;
-const dy = y - startY;
-
-const atTop = scroller.scrollTop <= 0;
-const atBottom = scroller.scrollTop + scroller.clientHeight >= scroller.scrollHeight - 1;
-
-if ((atTop && dy > 0) || (atBottom && dy < 0)) {
-e.preventDefault();
-}
-}, {passive:false});
-}
-
 /* Selection UI */
+function setJpAwake(on){
+document.body.classList.toggle('jpAwake', !!on);
+}
 function clearEnSelection(){
 if(selectedEnEl) selectedEnEl.classList.remove('selected');
 selectedEn = null;
+selectedEnId = null;
 selectedEnEl = null;
+setJpAwake(false);
 }
 
-/* Clear a JP slot to "take back" an English chip */
+/* Clear JP slot */
 function clearJPCard(jpCard){
 const enText = jpCard.dataset.connected;
+const enId = Number(jpCard.dataset.connectedId || 0);
 if(!enText) return;
 
-// Show the original English card again
-const enCard = document.querySelector(`.en[data-en="${enText}"]`);
+playVocabById(enId, enText);
+
+const enCard = document.querySelector(`.en[data-en="${enText}"][data-id="${enId}"]`);
 if(enCard) enCard.style.visibility = 'visible';
 
-// Restore JP card visuals/text
-jpCard.classList.remove('combined','matchedBlue','correct','wrong','locked');
+jpCard.classList.remove('combined','matchedBlue','pairedPop','correct','wrong','locked');
 jpCard.classList.add('jp');
 jpCard.innerHTML = `${jpCard.dataset.jp}\n(${jpCard.dataset.hira})`;
 
-// Clear connection
 jpCard.dataset.connected = "";
+jpCard.dataset.connectedId = "";
 delete connections[jpCard.dataset.jp];
 
-// Re-check if all 5 are linked
 $("#checkBtn").disabled = Object.keys(connections).length !== 5;
-
-// Also clear selection (feels better)
 clearEnSelection();
 }
 
-/* Combine helper */
-function combineIntoJP(jpCard, enText){
+/* Combine */
+function combineIntoJP(jpCard, enText, enId){
 if(!jpCard || !jpCard.dataset) return;
 
-// If this JP card already had an EN, give that EN back
 if(jpCard.dataset.connected){
-const old=document.querySelector(`.en[data-en="${jpCard.dataset.connected}"]`);
+const oldText = jpCard.dataset.connected;
+const oldId = Number(jpCard.dataset.connectedId || 0);
+const old = document.querySelector(`.en[data-en="${oldText}"][data-id="${oldId}"]`);
 if(old) old.style.visibility='visible';
 }
 
-const enCard=document.querySelector(`.en[data-en="${enText}"]`);
+const enCard=document.querySelector(`.en[data-en="${enText}"][data-id="${enId}"]`);
 if(enCard) enCard.style.visibility='hidden';
 
 const jp = jpCard.dataset.jp, hira = jpCard.dataset.hira;
-jpCard.classList.add('combined','matchedBlue');
+jpCard.classList.add('combined','matchedBlue','pairedPop');
 jpCard.classList.remove('jp','selected');
 jpCard.innerHTML = `<div class="enTxt">${enText}</div><div class="jpTxt">${jp}（${hira}）</div>`;
 jpCard.dataset.connected = enText;
-connections[jp] = enText;
+jpCard.dataset.connectedId = String(enId);
+connections[jp] = `${enId}|${enText}`;
+
+setTimeout(()=>jpCard.classList.remove('pairedPop'), 220);
 
 $("#checkBtn").disabled = Object.keys(connections).length !== 5;
-
-// clear selection after placing
 clearEnSelection();
+}
+
+/* Round flash */
+function showRoundFlash(n){
+const o = $("#roundFlash");
+const t1 = $("#roundFlashT1");
+const t2 = $("#roundFlashT2");
+if(!o||!t1||!t2) return;
+t1.textContent = `ROUND ${n}`;
+t2.textContent = `ラウンド${n}`;
+o.classList.add('show');
+setTimeout(()=>o.classList.remove('show'), 620);
 }
 
 /* Init */
@@ -765,16 +655,19 @@ function initGame(){
 totalScore=0; roundIndex=0; document.body.className='';
 $("#page-results").classList.remove('active'); $("#page-round").classList.add('active');
 clearEnSelection();
+isGrading = false;
 
 const shuffled=shuffle([...MASTER]);
 rounds=[shuffled.slice(0,5),shuffled.slice(5,10),shuffled.slice(10,15)];
+showRoundFlash(1);
 loadRound();
 }
 
-/* Build a round */
+/* Build round */
 function loadRound(){
 connections={};
 clearEnSelection();
+isGrading = false;
 
 const set=rounds[roundIndex], colEn=$("#col-en"), colJp=$("#col-jp");
 colEn.innerHTML=""; colJp.innerHTML="";
@@ -786,22 +679,25 @@ const c=document.createElement('div');
 c.className=`card en sv ${stripeClasses[idx % stripeClasses.length]}`;
 c.textContent=item.en.toLowerCase();
 c.dataset.en=item.en.toLowerCase();
+c.dataset.id=String(item.id);
 
-/* TAP: select + play vocab */
+/* Tap EN: select + ALWAYS replay */
 c.addEventListener('click', ()=>{
-if(c.style.visibility === 'hidden') return; // already used
-if(c.classList.contains('locked')) return;
+if(isGrading) return;
+if(c.style.visibility === 'hidden') return;
 
-playVocab(c.dataset.en);
+playVocabById(item.id, item.en);
 
 if(selectedEnEl === c){
-clearEnSelection();
+/* keep selection, just replay */
 return;
 }
 clearEnSelection();
-selectedEn = c.dataset.en;
+selectedEn = item.en.toLowerCase();
+selectedEnId = item.id;
 selectedEnEl = c;
 c.classList.add('selected');
+setJpAwake(true);
 });
 
 colEn.appendChild(c);
@@ -810,24 +706,22 @@ colEn.appendChild(c);
 shuffle([...set]).forEach(item=>{
 const c=document.createElement('div');
 c.className='card jp';
-c.dataset.jp=item.jp; c.dataset.hira=item.hira; c.dataset.connected="";
+c.dataset.jp=item.jp; c.dataset.hira=item.hira; c.dataset.connected=""; c.dataset.connectedId="";
 c.textContent=`${item.jp}\n(${item.hira})`;
 
-/* TAP JP:
-   - if combined -> undo
-   - else if EN selected -> combine
-   - else -> (optional) do nothing
-*/
 c.addEventListener('click', ()=>{
+if(isGrading) return;
 if(c.classList.contains('correct') || c.classList.contains('wrong')) return;
 
 if(c.dataset.connected){
 clearJPCard(c);
 return;
 }
-
 if(!selectedEn) return;
-combineIntoJP(c, selectedEn);
+
+combineIntoJP(c, selectedEn, selectedEnId);
+/* optional: audio again on place (feel-good) */
+playVocabById(selectedEnId, selectedEn);
 });
 
 colJp.appendChild(c);
@@ -839,6 +733,8 @@ $("#checkBtn").disabled=true;
 
 /* Check flow */
 $("#checkBtn").addEventListener('click',()=>{
+if(isGrading) return;
+isGrading = true;
 $("#checkBtn").disabled=true;
 clearEnSelection();
 
@@ -848,7 +744,12 @@ if(i>=jpOrder.length){
 clearInterval(step);
 setTimeout(()=>{
 roundIndex++;
-if(roundIndex<3){ loadRound(); } else { showResults(); }
+if(roundIndex<3){
+showRoundFlash(roundIndex+1);
+loadRound();
+}else{
+showResults();
+}
 },900);
 return;
 }
@@ -856,7 +757,7 @@ const card=jpOrder[i], jp=card.dataset.jp;
 const chosen=card.dataset.connected||"";
 const correct = rounds.flat().find(v=>v.jp===jp)?.en.toLowerCase();
 
-card.classList.remove('matchedBlue','selected');
+card.classList.remove('matchedBlue','pairedPop');
 
 if(chosen && chosen===correct){
 card.classList.remove('wrong');
@@ -910,43 +811,15 @@ setTimeout(()=>c.remove(),1900);
 
 /* Buttons */
 $("#playAgain").addEventListener('click', initGame);
-
-$("#backToMenu").addEventListener('click', () => {
-window.location.href = "index.html";
-});
-
-$("#quitBtn").addEventListener('click', () => {
-window.location.href = "index.html";
-});
+$("#backToMenu").addEventListener('click', () => { window.location.href = "index.html"; });
+$("#quitBtn").addEventListener('click', () => { window.location.href = "index.html"; });
 
 /* Help overlay logic */
 const helpOverlay = $("#helpOverlay");
-const helpBtn = $("#helpBtn");
-const helpClose = $("#helpClose");
+$("#helpBtn").addEventListener('click', () => { helpOverlay.classList.add('show'); });
+$("#helpClose").addEventListener('click', () => { helpOverlay.classList.remove('show'); });
+helpOverlay.addEventListener('click', (e) => { if(e.target === helpOverlay) helpOverlay.classList.remove('show'); });
 
-function closeHelp(){ helpOverlay.classList.remove('show'); }
-helpBtn.addEventListener('click', () => { helpOverlay.classList.add('show'); });
-helpClose.addEventListener('click', closeHelp);
-helpOverlay.addEventListener('click', (e) => { if(e.target === helpOverlay) closeHelp(); });
-
-/* Mobile scroll hint logic */
-const scrollHint = $("#scrollHint");
-let hintDismissed = false;
-function hideScrollHint(){
-if(hintDismissed || !scrollHint) return;
-hintDismissed = true;
-scrollHint.classList.add('hide');
-}
-if(scrollHint){
-window.addEventListener('scroll', hideScrollHint, {passive:true});
-const scroller = document.querySelector('.round-viewport');
-if(scroller){ scroller.addEventListener('scroll', hideScrollHint, {passive:true}); }
-window.addEventListener('touchstart', hideScrollHint, {passive:true});
-setTimeout(hideScrollHint, 6500);
-}
-
-/* Start */
-installPullToRefreshGuard();
 initGame();
 </script>
 </body>
