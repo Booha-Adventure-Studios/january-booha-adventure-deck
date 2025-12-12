@@ -10,15 +10,11 @@
   --bg:#0b1530; --ink:#fff; --gold:#ffd166; --green:#22c55e; --red:#ef4444; --purple:#a855f7;
   --outline:#ffffff26; --radius:26px; --micSize:56px; --barH:96px;
   --goldGlow:0 0 8px #facc15,0 0 20px #fde68a;
-
-  /* Tap Match-ish “window” styling */
   --winRadius:32px;
   --winShadow:0 12px 30px rgba(0,0,0,.32);
   --winInset:inset 0 0 0 4px rgba(255,255,255,.10);
   --winStroke:0 0 0 3px rgba(255,255,255,.10);
 }
-
-/* base */
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%}
 body{
@@ -31,14 +27,9 @@ body{
   padding-bottom:env(safe-area-inset-bottom);
 }
 
-/* 🔘 Quit button – smaller Booha version */
 .top-nav-btn{
-  position:fixed;
-  top:8px;
-  left:8px;
-  z-index:40;
-  border-radius:999px;
-  padding:3px 8px;
+  position:fixed; top:8px; left:8px; z-index:40;
+  border-radius:999px; padding:3px 8px;
   border:1px solid #ffffff66;
   background:rgba(15,23,42,.95);
   color:#fff;
@@ -60,7 +51,6 @@ body{
   transform:translateY(1px);
 }
 
-/* ❓ Help button – standard Booha */
 .help-icon{
   position:fixed;
   bottom:12px;
@@ -87,7 +77,6 @@ body{
 }
 .help-icon:active{transform:scale(.92);}
 
-/* Header */
 header{text-align:center;padding:28px 16px 10px}
 header h1{
   font-family:'Cinzel',serif;
@@ -100,12 +89,7 @@ header h2{
   margin-top:6px;
   font-size:clamp(2.0rem,6.2vw,3rem);
 }
-.subtitle-stack{
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  margin-top:6px;
-}
+.subtitle-stack{display:flex;justify-content:center;align-items:center;margin-top:6px;}
 .subtitle-stack .sub-combined{
   font-family:'Cinzel','Noto Sans JP',system-ui,sans-serif;
   font-weight:700;
@@ -114,15 +98,12 @@ header h2{
 }
 hr.sep{border:0;height:1px;background:linear-gradient(90deg,transparent,#ffffff33,transparent);margin:12px 0 8px}
 
-/* Pages + footer */
 footer{margin-top:auto;padding:14px 10px;opacity:.9;font-size:1rem;font-family:'Cinzel',serif}
 .page{width:100%;max-width:980px;margin:0 auto;display:none;padding:8px 16px 28px}
 .page.active{display:block}
 
-/* Game page */
 #page-game{display:flex;flex-direction:column;align-items:center;margin-top:30px;gap:22px;}
 
-/* Stripe “window” (Tap Match style) */
 .stripeBar{
   position:relative;
   width:min(560px,90vw);
@@ -147,7 +128,6 @@ footer{margin-top:auto;padding:14px 10px;opacity:.9;font-size:1rem;font-family:'
 .sv4{background-image:repeating-linear-gradient(0deg,#fca5a5 0 18px,#86efac 18px 36px,#93c5fd 36px 54px)}
 .sv5{background-image:repeating-linear-gradient(0deg,#f9a8d4 0 18px,#fef08a 18px 36px,#6ee7b7 36px 54px)}
 
-/* Japanese label: BLACK + readable glow, slightly bigger */
 .jpLabel{
   position:absolute;
   inset:0;
@@ -158,23 +138,15 @@ footer{margin-top:auto;padding:14px 10px;opacity:.9;font-size:1rem;font-family:'
   text-align:center;
   font-weight:900;
   letter-spacing:.02em;
-
   color:#0b1530;
   text-shadow:
     0 1px 0 rgba(255,255,255,.55),
     0 0 10px rgba(255,255,255,.35),
     0 3px 14px rgba(0,0,0,.18);
 }
-.jp{
-  font-size:clamp(1.65rem,4.2vw,2.25rem);
-  line-height:1.05;
-}
-.hira{
-  font-size:clamp(1.12rem,3.2vw,1.32rem);
-  opacity:.95;
-}
+.jp{font-size:clamp(1.65rem,4.2vw,2.25rem);line-height:1.05;}
+.hira{font-size:clamp(1.12rem,3.2vw,1.32rem);opacity:.95;}
 
-/* Default (Android/Desktop): answer box + mic in a row */
 .answerRow{
   width:min(560px,90vw);
   display:grid;
@@ -184,7 +156,6 @@ footer{margin-top:auto;padding:14px 10px;opacity:.9;font-size:1rem;font-family:'
   justify-content:center;
 }
 
-/* “Tap Match” white window */
 .answerBox{
   position:relative;
   height:96px;
@@ -196,13 +167,11 @@ footer{margin-top:auto;padding:14px 10px;opacity:.9;font-size:1rem;font-family:'
   justify-content:center;
   font-weight:900;
   letter-spacing:.01em;
-
   box-shadow:var(--winShadow), var(--winStroke);
   border:1px solid rgba(0,0,0,.06);
   transition:all .3s ease;
 }
 
-/* English size: match JP size feel */
 #answerText{
   font-size:clamp(1.65rem,4.2vw,2.25rem);
   line-height:1.05;
@@ -236,7 +205,6 @@ footer{margin-top:auto;padding:14px 10px;opacity:.9;font-size:1rem;font-family:'
   50%{box-shadow:0 0 40px 15px rgba(192,132,252,0.9),0 0 60px 25px rgba(168,85,247,0.7);}
 }
 
-/* Mic / check button */
 .micBtn{
   width:var(--micSize);
   height:var(--micSize);
@@ -252,34 +220,14 @@ footer{margin-top:auto;padding:14px 10px;opacity:.9;font-size:1rem;font-family:'
 .micBtn svg{width:24px;height:24px;fill:#fff;}
 .micBtn:active{transform:scale(.95);}
 .micBtn.idle{animation:breath 2.2s ease-in-out infinite}
-@keyframes breath{
-  0%,100%{filter:brightness(1)}
-  50%{filter:brightness(1.25)}
-}
+@keyframes breath{0%,100%{filter:brightness(1)}50%{filter:brightness(1.25)}}
 .micBtn:disabled{opacity:.5;filter:saturate(.6);cursor:not-allowed}
 
-/* iOS layout overrides */
-body.ios .answerRow{
-  grid-template-columns:1fr;
-  gap:14px;
-}
-body.ios #micBtn{
-  width:min(180px,60vw);
-  height:56px;
-  border-radius:999px;
-  margin:0 auto;
-  font-size:1.35rem;
-  font-weight:900;
-}
-body.ios #micBtn span{
-  display:inline-block;
-  transform:translateY(-1px);
-}
-body.ios #counter{
-  margin-top:2px;
-}
+body.ios .answerRow{grid-template-columns:1fr;gap:14px;}
+body.ios #micBtn{width:min(180px,60vw);height:56px;border-radius:999px;margin:0 auto;font-size:1.35rem;font-weight:900;}
+body.ios #micBtn span{display:inline-block;transform:translateY(-1px);}
+body.ios #counter{margin-top:2px;}
 
-/* NEXT */
 .btn-next{
   background:var(--gold);
   color:#000;
@@ -295,17 +243,8 @@ body.ios #counter{
 }
 .counter{margin-top:10px;text-align:center;opacity:.9;font-size:1rem;}
 
-.confetti{
-  position:fixed;
-  width:10px;
-  height:10px;
-  border-radius:50%;
-  pointer-events:none;
-  z-index:10;
-  opacity:.9;
-}
+.confetti{position:fixed;width:10px;height:10px;border-radius:50%;pointer-events:none;z-index:10;opacity:.9;}
 
-/* Results page */
 #page-results{text-align:center;}
 .result-box{
   margin-top:40px;
@@ -315,17 +254,9 @@ body.ios #counter{
   background:rgba(15,23,42,.9);
   box-shadow:0 0 18px rgba(0,0,0,.5);
 }
-.result-msg{
-  font-size:1.4rem;
-  font-weight:800;
-  margin-bottom:10px;
-}
-.result-score{
-  font-size:1.2rem;
-  opacity:.9;
-}
+.result-msg{font-size:1.4rem;font-weight:800;margin-bottom:10px;}
+.result-score{font-size:1.2rem;opacity:.9;}
 
-/* 🌌 Help overlay */
 .help-overlay{
   position:fixed;
   inset:0;
@@ -338,7 +269,6 @@ body.ios #counter{
   justify-content:center;
 }
 .help-overlay.show{display:flex;}
-
 .help-dialog{
   max-width:520px;
   width:90%;
@@ -352,91 +282,28 @@ body.ios #counter{
   overflow-y:auto;
   -webkit-overflow-scrolling:touch;
 }
-.help-title{
-  font-family:'Cinzel',serif;
-  text-align:center;
-  font-size:1.35rem;
-  margin-bottom:8px;
-  color:#fff;
-}
-.help-label{
-  text-align:center;
-  opacity:.75;
-  margin-bottom:12px;
-  font-size:.82rem;
-}
+.help-title{font-family:'Cinzel',serif;text-align:center;font-size:1.35rem;margin-bottom:8px;color:#fff;}
+.help-label{text-align:center;opacity:.75;margin-bottom:12px;font-size:.82rem;}
 .help-close{
-  position:absolute;
-  top:8px;
-  right:10px;
-  width:28px;
-  height:28px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  background:rgba(30,64,175,.9);
-  border-radius:999px;
-  border:none;
-  cursor:pointer;
-  font-weight:900;
-  color:#fff;
-  font-size:1rem;
+  position:absolute;top:8px;right:10px;width:28px;height:28px;
+  display:flex;align-items:center;justify-content:center;
+  background:rgba(30,64,175,.9);border-radius:999px;border:none;cursor:pointer;
+  font-weight:900;color:#fff;font-size:1rem;
 }
-.help-content{
-  font-size:.95rem;
-  line-height:1.6;
-  color:#f1f5f9;
-}
+.help-content{font-size:.95rem;line-height:1.6;color:#f1f5f9;}
 .help-content ul{padding-left:1.1em;margin-bottom:12px;}
 .help-content li{margin-bottom:4px;}
-.help-content .divider{
-  height:1px;
-  background:linear-gradient(90deg,transparent,#ffffff33,transparent);
-  margin:12px 0;
-}
+.help-content .divider{height:1px;background:linear-gradient(90deg,transparent,#ffffff33,transparent);margin:12px 0;}
 
-/* 📱 iOS-only notice overlay */
-.ios-notice-overlay{
-  position:fixed;
-  inset:0;
-  background:rgba(11,21,48,.95);
-  display:none;
-  align-items:center;
-  justify-content:center;
-  z-index:120;
-}
+.ios-notice-overlay{position:fixed;inset:0;background:rgba(11,21,48,.95);display:none;align-items:center;justify-content:center;z-index:120;}
 .ios-notice-overlay.show{display:flex;}
 .ios-notice-dialog{
-  max-width:520px;
-  width:85%;
-  background:#020617;
-  border-radius:24px;
-  padding:20px 20px 18px;
-  border:1px solid #ffffff55;
-  box-shadow:0 0 30px rgba(0,0,0,.8);
-  font-size:.95rem;
-  line-height:1.6;
+  max-width:520px;width:85%;background:#020617;border-radius:24px;padding:20px 20px 18px;
+  border:1px solid #ffffff55;box-shadow:0 0 30px rgba(0,0,0,.8);
+  font-size:.95rem;line-height:1.6;
 }
-.ios-notice-title{
-  font-weight:800;
-  font-size:1.1rem;
-  margin-bottom:8px;
-  text-align:center;
-}
-.ios-notice-btn{
-  margin-top:14px;
-  display:block;
-  margin-left:auto;
-  margin-right:auto;
-  border-radius:999px;
-  border:none;
-  padding:10px 28px;
-  font-weight:800;
-  cursor:pointer;
-  background:var(--gold);
-  color:#111827;
-  box-shadow:var(--goldGlow);
-}
+.ios-notice-title{font-weight:800;font-size:1.1rem;margin-bottom:8px;text-align:center;}
+.ios-notice-btn{margin-top:14px;display:block;margin-left:auto;margin-right:auto;border-radius:999px;border:none;padding:10px 28px;font-weight:800;cursor:pointer;background:var(--gold);color:#111827;box-shadow:var(--goldGlow);}
 
 @media(max-width:700px){
   :root{--barH:88px;--micSize:52px}
@@ -447,19 +314,13 @@ body.ios #counter{
 </head>
 <body>
 
-<button id="quitBtn" class="top-nav-btn">
-  <span>Quit</span>
-  <span class="jp">／ やめる</span>
-</button>
-
+<button id="quitBtn" class="top-nav-btn"><span>Quit</span><span class="jp">／ やめる</span></button>
 <button id="helpBtn" class="help-icon">?</button>
 
 <header>
   <h1>THE BOO-RICULUM</h1>
   <h2>SAY THE WORD</h2>
-  <div class="subtitle-stack">
-    <div class="sub-combined">January Week 1 – １月第１週</div>
-  </div>
+  <div class="subtitle-stack"><div class="sub-combined">January Week 1 – １月第１週</div></div>
   <hr class="sep">
 </header>
 
@@ -473,9 +334,7 @@ body.ios #counter{
   </div>
 
   <div class="answerRow">
-    <div class="answerBox" id="answerBox">
-      <div id="answerText">&nbsp;</div>
-    </div>
+    <div class="answerBox" id="answerBox"><div id="answerText">&nbsp;</div></div>
 
     <button id="micBtn" class="micBtn idle" aria-label="Speak or Check">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
@@ -502,11 +361,9 @@ body.ios #counter{
 
 <footer>Bryan's English School</footer>
 
-<!-- Help overlay -->
 <div id="helpOverlay" class="help-overlay">
   <div class="help-dialog">
     <button id="helpClose" class="help-close">×</button>
-
     <div class="help-title">遊び方 ／ HOW TO PLAY</div>
     <div class="help-label">Booha Say the Word</div>
 
@@ -519,9 +376,7 @@ body.ios #counter{
         <li>正解のとき：みどり + コンフェッティ + Sage の音声（英単語）。</li>
         <li><strong>NEXT / 次へ</strong>で次の単語へ。</li>
       </ul>
-
       <div class="divider"></div>
-
       <p><strong>English</strong></p>
       <ul>
         <li>Look at the Japanese (and hiragana), then say the English word out loud.</li>
@@ -530,28 +385,17 @@ body.ios #counter{
         <li>When correct: green box + confetti + Sage voice (the English word).</li>
         <li>Tap <strong>NEXT</strong> to continue.</li>
       </ul>
-
       <p><strong>Quit / やめる</strong></p>
-      <p>
-        左上の<b>「Quit / やめる」</b>でメインメニューにもどります。<br>
-        Tap <b>“Quit / やめる”</b> (top-left) to return to the main menu.
-      </p>
+      <p>左上の<b>「Quit / やめる」</b>でメインメニューにもどります。<br>Tap <b>“Quit / やめる”</b> (top-left) to return to the main menu.</p>
     </div>
   </div>
 </div>
 
-<!-- iOS-only notice -->
 <div id="iosNotice" class="ios-notice-overlay">
   <div class="ios-notice-dialog">
     <div class="ios-notice-title">iPad / iPhone をお使いの方へ</div>
-    <p>
-      このゲームの<strong>フルバージョン（声を聞いて自動チェック）</strong>は、<br>
-      <strong>Android</strong> と <strong>パソコン</strong> で遊べます。
-    </p>
-    <p style="margin-top:8px;">
-      iPad / iPhone では、声に出して練習しながら、<strong>✔ボタン</strong>で答えを確認する
-      <strong>シンプルモード</strong>になります。
-    </p>
+    <p>このゲームの<strong>フルバージョン（声を聞いて自動チェック）</strong>は、<br><strong>Android</strong> と <strong>パソコン</strong> で遊べます。</p>
+    <p style="margin-top:8px;">iPad / iPhone では、声に出して練習しながら、<strong>✔ボタン</strong>で答えを確認する<strong>シンプルモード</strong>になります。</p>
     <button id="iosNoticeOk" class="ios-notice-btn">OK ／ はじめる</button>
   </div>
 </div>
@@ -562,7 +406,7 @@ body.ios #counter{
 <audio id="s_r1114" src="assets/audio/result_11-14.mp3" preload="auto"></audio>
 <audio id="s_r15" src="assets/audio/result_15.mp3" preload="auto"></audio>
 
-<!-- Sage voice mp3s live in week1/audio/vocab -->
+<!-- Sage voice mp3s live in week1/audio/vocab (numbered: v01_goal.mp3 ...) -->
 <audio id="sageVoice" preload="auto"></audio>
 
 <script>
@@ -588,68 +432,85 @@ const $=s=>document.querySelector(s);
 function shuffle(a){return a.map(v=>[Math.random(),v]).sort((x,y)=>x[0]-y[0]).map(x=>x[1]);}
 
 /* =========================
-   ✅ Sage audio (reliable)
-   - Sage files: week1/audio/vocab/<word>.mp3
-   - This HTML is inside week1/, so path is: audio/vocab/<word>.mp3
+   ✅ Sage audio (FINAL naming)
+   - Files: week1/audio/vocab/v01_goal.mp3 ... v15_motivation.mp3
+   - This HTML is inside week1/, so path is: audio/vocab/v01_goal.mp3
    - Prime on first user tap to avoid autoplay blocks
    ========================= */
 const sageVoice = document.getElementById('sageVoice');
 let sagePrimed = false;
 
+// Build lookup based on MASTER order (1..15)
+const SAGE_LOOKUP = MASTER.reduce((acc, item, i)=>{
+  const n = String(i+1).padStart(2,'0');
+  acc[item.en] = `audio/vocab/v${n}_${item.en}.mp3`;
+  return acc;
+}, {});
+
 function sagePathFor(word){
-  // filenames are assumed: goal.mp3, plan.mp3, ...
-  const name = (word||'').toLowerCase().trim().replace(/[^a-z0-9]+/g,'_');
-  return `audio/vocab/${name}.mp3`;
+  const w = (word||'').toLowerCase().trim();
+  return SAGE_LOOKUP[w] || '';
 }
 
 async function primeSageAudio(){
   if(sagePrimed || !sageVoice) return;
   sagePrimed = true;
   try{
-    // Use a real file to satisfy iOS/Safari gesture rules
     sageVoice.muted = true;
-    const testWord = (MASTER?.[0]?.en || 'goal');
-    sageVoice.src = sagePathFor(testWord);
+    const testWord = MASTER?.[0]?.en || 'goal';
+    const src = sagePathFor(testWord);
+    if(src) sageVoice.src = src;
 
     const p = sageVoice.play();
     if(p && p.then) await p;
 
     sageVoice.pause();
     sageVoice.currentTime = 0;
-    sageVoice.muted = false;
   }catch(e){
-    // If priming fails, we'll still try normal playback later
-    sageVoice.muted = false;
+    // ignore; iOS may block until further gesture
+  }finally{
+    try{ sageVoice.muted = false; }catch{}
   }
 }
 
+function stopSage(){
+  try{ sageVoice.pause(); }catch{}
+  try{ sageVoice.currentTime = 0; }catch{}
+}
+
 function playSage(word, onend){
-  if(!word || !sageVoice){
-    if(onend) onend();
-    return;
-  }
+  if(!sageVoice){ onend && onend(); return; }
+  const src = sagePathFor(word);
+  if(!src){ console.warn('[SAGE] missing mapping for:', word); onend && onend(); return; }
+
+  // Clean handlers
+  sageVoice.onended = null;
+  sageVoice.onerror = null;
+
+  // Stop any current audio
+  stopSage();
 
   sageVoice.onended = () => {
     sageVoice.onended = null;
     sageVoice.onerror = null;
-    if(onend) onend();
+    onend && onend();
   };
-
   sageVoice.onerror = () => {
-    console.error('[SAGE] Failed to load:', sageVoice.src);
+    console.error('[SAGE] failed to load:', src);
     sageVoice.onended = null;
     sageVoice.onerror = null;
-    if(onend) onend();
+    onend && onend();
   };
 
-  sageVoice.src = sagePathFor(word);
-  sageVoice.currentTime = 0;
+  // Set src and play
+  sageVoice.src = src;
+  try{ sageVoice.currentTime = 0; }catch{}
 
   const p = sageVoice.play();
   if(p && p.catch){
     p.catch(err=>{
       console.warn('[SAGE] play blocked:', err);
-      if(onend) onend();
+      onend && onend();
     });
   }
 }
@@ -664,10 +525,7 @@ function confettiBurst(el,count=60){
     d.style.background=`hsl(${Math.random()*360},100%,60%)`;
     const x=(Math.random()-0.5)*300;
     const y=(Math.random()-1)*300;
-    d.animate(
-      [{transform:`translate(0,0)`},{transform:`translate(${x}px,${y}px)`,opacity:0}],
-      {duration:1000+Math.random()*600,easing:"ease-out"}
-    );
+    d.animate([{transform:`translate(0,0)`},{transform:`translate(${x}px,${y}px)`,opacity:0}],{duration:1000+Math.random()*600,easing:"ease-out"});
     document.body.appendChild(d);
     setTimeout(()=>d.remove(),1600);
   }
@@ -682,7 +540,6 @@ let order=shuffle([...MASTER]);
 let idx=0,score=0,stripeIx=0;
 const stripeSets=['sv1','sv2','sv3','sv4','sv5'];
 
-/* 🎙️ Speech recognition + platform flags */
 let recognition=null;
 let listening=false;
 let answered=false;
@@ -694,32 +551,25 @@ const isIpad = /iPad/.test(ua) || (platform === 'MacIntel' && navigator.maxTouch
 const isIOSPhone = /iPhone|iPod/.test(ua);
 const isIOS = isIpad || isIOSPhone;
 
-/* Apply iOS layout class */
 if(isIOS){
   document.body.classList.add('ios');
 }
 
-/* iOS notice overlay control */
 if(isIOS){
   const iosNotice = document.getElementById('iosNotice');
   const iosNoticeOk = document.getElementById('iosNoticeOk');
   if(iosNotice && iosNoticeOk){
     iosNotice.classList.add('show');
-    iosNoticeOk.addEventListener('click', ()=>{
-      iosNotice.classList.remove('show');
-    });
+    iosNoticeOk.addEventListener('click', ()=> iosNotice.classList.remove('show'));
   }
 }
 
-/* Swap icon to ✔ on iOS */
 if(isIOS){
   micBtn.innerHTML = '<span style="font-size:1.55rem;font-weight:900;">✔</span>';
 }
 
-/* Base SpeechRecognition type */
 const SR = window.SpeechRecognition || window.webkitSpeechRecognition || null;
 
-/* 🌍 Non-iOS: shared recognizer (Android + desktop) */
 if(SR && !isIOS){
   recognition = new SR();
   recognition.lang = 'en-US';
@@ -741,7 +591,7 @@ if(SR && !isIOS){
     const heard = raw.toLowerCase().replace(/[^a-z]/g,'');
 
     answerText.textContent = raw.trim();
-    evaluate(heard); // real check on non-iOS
+    evaluate(heard);
   };
 
   recognition.onerror = e => {
@@ -750,7 +600,7 @@ if(SR && !isIOS){
     micBtn.classList.remove('pulsing');
     answerBox.classList.remove('pulsing');
     answerText.textContent = '';
-    try{ recognition.stop(); }catch(_){}
+    try{ recognition.stop(); }catch(_){ }
   };
 
   recognition.onend = () => {
@@ -760,7 +610,6 @@ if(SR && !isIOS){
   };
 }
 
-/* 🚀 Start recognition (non-iOS only) */
 function startRecognitionCore(){
   if(!SR || !recognition){
     alert('Speech Recognition not supported on this browser.');
@@ -768,9 +617,8 @@ function startRecognitionCore(){
   }
   if(listening || answered) return;
 
-  try{
-    recognition.start();
-  }catch(err){
+  try{ recognition.start(); }
+  catch(err){
     console.warn('Recognition start error:', err);
     listening = false;
     micBtn.classList.remove('pulsing');
@@ -778,10 +626,6 @@ function startRecognitionCore(){
   }
 }
 
-/* 🎙️ iOS check-flow (no real speech recognition)
-   - Confetti
-   - Sage says the word
-   - NEXT appears AFTER Sage finishes */
 function iosCheckFlow(){
   if(answered) return;
 
@@ -802,14 +646,13 @@ function iosCheckFlow(){
       nextBtn.style.display = 'inline-block';
       nextBtn.disabled = false;
     });
-  }, 300);
+  }, 250);
 }
 
-/* 🎙️ Called when user taps mic / check button */
 function startListening(){
   if(answered) return;
 
-  // ✅ prime Sage on the user's tap (fixes Safari/iOS + some Android autoplay edge cases)
+  // ✅ Prime Sage on the user's tap (fixes iOS Safari + some autoplay edge cases)
   primeSageAudio();
 
   if(isIOS){
@@ -823,7 +666,7 @@ function startListening(){
 
 micBtn.addEventListener('click', startListening);
 
-function updateCounter(){counterEl.textContent=`${idx+1}/15`;}
+function updateCounter(){ counterEl.textContent=`${idx+1}/15`; }
 
 function showCard(){
   const item=order[idx];
@@ -838,14 +681,11 @@ function showCard(){
   answerBox.style.color='#111';
 
   nextBtn.style.display='none';
-  nextBtn.disabled = false;
+  nextBtn.disabled=false;
   answered=false;
   updateCounter();
 }
 
-/* ✅ Evaluate result – real check only for non-iOS
-   Correct: confetti + Sage speaks + NEXT after Sage
-   Wrong: shake only */
 function evaluate(heard){
   const correct=order[idx].en.toLowerCase().replace(/[^a-z]/g,'');
   if(heard===correct){
@@ -857,16 +697,15 @@ function evaluate(heard){
     confettiBurst(answerBox,60);
     score++;
 
-    nextBtn.style.display = 'none';
-    nextBtn.disabled = true;
+    nextBtn.style.display='none';
+    nextBtn.disabled=true;
 
     setTimeout(()=>{
       playSage(order[idx].en, ()=>{
         nextBtn.style.display='inline-block';
-        nextBtn.disabled = false;
+        nextBtn.disabled=false;
       });
-    }, 300);
-
+    }, 250);
   }else{
     answerBox.classList.add('wrong');
     setTimeout(()=>{
@@ -878,11 +717,10 @@ function evaluate(heard){
   }
 }
 
-/* ▶ NEXT button */
 nextBtn.addEventListener('click',()=>{
   idx++;
-  if(idx<order.length){showCard();}
-  else{showResults();}
+  if(idx<order.length) showCard();
+  else showResults();
 });
 
 function showResults(){
@@ -896,60 +734,42 @@ function showResults(){
   else if(score===15){msg='すごい！あなたは地球で一番頭がいい！';snd=$('#s_r15');}
   $('#resultMsg').textContent=msg;
   $('#resultScore').textContent=`${score}/15（${pct}%）`;
-  snd.currentTime=0;
+  try{ snd.currentTime=0; }catch{}
   snd.play().catch(()=>{});
   if(score===15){
-    for(let i=0;i<160;i++){
-      setTimeout(()=>{confettiBurst(document.body,1)},i*10);
-    }
+    for(let i=0;i<160;i++) setTimeout(()=>{confettiBurst(document.body,1)},i*10);
   }
 }
 
 $('#playAgain').addEventListener('click',()=>{
   order=shuffle([...MASTER]);
-  idx=0;
-  score=0;
-  stripeIx=0;
-  answered=false;
+  idx=0;score=0;stripeIx=0;answered=false;
   $('#page-results').classList.remove('active');
   $('#page-game').classList.add('active');
   showCard();
 });
 
-$('#backToMenu').addEventListener('click',()=>{
-  location.href='index.html';
-});
+$('#backToMenu').addEventListener('click',()=>{ location.href='index.html'; });
 
 function preloadAll(){
-  // Sage vocab mp3s
+  // Sage vocab mp3s (numbered)
   MASTER.forEach(i=>{
-    const a=new Audio(sagePathFor(i.en));
-    a.load();
+    const src = sagePathFor(i.en);
+    if(!src) return;
+    const a=new Audio(src);
+    try{ a.load(); }catch{}
   });
   // Results mp3s
-  ['s_r05','s_r610','s_r1114','s_r15'].forEach(id=>{
-    const el=$("#"+id);
-    if(el) el.load();
-  });
+  ['s_r05','s_r610','s_r1114','s_r15'].forEach(id=>{ const el=$("#"+id); if(el) try{ el.load(); }catch{} });
 }
 
-// Quit button
-document.getElementById('quitBtn').addEventListener('click',()=>{
-  location.href='index.html';
-});
+$('#quitBtn').addEventListener('click',()=>{ location.href='index.html'; });
 
-// Help overlay logic
-const helpOverlay=document.getElementById('helpOverlay');
-const helpBtn=document.getElementById('helpBtn');
-const helpClose=document.getElementById('helpClose');
+const helpOverlay=$('#helpOverlay');
+$('#helpBtn').addEventListener('click',()=> helpOverlay.classList.add('show'));
+$('#helpClose').addEventListener('click',()=> helpOverlay.classList.remove('show'));
+helpOverlay.addEventListener('click',e=>{ if(e.target===helpOverlay) helpOverlay.classList.remove('show'); });
 
-helpBtn.addEventListener('click',()=> helpOverlay.classList.add('show'));
-helpClose.addEventListener('click',()=> helpOverlay.classList.remove('show'));
-helpOverlay.addEventListener('click',e=>{
-  if(e.target===helpOverlay) helpOverlay.classList.remove('show');
-});
-
-// INIT
 preloadAll();
 showCard();
 </script>
