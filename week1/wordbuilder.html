@@ -7,141 +7,92 @@
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Noto+Sans+JP:wght@500;700&display=swap" rel="stylesheet">
 <style>
 :root{
---bg:#0b1530; --ink:#fff; --outline:#ffffff26;
---green:#22c55e; --red:#ef4444; --purple:#7c3aed;
---gold:#ffd54a; --goldSoft:#ffe59966;
+  --bg:#0b1530; --ink:#fff; --outline:#ffffff26;
+  --green:#22c55e; --red:#ef4444; --purple:#7c3aed;
+  --gold:#ffd54a; --goldSoft:#ffe59966;
+  --tile:#1b2046;
 }
 
-/* Reset */
 *{box-sizing:border-box;margin:0;padding:0}
 
-/* Body */
 body{
-background:var(--bg); color:var(--ink);
-font-family:system-ui,'Noto Sans JP',sans-serif;
-min-height:100vh; display:flex; flex-direction:column;
-overflow-x:hidden;
-overflow-y:auto;
-user-select:none; -webkit-user-select:none; -ms-user-select:none;
+  background:var(--bg); color:var(--ink);
+  font-family:system-ui,'Noto Sans JP',sans-serif;
+  min-height:100vh; display:flex; flex-direction:column;
+  overflow-x:hidden; overflow-y:auto;
+  user-select:none; -webkit-user-select:none; -ms-user-select:none;
 }
 
 /* Top nav buttons (standard Booha) */
 .top-nav-btn{
-position:fixed;
-top:10px;
-left:10px;
-z-index:60;
-border-radius:999px;
-padding:6px 14px;
-border:1px solid #ffffff66;
-background:rgba(15,23,42,.95);
-color:#fff;
-font-size:.78rem;
-font-weight:700;
-letter-spacing:.04em;
-cursor:pointer;
-display:flex;
-align-items:center;
-gap:4px;
-box-shadow:0 0 12px rgba(0,0,0,.6);
-backdrop-filter:blur(4px);
+  position:fixed; top:10px; left:10px; z-index:60;
+  border-radius:999px; padding:6px 14px;
+  border:1px solid #ffffff66;
+  background:rgba(15,23,42,.95);
+  color:#fff; font-size:.78rem; font-weight:700; letter-spacing:.04em;
+  cursor:pointer; display:flex; align-items:center; gap:4px;
+  box-shadow:0 0 12px rgba(0,0,0,.6);
+  backdrop-filter:blur(4px);
 }
-.top-nav-btn span.jp{
-font-family:'Noto Sans JP',sans-serif;
-font-size:.74em;
-}
+.top-nav-btn span.jp{font-family:'Noto Sans JP',sans-serif;font-size:.74em}
 
 /* Help "?" button */
 .icon-btn{
-position:fixed;
-top:10px;
-right:10px;
-width:34px;
-height:34px;
-border-radius:999px;
-border:1px solid #ffffff66;
-background:radial-gradient(circle at 30% 30%,#ffffffee,#38bdf8cc,#4f46e5ff);
-color:#0b1530;
-font-weight:900;
-font-size:1.15rem;
-display:flex;
-align-items:center;
-justify-content:center;
-cursor:pointer;
-box-shadow:0 0 16px rgba(96,165,250,.9),0 0 32px rgba(129,140,248,.75);
-backdrop-filter:blur(6px);
-z-index:60;
-animation:helpPulse 1.9s ease-in-out infinite;
+  position:fixed; top:10px; right:10px;
+  width:34px; height:34px; border-radius:999px;
+  border:1px solid #ffffff66;
+  background:radial-gradient(circle at 30% 30%,#ffffffee,#38bdf8cc,#4f46e5ff);
+  color:#0b1530; font-weight:900; font-size:1.15rem;
+  display:flex; align-items:center; justify-content:center;
+  cursor:pointer;
+  box-shadow:0 0 16px rgba(96,165,250,.9),0 0 32px rgba(129,140,248,.75);
+  backdrop-filter:blur(6px);
+  z-index:60;
+  animation:helpPulse 1.9s ease-in-out infinite;
 }
-@keyframes helpPulse{
-0%,100%{transform:scale(1)}
-50%{transform:scale(1.06)}
-}
+@keyframes helpPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
 
 /* Help modal */
 .help-modal{
-position:fixed;
-inset:0;
-background:rgba(15,23,42,.86);
-backdrop-filter:blur(6px);
-display:none;
-align-items:center;
-justify-content:center;
-z-index:80;
+  position:fixed; inset:0;
+  background:rgba(15,23,42,.86);
+  backdrop-filter:blur(6px);
+  display:none; align-items:center; justify-content:center;
+  z-index:80;
 }
 .help-panel{
-width:min(520px,92vw);
-max-height:80vh;
-background:#020617;
-border-radius:24px;
-border:1px solid #ffffff33;
-box-shadow:0 18px 60px rgba(0,0,0,.85);
-padding:18px 18px 22px;
-overflow-y:auto;
-font-size:.9rem;
-line-height:1.6;
+  width:min(520px,92vw);
+  max-height:80vh;
+  background:#020617;
+  border-radius:24px;
+  border:1px solid #ffffff33;
+  box-shadow:0 18px 60px rgba(0,0,0,.85);
+  padding:18px 18px 22px;
+  overflow-y:auto;
+  font-size:.9rem;
+  line-height:1.6;
 }
-.help-panel h2{
-font-family:'Cinzel',serif;
-font-size:1.3rem;
-margin-bottom:4px;
-}
-.help-panel h3{
-font-size:.95rem;
-opacity:.9;
-margin-bottom:12px;
-}
-.help-panel p{
-margin-bottom:8px;
-}
-.help-panel p.jp{
-font-family:'Noto Sans JP',sans-serif;
-}
+.help-panel h2{font-family:'Cinzel',serif;font-size:1.3rem;margin-bottom:4px}
+.help-panel h3{font-size:.95rem;opacity:.9;margin-bottom:12px}
+.help-panel p{margin-bottom:8px}
+.help-panel p.jp{font-family:'Noto Sans JP',sans-serif}
 .help-close{
-position:absolute;
-top:10px;
-right:14px;
-border:none;
-background:transparent;
-color:#e5e7eb;
-font-size:1.2rem;
-cursor:pointer;
+  position:absolute; top:10px; right:14px;
+  border:none; background:transparent;
+  color:#e5e7eb; font-size:1.2rem; cursor:pointer;
 }
 
 /* Global overlays */
 #overlay{position:fixed; inset:0; pointer-events:none; z-index:9999}
-.flashRed{
-position:fixed; inset:0; background:rgba(255,0,0,.35);
-animation:flash .35s ease; pointer-events:none; z-index:9998;
-}
-@keyframes flash{0%{opacity:.0}40%{opacity:1}100%{opacity:0}}
+.flashRed{position:fixed; inset:0; background:rgba(255,0,0,.35); animation:flash .35s ease; pointer-events:none; z-index:9998}
+@keyframes flash{0%{opacity:0}40%{opacity:1}100%{opacity:0}}
 
 /* Header */
 header{
-text-align:center;
-padding:48px 16px 8px; /* extra top space for nav buttons */
-position:relative;
-z-index:5;
+  text-align:center;
+  padding:48px 16px 8px;
+  position:relative;
+  z-index:5;
 }
 header h1,header h2,header h3{font-family:'Cinzel',serif}
 header h2{font-size:clamp(2rem,6vw,3rem);margin-top:4px}
@@ -149,32 +100,32 @@ header h3{margin-top:6px;opacity:.9}
 
 /* Play (fizzle behind triangle) */
 .playWrap{
-position:relative;
-z-index:10;
-display:flex;
-flex-direction:column;
-align-items:center;
-margin-top:28px;
+  position:relative;
+  z-index:10;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  margin-top:28px;
 }
 .playBtn{
-appearance:none;border:none;cursor:pointer;width:240px;height:240px;border-radius:50%;
-display:grid;place-items:center;font-size:6rem;font-weight:900;color:#0b1530;
-background:conic-gradient(from 0deg,#ff007f,#ff7f00,#ffff00,#00ff00,#00ffff,#007fff,#ff00ff,#ff007f);
-box-shadow:0 0 80px #ff00ff88,0 0 150px #00ffff66;
-animation:rgbSpin 4s linear infinite,pulse 2s ease-in-out infinite;
-position:relative;overflow:hidden;z-index:11;
+  appearance:none;border:none;cursor:pointer;width:240px;height:240px;border-radius:50%;
+  display:grid;place-items:center;font-size:6rem;font-weight:900;color:#0b1530;
+  background:conic-gradient(from 0deg,#ff007f,#ff7f00,#ffff00,#00ff00,#00ffff,#007fff,#ff00ff,#ff007f);
+  box-shadow:0 0 80px #ff00ff88,0 0 150px #00ffff66;
+  animation:rgbSpin 4s linear infinite,pulse 2s ease-in-out infinite;
+  position:relative;overflow:hidden;z-index:11;
 }
 .playBtn::before,.playBtn::after{content:"";position:absolute;inset:0;border-radius:50%;pointer-events:none}
 .playBtn.fizzy::before{
-background:
-radial-gradient(circle at 25% 75%,rgba(255,255,255,.6),transparent 60%),
-radial-gradient(circle at 75% 25%,rgba(255,255,255,.4),transparent 60%),
-radial-gradient(circle at 50% 50%,rgba(255,255,255,.3),transparent 60%);
-animation:fizzmove .35s infinite linear; z-index:0;
+  background:
+    radial-gradient(circle at 25% 75%,rgba(255,255,255,.6),transparent 60%),
+    radial-gradient(circle at 75% 25%,rgba(255,255,255,.4),transparent 60%),
+    radial-gradient(circle at 50% 50%,rgba(255,255,255,.3),transparent 60%);
+  animation:fizzmove .35s infinite linear; z-index:0;
 }
 .playBtn.fizzy::after{
-box-shadow:0 0 40px 10px #fff8,0 0 90px 20px #00ffff99;
-animation:fizzglow .25s ease-in-out infinite alternate; z-index:0;
+  box-shadow:0 0 40px 10px #fff8,0 0 90px 20px #00ffff99;
+  animation:fizzglow .25s ease-in-out infinite alternate; z-index:0;
 }
 .playBtn span{position:relative;z-index:5;transform:translateX(4px)}
 @keyframes rgbSpin{to{filter:hue-rotate(360deg)}}
@@ -182,193 +133,123 @@ animation:fizzglow .25s ease-in-out infinite alternate; z-index:0;
 @keyframes fizzmove{0%{transform:translate(0,0) rotate(0)}50%{transform:translate(-4px,-4px) rotate(180deg)}100%{transform:translate(0,0) rotate(360deg)}}
 @keyframes fizzglow{0%{opacity:.4;filter:blur(3px)}100%{opacity:1;filter:blur(7px)}}
 
-/* Pastel rainbow while dragging/handled */
-@keyframes rainbowPulse{
-0%{
-transform:scale(1);
-filter:hue-rotate(0deg) brightness(1.1) saturate(1.1);
-box-shadow:0 0 22px #ff9ff380,0 0 44px #ffb38080;
-}
-25%{
-transform:scale(1.05);
-filter:hue-rotate(90deg) brightness(1.25) saturate(1.15);
-box-shadow:0 0 26px #b2faff99,0 0 52px #a0ff8080;
-}
-50%{
-transform:scale(1.1);
-filter:hue-rotate(180deg) brightness(1.3) saturate(1.15);
-box-shadow:0 0 30px #aaffcc99,0 0 58px #ffb3ff99;
-}
-75%{
-transform:scale(1.05);
-filter:hue-rotate(270deg) brightness(1.25) saturate(1.15);
-box-shadow:0 0 26px #ff80bf99,0 0 52px #ffff8080;
-}
-100%{
-transform:scale(1);
-filter:hue-rotate(360deg) brightness(1.1) saturate(1.1);
-box-shadow:0 0 22px #ff9ff380,0 0 44px #ffb38080;
-}
-}
-
-/* Gentle gold pulse while parked in slot */
-@keyframes glowPulse{
-0% { box-shadow:0 0 18px #facc15, 0 0 32px #fde68a66; }
-50% { box-shadow:0 0 28px #ffd54a, 0 0 60px #ffe59988; }
-100% { box-shadow:0 0 18px #facc15, 0 0 32px #fde68a66; }
-}
-
-/* Main centered layout */
 main{
-flex:1;
-display:flex;
-flex-direction:column;
-align-items:center;
-justify-content:center;
-gap:18px;
-padding:0 10px 18px;
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:18px;
+  padding:0 10px 18px;
 }
 
-/* Drag area – allow wrapping into 2 lines */
 .dropZone,
 .bank{
-display:flex;
-flex-wrap:wrap; /* ← key change: allow wrap */
-gap:18px;
-justify-content:center;
-align-items:center;
-max-width:100%;
-overflow:visible; /* no horizontal scroll */
-padding:8px 4px;
+  display:flex;
+  flex-wrap:wrap;
+  gap:14px;
+  justify-content:center;
+  align-items:center;
+  max-width:100%;
+  overflow:visible;
+  padding:8px 4px;
 }
 
-/* Slots & tiles */
-.slot,
+.slot,.tile{
+  border-radius:18px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-weight:900;
+  font-size:52px;
+  transition:box-shadow .15s, background .15s, transform .12s, filter .12s, color .12s;
+  flex:0 0 auto;
+}
+
+/* Slightly smaller tiles */
+.slot{width:88px;height:88px;border:2px dashed #ffffff3a;background:#27306b99}
+.slot.filled{background:#2a2f6b;border-color:#fff9;box-shadow:0 0 12px #facc15, 0 0 28px #fde68a66}
+.slot.hint{border-color:#fffbe8;box-shadow:0 0 18px #facc15,0 0 34px #fde68ab3}
+
 .tile{
-border-radius:18px;
-display:flex;
-align-items:center;
-justify-content:center;
-font-weight:900;
-font-size:54px;
-transition:box-shadow .15s, background .15s, transform .12s, filter .1s, color .1s;
-flex:0 0 auto;
+  width:88px;height:88px;
+  background:var(--tile);
+  border:1px solid #8690ff33;
+  box-shadow:0 8px 14px rgba(0,0,0,.28);
+  color:#fff;
+  cursor:pointer;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
 }
 
-.slot{
-width:96px;
-height:96px;
-border:2px dashed #ffffff3a;
-background:#27306b99;
+/* Cute glow when touched / selected */
+.tile:active{transform:scale(1.04)}
+.tile.touched{
+  box-shadow:
+    0 0 0 2px rgba(255,255,255,.25) inset,
+    0 0 20px rgba(244,114,182,.75),
+    0 0 42px rgba(167,139,250,.55);
+  filter:saturate(1.2) brightness(1.15);
 }
-.slot.filled{
-background:#2a2f6b;
-border-color:#fff9;
-box-shadow:0 0 12px #facc15, 0 0 28px #fde68a66;
-}
-.slot.hover{
-border-color:#fff;
-box-shadow:0 0 22px #7dd3fc66,0 0 44px #a78bfa55;
-}
-.slot.preDrop{
-border-color:#fffbe8;
-box-shadow:0 0 18px #facc15,0 0 34px #fde68ab3;
+.tile.selected{
+  background:#2a2f6b;
+  box-shadow:
+    0 0 0 2px rgba(255,255,255,.18) inset,
+    0 0 20px rgba(125,211,252,.8),
+    0 0 44px rgba(167,139,250,.65);
+  transform:translateY(-2px) scale(1.05);
 }
 
-/* base tile size for bank */
-.tile{
-width:96px;
-height:96px;
-background:#1b2046;
-border:1px solid #8690ff33;
-box-shadow:0 8px 14px rgba(0,0,0,.28);
-color:#fff;
-touch-action:none;
-}
+/* Tile inside slot */
+.slot .tile{width:100%;height:100%;border-radius:16px}
+.tile.inSlot{background:#fff4c2;color:#000;box-shadow:0 0 18px #facc15,0 0 32px #fde68a66}
 
-/* tile inside slot = exactly fill slot */
-.slot .tile{
-width:100%;
-height:100%;
-}
-
-.tile.dragging{
-animation: rainbowPulse .9s linear infinite;
-filter:saturate(1.2) brightness(1.15);
-}
-.tile.preDropTile{
-box-shadow:0 0 18px var(--gold),0 0 34px var(--goldSoft);
-}
-.tile.handled{
-filter:hue-rotate(var(--hue,0deg)) saturate(1.15) brightness(1.05);
-}
-.tile.inSlot{
-background:#fff4c2;
-color:#000;
-animation:glowPulse 1.6s ease-in-out infinite;
-}
-
-/* Sparkles rising from tile top (overlay-based) */
-.auraTop{
-position:fixed; pointer-events:none;
-transform:translateX(-50%);
-z-index:9998;
-}
-.spark{
-position:absolute; width:6px; height:6px; border-radius:50%;
-color:#ffd54a;
-background:currentColor;
-box-shadow:0 0 6px currentColor, 0 0 12px currentColor;
-animation: riseSpark 3.8s ease-in-out infinite, sparkleColor 3.8s linear infinite;
-will-change:transform,opacity,box-shadow,color;
-opacity:.75;
-}
-@keyframes sparkleColor{
-0% { color:#ffd54a; }
-50% { color:#ffc58a; }
-100% { color:#ffc0cb; }
-}
-@keyframes riseSpark{
-0% { transform:translate(var(--sx, 0px), 0) scale(.85); opacity:0; }
-10% { opacity:.55; }
-35% { transform:translate(var(--sx, 0px), -18px) scale(.95); opacity:.8; }
-70% { transform:translate(var(--sx, 0px), -44px) scale(1.05); opacity:.82; }
-100% { transform:translate(var(--sx, 0px), -70px) scale(1.18); opacity:0; }
-}
-
-/* Controls + Next + counter under buttons */
 .controls{display:flex;gap:12px;justify-content:center;margin-top:10px}
 .btn{appearance:none;border:none;cursor:pointer;padding:12px 20px;border-radius:14px;font-weight:800;font-size:16px}
 .btn.primary{background:linear-gradient(135deg,#a78bfa,#7c3aed);color:#fff;box-shadow:0 0 20px #7c3aed66}
+
 #nextWrap{display:none;flex-direction:column;align-items:center;margin-top:14px}
 #nextBtn{
-appearance:none;border:none;cursor:pointer;
-padding:12px 24px;border-radius:14px;font-weight:900;font-size:18px;color:#fff;
-background:linear-gradient(135deg,#22c55e,#16a34a);
-box-shadow:0 0 20px #16a34a80,0 0 40px #22c55e55;
-animation:nextPulse 1.4s ease-in-out infinite;
+  appearance:none;border:none;cursor:pointer;
+  padding:12px 24px;border-radius:14px;font-weight:900;font-size:18px;color:#fff;
+  background:linear-gradient(135deg,#22c55e,#16a34a);
+  box-shadow:0 0 20px #16a34a80,0 0 40px #22c55e55;
+  animation:nextPulse 1.4s ease-in-out infinite;
 }
 @keyframes nextPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
 #progressCount{margin-top:10px;font-weight:700;font-size:1.1rem}
 
-/* Hearts / Farts */
-@keyframes floatHeart{0%{transform:translateY(0) scale(1);opacity:1}100%{transform:translateY(-140px) scale(1.6);opacity:0}}
-@keyframes fartCloud{0%{transform:scale(.6);opacity:0}40%{transform:scale(1.2);opacity:1}100%{transform:translateY(-60px) scale(1.6);opacity:0}}
-.heart,.fart{position:fixed;font-size:36px;pointer-events:none}
-.heart{color:#ff4fa6;animation:floatHeart 1.3s.ease-out forwards}
-.fart{color:#8B4513;animation:fartCloud 1.2s ease-out forwards}
+/* ONE big heart + ONE big fart cloud */
+.bigFx{
+  position:fixed;
+  left:50%; top:52%;
+  transform:translate(-50%,-50%) scale(.6);
+  opacity:0;
+  pointer-events:none;
+  z-index:9999;
+  filter:drop-shadow(0 0 18px rgba(255,255,255,.22));
+  will-change:transform,opacity;
+}
+.bigFx.show{
+  animation:bigPop 900ms ease-out both;
+}
+@keyframes bigPop{
+  0%{opacity:0;transform:translate(-50%,-50%) scale(.6)}
+  20%{opacity:1;transform:translate(-50%,-54%) scale(1.25)}
+  100%{opacity:0;transform:translate(-50%,-64%) scale(1.55)}
+}
 
 /* Results */
 #page-results{
-display:none;
-text-align:center;
-padding:60px 16px;
-min-height:60vh;
-display:flex;
-flex-direction:column;
-align-items:center;
-justify-content:center;
-gap:22px;
+  display:none;
+  text-align:center;
+  padding:60px 16px;
+  min-height:60vh;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:22px;
 }
 #page-results h2{font-family:'Cinzel',serif;}
 #resultMsg{font-size:clamp(1.6rem,4vw,2rem);font-weight:900;text-shadow:0 0 10px rgba(255,255,255,.2)}
@@ -380,91 +261,76 @@ gap:22px;
 .confetti{position:fixed;top:-10vh;width:10px;height:16px;border-radius:2px;animation:fall linear both;z-index:9999}
 @keyframes fall{to{transform:translateY(110vh) rotate(720deg)}}
 
-/* Footer */
 footer{text-align:center;padding:16px;font-family:'Cinzel',serif;font-size:.95rem;opacity:.85;border-top:1px solid var(--outline)}
 
-/* Mobile tuning */
 @media (max-width:600px){
-.slot{
-width:68px;
-height:68px;
-border-radius:14px;
-}
-.tile{
-width:68px;
-height:68px;
-border-radius:14px;
-font-size:38px;
-}
-.slot .tile{
-width:100%;
-height:100%;
-}
-.dropZone,
-.bank{
-gap:10px;
-}
-header{
-padding-top:56px;
-}
+  .slot,.tile{font-size:38px}
+  .slot{width:62px;height:62px;border-radius:14px}
+  .tile{width:62px;height:62px;border-radius:14px}
+  .slot .tile{border-radius:12px}
+  .dropZone,.bank{gap:10px}
+  header{padding-top:56px}
+  .playBtn{width:210px;height:210px;font-size:5.2rem}
 }
 </style>
 </head>
 <body>
 <div id="overlay"></div>
 
-<!-- Quit + Help buttons -->
-<button class="top-nav-btn" id="quitBtn">
-<span>Quit</span><span class="jp">やめる</span>
-</button>
+<button class="top-nav-btn" id="quitBtn"><span>Quit</span><span class="jp">やめる</span></button>
 <button class="icon-btn" id="helpBtn">?</button>
 
-<!-- Help popup -->
 <div class="help-modal" id="helpModal">
-<div class="help-panel">
-<button class="help-close" id="helpClose">×</button>
-<h2>How to Play ／ 遊び方</h2>
-<h3>Word Builder Game</h3>
+  <div class="help-panel">
+    <button class="help-close" id="helpClose">×</button>
+    <h2>遊び方 / How to Play</h2>
+    <h3>Word Builder Game</h3>
 
-<p>1. Tap the rainbow circle ▶ to hear the English word.</p>
-<p>2. Drag the letter tiles from the bank into the empty slots to spell the word.</p>
-<p>3. When all slots are filled, tap CHECK.</p>
-<p>4. Correct on the first try = 1 point. If you miss, the letters fly back and you can try again (no point).</p>
-<p>5. There are 15 words. Try to get a perfect score!</p>
+    <p class="jp">１．レインボーの丸いボタン（▶）をタップして、英単語を聞きます。</p>
+    <p class="jp">２．下のアルファベットを「タップ」して、上のマスに入れて単語を作ります。</p>
+    <p class="jp">（※タイルを先にタップ → 入れたいマスをタップ でもOK！）</p>
+    <p class="jp">３．すべてのマスがうまったら「CHECK」を押します。</p>
+    <p class="jp">４．１回目で正解すると１ポイント！まちがえたらタイルがもどるので、もう一度チャレンジできます（その単語のポイントは０点）。</p>
+    <p class="jp">５．全部で１５問あります。パーフェクトスコアを目指してね！</p>
 
-<p class="jp">１．レインボーの丸いボタン（▶）をタップして、英単語を聞きます。</p>
-<p class="jp">２．下のアルファベットタイルをドラッグして、上のマスに動かし、単語をつくります。</p>
-<p class="jp">３．すべてのマスがうまったら「CHECK」を押します。</p>
-<p class="jp">４．１回目で正解すると１ポイント！まちがえたらタイルがもどるので、もう一度チャレンジできます（その単語のポイントは０点）。</p>
-<p class="jp">５．全部で１５問あります。パーフェクトスコアを目指してね！</p>
-</div>
+    <p>1. Tap the rainbow circle ▶ to hear the English word.</p>
+    <p>2. Tap the letter tiles to put them into the empty slots (no dragging!).</p>
+    <p>(Tip: Tap a tile first, then tap the slot you want.)</p>
+    <p>3. When all slots are filled, tap CHECK.</p>
+    <p>4. Correct on the first try = 1 point. If you miss, the letters return and you can try again (no point).</p>
+    <p>5. There are 15 words. Try to get a perfect score!</p>
+  </div>
 </div>
 
 <header>
-<h1>THE BOO-RICULUM</h1>
-<h2>WORD BUILDER</h2>
-<h3>January Week 1 – １月第１週</h3>
+  <h1>THE BOO-RICULUM</h1>
+  <h2>WORD BUILDER</h2>
+  <h3>January Week 1 – １月第１週</h3>
 </header>
 
 <div class="playWrap" id="playWrap">
-<button class="playBtn" id="playBtn"><span>▶</span></button>
+  <button class="playBtn" id="playBtn"><span>▶</span></button>
 </div>
 
 <main id="page-round">
-<div class="dropZone" id="dropZone"></div>
-<div class="bank" id="bank"></div>
-<div class="controls">
-<button class="btn primary" id="checkBtn" disabled>CHECK</button>
-</div>
-<div id="nextWrap"><button id="nextBtn">Next / つぎへ</button></div>
-<div id="progressCount">1 / 15</div>
+  <div class="dropZone" id="dropZone"></div>
+  <div class="bank" id="bank"></div>
+  <div class="controls">
+    <button class="btn primary" id="checkBtn" disabled>CHECK</button>
+  </div>
+  <div id="nextWrap"><button id="nextBtn">Next / つぎへ</button></div>
+  <div id="progressCount">1 / 15</div>
 </main>
 
 <section id="page-results">
-<h2>RESULTS / リザルト</h2>
-<div id="resultMsg">いいね！あと少しでパーフェクト！</div>
-<div id="resultScore">0/15（0%）</div>
+  <h2>RESULTS / リザルト</h2>
+  <div id="resultMsg">いいね！あと少しでパーフェクト！</div>
+  <div id="resultScore">0/15（0%）</div>
 </section>
+
+<!-- Big FX nodes (single heart + single fart cloud) -->
+<div class="bigFx" id="bigHeart" aria-hidden="true" style="font-size:120px;">❤️</div>
+<div class="bigFx" id="bigFart" aria-hidden="true" style="font-size:120px;">💨</div>
 
 <footer>BRYAN'S ENGLISH SCHOOL</footer>
 
@@ -480,397 +346,305 @@ let index=0,totalScore=0,firstTry=true;
 /* ====== DOM ====== */
 const drop=$("#dropZone"),bank=$("#bank"),play=$("#playBtn"),check=$("#checkBtn");
 const nextWrap=$("#nextWrap"),nextBtn=$("#nextBtn"),progressCount=$("#progressCount");
-const overlay=$("#overlay"),pageRound=$("#page-round"),pageResults=$("#page-results");
+const pageRound=$("#page-round"),pageResults=$("#page-results");
 const playWrap=$("#playWrap");
 const quitBtn=$("#quitBtn");
-const helpBtn=$("#helpBtn");
-const helpModal=$("#helpModal");
-const helpClose=$("#helpClose");
+const helpBtn=$("#helpBtn"), helpModal=$("#helpModal"), helpClose=$("#helpClose");
+const bigHeart=$("#bigHeart"), bigFart=$("#bigFart");
 
 /* Quit = back to menu */
 quitBtn.addEventListener("click",()=>{ location.href="index.html"; });
 
 /* Help popup logic */
-function openHelp(){
-helpModal.style.display="flex";
-}
-function closeHelp(){
-helpModal.style.display="none";
-}
+function openHelp(){ helpModal.style.display="flex"; }
+function closeHelp(){ helpModal.style.display="none"; }
 helpBtn.addEventListener("click",openHelp);
 helpClose.addEventListener("click",closeHelp);
-helpModal.addEventListener("click",e=>{
-if(e.target===helpModal) closeHelp();
-});
+helpModal.addEventListener("click",e=>{ if(e.target===helpModal) closeHelp(); });
 
 /* ====== Audio ====== */
 const sfx={
-ding:new Audio('assets/audio/ding.mp3'),
-fart:new Audio('assets/audio/fart.mp3'),
-r0_5:new Audio('assets/audio/result_0-5.mp3'),
-r6_10:new Audio('assets/audio/result_6-10.mp3'),
-r11_14:new Audio('assets/audio/result_11-14.mp3'),
-r15:new Audio('assets/audio/result_15.mp3'),
+  fart:new Audio('assets/audio/fart.mp3'),
+  r0_5:new Audio('assets/audio/result_0-5.mp3'),
+  r6_10:new Audio('assets/audio/result_6-10.mp3'),
+  r11_14:new Audio('assets/audio/result_11-14.mp3'),
+  r15:new Audio('assets/audio/result_15.mp3'),
 };
 Object.values(sfx).forEach(a=>{a.preload='auto'; a.load();});
 
 function playSfx(audio){
-try{
-if(!audio.paused){
-const clone = audio.cloneNode(true);
-clone.preload='auto';
-clone.play().catch(()=>{});
-return;
-}
-audio.currentTime=0;
-audio.play().catch(()=>{
-const clone = audio.cloneNode(true);
-clone.preload='auto';
-clone.play().catch(()=>{});
-});
-}catch{}
+  try{
+    audio.currentTime=0;
+    audio.play().catch(()=>{
+      const clone = audio.cloneNode(true);
+      clone.preload='auto';
+      clone.play().catch(()=>{});
+    });
+  }catch{}
 }
 
 /* Sage voice */
 const sage=new Map();
 MASTER_BASE.forEach(w=>{
-const a=new Audio(`audio/${w}.mp3`);
-a.preload='auto'; a.load(); a.loop=false;
-sage.set(w,a);
+  const a=new Audio(`audio/${w}.mp3`);
+  a.preload='auto'; a.load(); a.loop=false;
+  sage.set(w,a);
 });
 function speak(){
-const w=WORDS[index], a=sage.get(w);
-if(!a) return;
-a.currentTime=0; play.classList.add("fizzy");
-a.play().catch(()=>{});
-a.onended=()=>play.classList.remove("fizzy");
+  const w=WORDS[index], a=sage.get(w);
+  if(!a) return;
+  a.currentTime=0;
+  play.classList.add("fizzy");
+  a.play().catch(()=>{});
+  a.onended=()=>play.classList.remove("fizzy");
 }
 play.addEventListener("click", speak);
 
 /* ====== Visual FX ====== */
-function spawnHeart(x,y){
-const h=document.createElement("div");
-h.className="heart"; h.textContent="❤️";
-h.style.left=(x-18)+"px"; h.style.top=(y-18)+"px";
-overlay.appendChild(h); setTimeout(()=>h.remove(),1300);
-}
-function spawnFartAtTileMid(tile){
-requestAnimationFrame(() => {
-const r = tile.getBoundingClientRect();
-const midX = r.left + r.width / 2;
-const midY = r.top - 6;
-const f = document.createElement("div");
-f.className = "fart";
-f.textContent = "💨";
-f.style.left = (midX - 18) + "px";
-f.style.top = (midY - 18) + "px";
-overlay.appendChild(f);
-setTimeout(() => f.remove(), 1200);
-});
-}
-
 function flashRedScreen(){
-const el=document.createElement('div');
-el.className='flashRed';
-document.body.appendChild(el);
-setTimeout(()=>el.remove(),400);
+  const el=document.createElement('div');
+  el.className='flashRed';
+  document.body.appendChild(el);
+  setTimeout(()=>el.remove(),400);
+}
+function showBig(el){
+  el.classList.remove('show');
+  // force reflow
+  void el.offsetWidth;
+  el.classList.add('show');
+  setTimeout(()=>el.classList.remove('show'), 950);
 }
 
-/* Marching highlight */
-const glowColors=['#a78bfa','#22c55e','#3b82f6','#f59e0b','#ef4444','#f472b6'];
-let glowIdx=0;
-setInterval(()=>{
-const slots=[...drop.children];
-if(!slots.length) return;
-slots.forEach(s=>{ if(!s.firstChild) s.classList.remove('hover'); });
-let i=glowIdx, count=0;
-while(count<slots.length && slots[i%slots.length].firstChild){ i++; count++; }
-const target=slots[i%slots.length];
-if(target && !target.firstChild){
-target.classList.add('hover');
-target.style.setProperty('--c', glowColors[i%glowColors.length]);
-glowIdx=(i+1)%slots.length;
-}
-}, 480);
+/* ====== Tap Game State ====== */
+let selectedTile = null; // tile DOM
 
-/* ====== Sparkles rising from tile top (overlay) ====== */
-function addAura(tile){
-removeAura(tile);
-const c=document.createElement('div');
-c.className='auraTop';
-let running=true;
-function raf(){
-if(!running) return;
-if(!tile.isConnected || !tile.classList.contains('inSlot')){ running=false; c.remove(); return; }
-const r=tile.getBoundingClientRect();
-c.style.left = (r.left + r.width/2) + 'px';
-c.style.top = (r.top - 6) + 'px';
-requestAnimationFrame(raf);
+function nextEmptySlot(){
+  return [...drop.children].find(s=>!s.firstChild) || null;
 }
-requestAnimationFrame(raf);
-
-for(let i=0;i<10;i++){
-const s=document.createElement('div');
-s.className='spark';
-s.style.setProperty('--sx', (Math.random()*28 - 14).toFixed(1)+'px');
-s.style.left='0px'; s.style.top='0px';
-s.style.animationDelay=(Math.random()*1.6).toFixed(2)+'s';
-c.appendChild(s);
+function allFilled(){
+  return [...drop.children].every(s=>s.firstChild);
 }
-overlay.appendChild(c);
-tile._auraRef=c;
+function currentAnswer(){
+  return [...drop.children].map(s=>s.firstChild?.textContent ?? "").join("");
 }
-function removeAura(tile){
-const c=tile._auraRef; if(c){ c.remove(); tile._auraRef=null; }
+function enableCheck(){
+  check.disabled = !allFilled();
 }
 
-/* ====== Drag & Drop with smooth magnet ====== */
-function elementsSlotAt(x,y){
-const els=document.elementsFromPoint(x,y);
-return els.find(el=>el.classList && el.classList.contains('slot')) || null;
-}
-function animateToFixed(tile, x, y, duration=220){
-return new Promise(resolve=>{
-tile.style.transition=`left ${duration}ms ease-out, top ${duration}ms ease-out`;
-requestAnimationFrame(()=>{ tile.style.left=x+'px'; tile.style.top=y+'px'; });
-const done=()=>{ tile.style.transition=''; tile.removeEventListener('transitionend',done); resolve(); };
-tile.addEventListener('transitionend',done,{once:true});
-});
+function clearSelected(){
+  if(selectedTile){ selectedTile.classList.remove('selected'); }
+  selectedTile = null;
 }
 
-function attachTileControls(tile){
-tile.draggable=false;
-let startX=0,startY=0,offX=0,offY=0,moved=false,wasInSlot=false;
-
-function onPointerDown(e){
-tile.setPointerCapture(e.pointerId);
-const rect=tile.getBoundingClientRect();
-startX=e.clientX; startY=e.clientY;
-offX=e.clientX-rect.left; offY=e.clientY-rect.top;
-moved=false;
-wasInSlot = tile.parentElement?.classList.contains('slot');
-
-const hue=Math.floor(Math.random()*360);
-tile.style.setProperty('--hue',hue+'deg');
-tile.classList.add('handled','dragging');
-tile.classList.remove('inSlot');
-tile.style.background="#2a2f6b";
-removeAura(tile);
-
-tile.style.position='fixed';
-tile.style.left=rect.left+'px'; tile.style.top=rect.top+'px';
-tile.style.zIndex='1000';
-
-document.addEventListener('pointermove',onPointerMove);
-document.addEventListener('pointerup',onPointerUp);
+function markHint(){
+  [...drop.children].forEach(s=>s.classList.remove('hint'));
+  const s = nextEmptySlot();
+  if(s) s.classList.add('hint');
 }
 
-function onPointerMove(e){
-const nx=e.clientX-offX, ny=e.clientY-offY;
-if(Math.abs(e.clientX-startX)>3 || Math.abs(e.clientY-startY)>3){ moved=true; }
-tile.style.left=nx+'px'; tile.style.top=ny+'px';
+function makeTile(ch){
+  const t=document.createElement('div');
+  t.className="tile";
+  t.textContent=ch;
 
-const slot=elementsSlotAt(e.clientX,e.clientY);
-[...drop.children].forEach(s=>{ if(s!==slot && !s.firstChild) s.classList.remove('hover','preDrop'); });
-tile.classList.remove('preDropTile');
-if(slot && !slot.firstChild){
-slot.classList.add('preDrop');
-tile.classList.add('preDropTile');
+  // cute glow on touch
+  t.addEventListener('pointerdown',()=>{
+    t.classList.add('touched');
+    setTimeout(()=>t.classList.remove('touched'), 180);
+  }, {passive:true});
+
+  // tap logic
+  t.addEventListener('click', (e)=>{
+    e.stopPropagation();
+
+    const inSlot = t.parentElement?.classList.contains('slot');
+    if(inSlot){
+      // tap tile in slot = send back to bank
+      sendToBank(t);
+      clearSelected();
+      markHint();
+      enableCheck();
+      return;
+    }
+
+    // tap tile in bank
+    if(selectedTile === t){
+      // second tap = auto-place into next empty slot
+      const s = nextEmptySlot();
+      if(s){ placeIntoSlot(t, s); }
+      clearSelected();
+      markHint();
+      enableCheck();
+      return;
+    }
+
+    // select tile
+    clearSelected();
+    selectedTile = t;
+    t.classList.add('selected');
+
+    // if a slot is immediately available, we keep it selected so user can tap a specific slot
+  });
+
+  return t;
 }
 
-const brect=bank.getBoundingClientRect();
-if(e.clientX>brect.left && e.clientX<brect.right && e.clientY>brect.top && e.clientY<brect.bottom){
-[...drop.children].forEach(s=>s.classList.remove('hover','preDrop'));
-tile.classList.remove('preDropTile');
-}
-}
-
-async function onPointerUp(e){
-try{ tile.releasePointerCapture(e.pointerId); }catch{}
-const slot=elementsSlotAt(e.clientX,e.clientY);
-const brect=bank.getBoundingClientRect();
-const overBank=(e.clientX>brect.left && e.clientX<brect.right && e.clientY>brect.top && e.clientY<brect.bottom);
-
-if(!moved && wasInSlot && !slot){
-sendToBank(tile); finalizeDragCleanup(); return;
-}
-
-if(slot && !slot.firstChild){
-const tRect = tile.getBoundingClientRect();
-const sRect = slot.getBoundingClientRect();
-const targetX = sRect.left + (sRect.width - tRect.width)/2;
-const targetY = sRect.top + (sRect.height - tRect.height)/2;
-tile.classList.add('preDropTile'); slot.classList.add('preDrop');
-await animateToFixed(tile, targetX, targetY, 220);
-placeIntoSlot(tile,slot);
-finalizeDragCleanup();
-} else if(overBank){
-sendToBank(tile); finalizeDragCleanup();
-} else {
-sendToBank(tile); finalizeDragCleanup();
-}
-enableCheck();
-}
-
-function finalizeDragCleanup(){
-document.removeEventListener('pointermove',onPointerMove);
-document.removeEventListener('pointerup',onPointerUp);
-[...drop.children].forEach(s=>s.classList.remove('hover','preDrop'));
-}
-
-tile.addEventListener('pointerdown',onPointerDown,{passive:false});
-}
-
-/* ====== Placement / Bank ====== */
-function placeIntoSlot(tile,slot){
-if(slot.firstChild && slot.firstChild!==tile){ sendToBank(slot.firstChild); }
-
-tile.style.position=''; tile.style.left=''; tile.style.top=''; tile.style.zIndex='';
-tile.style.background='#fff4c2';
-tile.style.color='#000';
-tile.classList.remove('dragging','preDropTile');
-
-slot.appendChild(tile);
-slot.classList.add("filled");
-tile.classList.add("inSlot");
-addAura(tile);
-}
-function sendToBank(tile){
-bank.appendChild(tile);
-tile.classList.remove('inSlot','preDropTile','dragging');
-tile.style.background = '#1b2046';
-tile.style.color = '#fff';
-tile.style.position=''; tile.style.left=''; tile.style.top=''; tile.style.zIndex='';
-removeAura(tile);
-[...drop.children].forEach(s=>{ if(!s.firstChild) s.classList.remove('filled','preDrop'); });
-}
-
-/* ====== Build ====== */
 function buildSlots(w){
-drop.innerHTML="";
-for(let i=0;i<w.length;i++){
-const s=document.createElement("div");
-s.className="slot"; drop.appendChild(s);
+  drop.innerHTML="";
+  for(let i=0;i<w.length;i++){
+    const s=document.createElement('div');
+    s.className="slot";
+
+    // tap slot: if tile selected, place here
+    s.addEventListener('click', ()=>{
+      if(!selectedTile) return;
+      if(s.firstChild) return;
+      // if selected tile is still in bank
+      if(selectedTile.parentElement !== bank) return;
+      placeIntoSlot(selectedTile, s);
+      clearSelected();
+      markHint();
+      enableCheck();
+    });
+
+    drop.appendChild(s);
+  }
 }
-}
+
 function buildBank(w){
-bank.innerHTML="";
-const chars=[...w]; let scr=[...chars];
-if(chars.length>1){ do{ scr.sort(()=>Math.random()-.5); } while(scr.join("")===w); }
-scr.forEach((ch,i)=>{
-const t=document.createElement("div");
-t.className="tile"; t.id=`tile-${Date.now()}-${i}`; t.textContent=ch;
-attachTileControls(t);
-bank.appendChild(t);
-});
+  bank.innerHTML="";
+  const chars=[...w];
+  let scr=[...chars];
+  if(chars.length>1){
+    do{ scr.sort(()=>Math.random()-.5); } while(scr.join("")===w);
+  }
+  scr.forEach((ch)=> bank.appendChild(makeTile(ch)) );
+}
+
+function placeIntoSlot(tile,slot){
+  // safety
+  if(slot.firstChild) return;
+
+  tile.classList.remove('selected');
+  tile.classList.add('inSlot');
+  slot.appendChild(tile);
+  slot.classList.add('filled');
+}
+
+function sendToBank(tile){
+  bank.appendChild(tile);
+  tile.classList.remove('inSlot','selected');
+  // clean up slot classes
+  [...drop.children].forEach(s=>{
+    if(!s.firstChild) s.classList.remove('filled');
+    else s.classList.add('filled');
+  });
 }
 
 /* ====== Round / Check ====== */
-function enableCheck(){ check.disabled=!allFilled(); }
-function allFilled(){ return [...drop.children].every(s=>s.firstChild); }
-function currentAnswer(){ return [...drop.children].map(s=>s.firstChild?.textContent ?? "").join(""); }
-
 check.addEventListener("click",()=>{
-const ans=currentAnswer(), correct=WORDS[index];
-if(ans===correct){
-if(firstTry) totalScore++;
-playSfx(sfx.ding);
-[...drop.querySelectorAll(".tile")].forEach(t=>{
-const r=t.getBoundingClientRect();
-spawnHeart(r.left + r.width/2, r.top);
-});
-nextWrap.style.display="flex";
-check.style.display="none";
-} else {
-firstTry=false;
-flashRedScreen();
-playSfx(sfx.fart);
-[...drop.children].forEach(s=>{
-if(s.firstChild){
-const t=s.firstChild;
-spawnFartAtTileMid(t);
-t.style.background="#3b0f0f";
-setTimeout(()=>t.style.background="#1b2046",300);
-sendToBank(t);
-}
-s.classList.remove("filled","hover","preDrop");
-});
-enableCheck();
-}
+  const ans=currentAnswer(), correct=WORDS[index];
+  if(ans===correct){
+    if(firstTry) totalScore++;
+
+    showBig(bigHeart);
+
+    nextWrap.style.display="flex";
+    check.style.display="none";
+  } else {
+    firstTry=false;
+    flashRedScreen();
+    showBig(bigFart);
+    playSfx(sfx.fart);
+
+    // return all tiles to bank
+    const tiles=[...drop.querySelectorAll('.tile')];
+    tiles.forEach(t=>sendToBank(t));
+
+    clearSelected();
+    markHint();
+    enableCheck();
+  }
 });
 
 nextBtn.addEventListener("click",()=>{
-index++; progressCount.textContent=`${Math.min(index+1,WORDS.length)} / ${WORDS.length}`;
-if(index>=WORDS.length){ showResults(); return; }
-loadCard();
+  index++;
+  progressCount.textContent=`${Math.min(index+1,WORDS.length)} / ${WORDS.length}`;
+  if(index>=WORDS.length){ showResults(); return; }
+  loadCard();
 });
 
 /* ====== Results ====== */
 function showResults(){
-pageRound.style.display="none";
-playWrap.style.display="none";
-pageResults.style.display="flex";
+  pageRound.style.display="none";
+  playWrap.style.display="none";
+  pageResults.style.display="flex";
 
-const pct=Math.round((totalScore/WORDS.length)*100);
-const msg=$("#resultMsg"), score=$("#resultScore");
-let bg="blueGlow", snd=sfx.r11_14, text="いいね！あと少しでパーフェクト！";
-if(totalScore<=5){ bg="redGlow"; snd=sfx.r0_5; text="ブーリキュラム見てないでしょ！"; }
-else if(totalScore<=10){ bg="orangeGlow"; snd=sfx.r6_10; text="YouTube見すぎ！ブーリキュラムもやろう！"; }
-else if(totalScore===15){ bg="goldGlow"; snd=sfx.r15; text="すごい！あなたは地球で一番頭がいい！"; }
+  const pct=Math.round((totalScore/WORDS.length)*100);
+  const msg=$("#resultMsg"), score=$("#resultScore");
+  let bg="blueGlow", snd=sfx.r11_14, text="いいね！あと少しでパーフェクト！";
+  if(totalScore<=5){ bg="redGlow"; snd=sfx.r0_5; text="ブーリキュラム見てないでしょ！"; }
+  else if(totalScore<=10){ bg="orangeGlow"; snd=sfx.r6_10; text="YouTube見すぎ！ブーリキュラムもやろう！"; }
+  else if(totalScore===15){ bg="goldGlow"; snd=sfx.r15; text="すごい！あなたは地球で一番頭がいい！"; }
 
-document.body.className=bg;
-msg.textContent=text;
-score.textContent=`${totalScore}/${WORDS.length}（${pct}%）`;
+  document.body.className=bg;
+  msg.textContent=text;
+  score.textContent=`${totalScore}/${WORDS.length}（${pct}%）`;
 
-playSfx(snd);
+  playSfx(snd);
 
-if(totalScore===15){
-for(let i=0;i<160;i++){
-setTimeout(()=>{
-const c=document.createElement("div");
-c.className="confetti";
-c.style.left=(Math.random()*100)+"vw";
-c.style.background=`hsl(${Math.random()*360},100%,60%)`;
-c.style.animationDuration=(0.9+Math.random()*0.9)+"s";
-document.body.appendChild(c);
-setTimeout(()=>c.remove(),1900);
-}, i*10);
-}
-}
+  if(totalScore===15){
+    for(let i=0;i<160;i++){
+      setTimeout(()=>{
+        const c=document.createElement("div");
+        c.className="confetti";
+        c.style.left=(Math.random()*100)+"vw";
+        c.style.background=`hsl(${Math.random()*360},100%,60%)`;
+        c.style.animationDuration=(0.9+Math.random()*0.9)+"s";
+        document.body.appendChild(c);
+        setTimeout(()=>c.remove(),1900);
+      }, i*10);
+    }
+  }
 }
 
 /* ====== Utils ====== */
 function shuffle(arr){
-for(let i=arr.length-1;i>0;i--){
-const j=Math.floor(Math.random()*(i+1));
-[arr[i],arr[j]]=[arr[j],arr[i]];
-}
-return arr;
+  for(let i=arr.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [arr[i],arr[j]]=[arr[j],arr[i]];
+  }
+  return arr;
 }
 
 /* ====== Game Init ====== */
 function loadCard(){
-const w=WORDS[index]; firstTry=true;
-buildSlots(w); buildBank(w);
-check.disabled=true; check.style.display="inline-block";
-nextWrap.style.display="none";
+  const w=WORDS[index];
+  firstTry=true;
+  clearSelected();
+  buildSlots(w);
+  buildBank(w);
+  check.disabled=true;
+  check.style.display="inline-block";
+  nextWrap.style.display="none";
+  markHint();
 }
 function initGame(){
-WORDS = shuffle([...MASTER_BASE]);
-index=0; totalScore=0; firstTry=true;
-document.body.className="";
-pageResults.style.display="none";
-playWrap.style.display="flex";
-pageRound.style.display="flex";
-progressCount.textContent=`1 / ${WORDS.length}`;
-loadCard();
+  WORDS = shuffle([...MASTER_BASE]);
+  index=0; totalScore=0; firstTry=true;
+  document.body.className="";
+  pageResults.style.display="none";
+  playWrap.style.display="flex";
+  pageRound.style.display="flex";
+  progressCount.textContent=`1 / ${WORDS.length}`;
+  loadCard();
 }
 initGame();
 
 /* Pre-warm audio (best-effort) */
 setTimeout(()=>{
-Object.values(sfx).forEach(a=>{ try{ a.play().then(()=>{a.pause();a.currentTime=0;}).catch(()=>{});}catch{} });
-sage.forEach(a=>{ try{ a.play().then(()=>{a.pause();a.currentTime=0;}).catch(()=>{});}catch{} });
+  Object.values(sfx).forEach(a=>{ try{ a.play().then(()=>{a.pause();a.currentTime=0;}).catch(()=>{});}catch{} });
+  sage.forEach(a=>{ try{ a.play().then(()=>{a.pause();a.currentTime=0;}).catch(()=>{});}catch{} });
 }, 300);
 </script>
 </body>
