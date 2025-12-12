@@ -556,13 +556,13 @@ body.ios #counter{
   </div>
 </div>
 
-<!-- results audio only -->
+<!-- non-Sage (SFX/results) live in week1/assets/audio -->
 <audio id="s_r05" src="assets/audio/result_0-5.mp3" preload="auto"></audio>
 <audio id="s_r610" src="assets/audio/result_6-10.mp3" preload="auto"></audio>
 <audio id="s_r1114" src="assets/audio/result_11-14.mp3" preload="auto"></audio>
 <audio id="s_r15" src="assets/audio/result_15.mp3" preload="auto"></audio>
 
-<!-- 🔊 Shared Sage voice element -->
+<!-- Sage voice mp3s live in week1/audio/vocab -->
 <audio id="sageVoice" preload="auto"></audio>
 
 <script>
@@ -587,24 +587,71 @@ const MASTER=[
 const $=s=>document.querySelector(s);
 function shuffle(a){return a.map(v=>[Math.random(),v]).sort((x,y)=>x[0]-y[0]).map(x=>x[1]);}
 
-/* 🔁 Shared Sage voice element */
-const sageVoice=document.getElementById('sageVoice');
-function playSage(word,onend){
+/* =========================
+   ✅ Sage audio (reliable)
+   - Sage files: week1/audio/vocab/<word>.mp3
+   - This HTML is inside week1/, so path is: audio/vocab/<word>.mp3
+   - Prime on first user tap to avoid autoplay blocks
+   ========================= */
+const sageVoice = document.getElementById('sageVoice');
+let sagePrimed = false;
+
+function sagePathFor(word){
+  // filenames are assumed: goal.mp3, plan.mp3, ...
+  const name = (word||'').toLowerCase().trim().replace(/[^a-z0-9]+/g,'_');
+  return `audio/vocab/${name}.mp3`;
+}
+
+async function primeSageAudio(){
+  if(sagePrimed || !sageVoice) return;
+  sagePrimed = true;
+  try{
+    // Use a real file to satisfy iOS/Safari gesture rules
+    sageVoice.muted = true;
+    const testWord = (MASTER?.[0]?.en || 'goal');
+    sageVoice.src = sagePathFor(testWord);
+
+    const p = sageVoice.play();
+    if(p && p.then) await p;
+
+    sageVoice.pause();
+    sageVoice.currentTime = 0;
+    sageVoice.muted = false;
+  }catch(e){
+    // If priming fails, we'll still try normal playback later
+    sageVoice.muted = false;
+  }
+}
+
+function playSage(word, onend){
   if(!word || !sageVoice){
-    if(onend)onend();
+    if(onend) onend();
     return;
   }
-  const name=word.toLowerCase();
-  sageVoice.src=`audio/${name}.mp3`;
-  sageVoice.currentTime=0;
-  sageVoice.onended=()=>{
-    sageVoice.onended=null;
-    if(onend)onend();
+
+  sageVoice.onended = () => {
+    sageVoice.onended = null;
+    sageVoice.onerror = null;
+    if(onend) onend();
   };
-  sageVoice.play().catch(err=>{
-    console.warn('Sage play blocked:',err);
-    if(onend)onend();
-  });
+
+  sageVoice.onerror = () => {
+    console.error('[SAGE] Failed to load:', sageVoice.src);
+    sageVoice.onended = null;
+    sageVoice.onerror = null;
+    if(onend) onend();
+  };
+
+  sageVoice.src = sagePathFor(word);
+  sageVoice.currentTime = 0;
+
+  const p = sageVoice.play();
+  if(p && p.catch){
+    p.catch(err=>{
+      console.warn('[SAGE] play blocked:', err);
+      if(onend) onend();
+    });
+  }
 }
 
 function confettiBurst(el,count=60){
@@ -639,7 +686,6 @@ const stripeSets=['sv1','sv2','sv3','sv4','sv5'];
 let recognition=null;
 let listening=false;
 let answered=false;
-let audioUnlocked=false;
 
 const ua = navigator.userAgent || '';
 const platform = navigator.platform || '';
@@ -647,8 +693,6 @@ const platform = navigator.platform || '';
 const isIpad = /iPad/.test(ua) || (platform === 'MacIntel' && navigator.maxTouchPoints > 1);
 const isIOSPhone = /iPhone|iPod/.test(ua);
 const isIOS = isIpad || isIOSPhone;
-const isMacDesktop = /Macintosh/.test(ua) && !isIpad;
-const isApple = isIOS || isMacDesktop;
 
 /* Apply iOS layout class */
 if(isIOS){
@@ -675,7 +719,7 @@ if(isIOS){
 /* Base SpeechRecognition type */
 const SR = window.SpeechRecognition || window.webkitSpeechRecognition || null;
 
-/* 🌍 Non-iOS: shared recognizer (Android + desktop, including Mac) */
+/* 🌍 Non-iOS: shared recognizer (Android + desktop) */
 if(SR && !isIOS){
   recognition = new SR();
   recognition.lang = 'en-US';
@@ -714,36 +758,6 @@ if(SR && !isIOS){
     micBtn.classList.remove('pulsing');
     answerBox.classList.remove('pulsing');
   };
-}
-
-/* 🎧 Unlock audio session on Apple (no ding file) */
-let audioCtx = null;
-function unlockAudio(cb){
-  if(!isApple){
-    if(cb) cb();
-    return;
-  }
-  if(audioUnlocked){
-    if(cb) cb();
-    return;
-  }
-  audioUnlocked = true;
-
-  try{
-    const AC = window.AudioContext || window.webkitAudioContext;
-    if(!AC){
-      if(cb) cb();
-      return;
-    }
-    audioCtx = audioCtx || new AC();
-    if(audioCtx.state === 'suspended'){
-      audioCtx.resume().then(()=>{ if(cb) cb(); }).catch(()=>{ if(cb) cb(); });
-    }else{
-      if(cb) cb();
-    }
-  }catch(e){
-    if(cb) cb();
-  }
 }
 
 /* 🚀 Start recognition (non-iOS only) */
@@ -795,22 +809,16 @@ function iosCheckFlow(){
 function startListening(){
   if(answered) return;
 
+  // ✅ prime Sage on the user's tap (fixes Safari/iOS + some Android autoplay edge cases)
+  primeSageAudio();
+
   if(isIOS){
-    if(isApple){
-      unlockAudio(()=>{ iosCheckFlow(); });
-    }else{
-      iosCheckFlow();
-    }
+    iosCheckFlow();
     return;
   }
 
   if(listening) return;
-
-  if(isApple){
-    unlockAudio(()=>{ startRecognitionCore(); });
-  }else{
-    startRecognitionCore();
-  }
+  startRecognitionCore();
 }
 
 micBtn.addEventListener('click', startListening);
@@ -913,10 +921,12 @@ $('#backToMenu').addEventListener('click',()=>{
 });
 
 function preloadAll(){
+  // Sage vocab mp3s
   MASTER.forEach(i=>{
-    const a=new Audio(`audio/${i.en.toLowerCase()}.mp3`);
+    const a=new Audio(sagePathFor(i.en));
     a.load();
   });
+  // Results mp3s
   ['s_r05','s_r610','s_r1114','s_r15'].forEach(id=>{
     const el=$("#"+id);
     if(el) el.load();
