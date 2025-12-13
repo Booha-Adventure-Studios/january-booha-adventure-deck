@@ -90,12 +90,27 @@ main{
   position:relative;
   z-index:1;
   font-weight:900;
-  font-size:clamp(1.35rem,5vw,2rem);
+  font-size:clamp(1.05rem,4.4vw,1.7rem);
+  line-height:1.15;
   color:#0b1530;
   text-shadow:0 1px 0 rgba(255,255,255,.6);
-  padding:0 1rem;
+  padding:12px 16px;
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:center;
+  align-items:center;
+  text-align:center;
+  max-width:100%;
+  overflow:hidden;
 }
-.word{opacity:0;margin:0 .35rem;transition:opacity .25s ease;}
+.word{
+  opacity:0;
+  margin:0 .25rem .12rem;
+  transition:opacity .25s ease;
+  max-width:100%;
+  overflow-wrap:anywhere;
+  word-break:break-word;
+}
 
 .tapHint{
   margin-top:-10px;
@@ -456,6 +471,21 @@ const sageText=$('#sageText');
 const studentBox=$('#studentBox');
 const eraseBtn=$('#eraseBtn');
 const statusLine=$('#statusLine');
+
+function setMicStatus(on){
+  if(!statusLine) return;
+  if(isIOS){
+    statusLine.style.display='none';
+    return;
+  }
+  statusLine.style.display='block';
+  if(on){
+    statusLine.innerHTML = `聞いてるよ…<small>Listening...</small>`;
+  } else {
+    statusLine.innerHTML = `白いボックスをタップしてスタート<small>Tap white box to start</small>`;
+  }
+}
+
 const optionsBox=$('#options');
 const hintBox=$('#hintBox');
 const nextBtn=$('#nextBtn');
@@ -583,6 +613,28 @@ function updateUI(){
   pointsValue.textContent=points;
   counter.textContent=(current+1)+' / '+questions.length;
 }
+function fitSageText(){
+  // Ensure the question always fits inside the rainbow box
+  const box = sageBox;
+  const el = sageText;
+  if(!box || !el) return;
+
+  const maxPx = 32;
+  const minPx = 14;
+  let size = maxPx;
+
+  el.style.fontSize = size + 'px';
+
+  for(let i=0;i<80;i++){
+    const fitsH = el.scrollHeight <= box.clientHeight - 8;
+    const fitsW = el.scrollWidth  <= box.clientWidth  - 8;
+    if(fitsH && fitsW) break;
+    size -= 1;
+    if(size <= minPx) break;
+    el.style.fontSize = size + 'px';
+  }
+}
+
 function animateWords(t){
   sageText.innerHTML='';
   t.split(' ').forEach((w,i)=>{
@@ -590,19 +642,12 @@ function animateWords(t){
     s.className='word';
     s.textContent=w;
     sageText.appendChild(s);
-    setTimeout(()=>s.style.opacity=1,180*i);
+    setTimeout(()=>s.style.opacity=1,140*i);
   });
-}
-
-function confetti(n=80){
-  for(let i=0;i<n;i++){
-    const c=document.createElement('div');
-    c.style.cssText=`position:fixed;width:10px;height:10px;left:${Math.random()*100}%;top:-10px;background:hsl(${Math.random()*360},100%,70%);opacity:.9;pointer-events:none;z-index:9999;`;
-    document.body.appendChild(c);
-    const d=900+Math.random()*1200;
-    c.animate([{transform:'translateY(0)'},{transform:'translateY(100vh) rotate(720deg)'}],{duration:d,easing:'ease-out'});
-    setTimeout(()=>c.remove(),d);
-  }
+  requestAnimationFrame(()=>{
+    fitSageText();
+    setTimeout(fitSageText, 240);
+  });
 }
 
 function normalize(s){
@@ -649,19 +694,16 @@ function currentQuestion(){return questions[current];}
 
 function setModeUI(){
   if(isIOS){
-    // iOS: tap-to-move, auto-check
-    statusLine.style.display='none';
+    if(statusLine) statusLine.style.display='none';
     eraseBtn.style.display='none';
     optionsBox.classList.remove('locked');
     studentBox.classList.remove('listening');
     studentBox.style.cursor='default';
   } else {
-    // Android/Desktop: speech only
-    statusLine.style.display='block';
     eraseBtn.style.display='inline-block';
     optionsBox.classList.add('locked');
     studentBox.style.cursor='pointer';
-    statusLine.innerHTML = `声で言ってね（タップは無効）<small>Speak your answer (taps are disabled).</small>`;
+    setMicStatus(false);
   }
 }
 
@@ -787,13 +829,13 @@ function ensureRecog(){
   recog.onstart=()=>{
     listening=true;
     studentBox.classList.add('listening');
-    statusLine.style.display='block';
-    statusLine.innerHTML = `聞いてるよ…<small>Listening…</small>`;
+    setMicStatus(true);
   };
 
   recog.onend=()=>{
     listening=false;
     studentBox.classList.remove('listening');
+    setMicStatus(false);
     // no auto-restart (student toggles mic)
   };
 
@@ -899,6 +941,16 @@ studentBox.addEventListener('click', ()=>{
   if(isIOS) return;
   if(!recog) ensureRecog();
   if(!recog) return;
+
+  if(listening){
+    stopMic();
+    setMicStatus(false);
+  }else{
+    startMic();
+    setMicStatus(true);
+  }
+});
+  if(!recog) return;
   if(listening){
     stopMic();
     setHint('マイク：オフ','Mic: OFF');
@@ -973,7 +1025,8 @@ window.onload=()=>{
       }
     }
   } else {
-    setHint('白いボックスを押してマイクをオン・オフ','Tap the white box to toggle the mic');
+    setHint('白いボックスをタップしてスタート','Tap white box to start');
+    setMicStatus(false);
   }
 };
 
