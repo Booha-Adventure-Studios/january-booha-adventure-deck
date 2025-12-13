@@ -436,22 +436,17 @@ footer{text-align:center;color:#fff;padding:16px 0 22px;font-family:'Cinzel',ser
 
 <script>
 /* =========================================
-   Booha Eigo Adventure – December 13 redesign
-   Rules:
-   - Tap rainbow question box to play Sage question audio (glow while playing)
-   - NO answer audio
-   - Android/Desktop: speech recognition only; tapping options does nothing
-     - wrong speech stays until erased
-   - iPad/iPhone: tap option moves to answer box and auto-checks
-   - All devices: correct=confetti+ding / wrong=fart+shake
-   - JP/EN help text (JP first)
+   Booha Eigo Adventure – stable rebuild
+   - Tap rainbow box: play Sage question audio
+   - iOS: tap option auto-check
+   - Android/Desktop: speech only, manual mic toggle by tapping white box
+   - No emojis
+   - JP/EN text (JP first)
+   - Questions + answers shuffle on refresh, but Sage filenames stay q01..q15
+   - Rainbow question text always fits in its container
    ========================================= */
 
-/* ✅ Paths (remember: week1/assets/audio + week1/audio/questions) */
-const SFX = {
-  ding: "assets/audio/ding.mp3",
-  fart: "assets/audio/fart.mp3",
-};
+const SFX = { ding: "assets/audio/ding.mp3", fart: "assets/audio/fart.mp3" };
 
 const RES = {
   r05:  document.getElementById('r05'),
@@ -460,17 +455,35 @@ const RES = {
   r15:  document.getElementById('r15')
 };
 
-/* iOS detection */
 const isIOS = /iP(hone|od|ad)/.test(navigator.userAgent) ||
   (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
 
-/* DOM */
-const $=s=>document.querySelector(s);
-const sageBox=$('#sageBox');
-const sageText=$('#sageText');
-const studentBox=$('#studentBox');
-const eraseBtn=$('#eraseBtn');
-const statusLine=$('#statusLine');
+const $ = function(s){ return document.querySelector(s); };
+const sageBox = $('#sageBox');
+const sageText = $('#sageText');
+const studentBox = $('#studentBox');
+const eraseBtn = $('#eraseBtn');
+const statusLine = $('#statusLine');
+const optionsBox = $('#options');
+const hintBox = $('#hintBox');
+const nextBtn = $('#nextBtn');
+const pointsValue = $('#pointsValue');
+const counter = $('#counter');
+
+const helpBtn = $('#helpBtn');
+const helpModal = $('#helpModal');
+
+const resultsOverlay = document.getElementById('resultsOverlay');
+const resultsScore = document.getElementById('resultsScore');
+const resultsMsg = document.getElementById('resultsMsg');
+const restartBtn = document.getElementById('restartBtn');
+
+const iosOverlay = document.getElementById('iosOverlay');
+const iosOverlayOk = document.getElementById('iosOverlayOk');
+
+function setHint(jp, en){
+  hintBox.innerHTML = jp + '<small>' + en + '</small>';
+}
 
 function setMicStatus(on){
   if(!statusLine) return;
@@ -480,103 +493,87 @@ function setMicStatus(on){
   }
   statusLine.style.display='block';
   if(on){
-    statusLine.innerHTML = `聞いてるよ…<small>Listening...</small>`;
+    statusLine.innerHTML = '聞いてるよ…<small>Listening...</small>';
   } else {
-    statusLine.innerHTML = `白いボックスをタップしてスタート<small>Tap white box to start</small>`;
+    statusLine.innerHTML = '白いボックスをタップしてスタート<small>Tap white box to start</small>';
   }
 }
 
-const optionsBox=$('#options');
-const hintBox=$('#hintBox');
-const nextBtn=$('#nextBtn');
-const pointsValue=$('#pointsValue');
-const counter=$('#counter');
-
-const helpBtn=$('#helpBtn');
-const helpModal=$('#helpModal');
-
-const iosOverlay = document.getElementById('iosOverlay');
-const iosOverlayOk = document.getElementById('iosOverlayOk');
-
-const resultsOverlay = document.getElementById('resultsOverlay');
-const resultsScore = document.getElementById('resultsScore');
-const resultsMsg = document.getElementById('resultsMsg');
-const restartBtn = document.getElementById('restartBtn');
-
-/* Data */
+/* ===== New content (fixed index1 for Sage filenames) ===== */
 let questions=[
-  {index1:1, q:"What is your goal this year?", a:0, legacy:null, answers:[
+  {index1:1, q:"What is your goal this year?", a:0, answers:[
     "I want to improve my English this year.","I want to turn into a banana.","My goal is to sleep for one year.","I want to live on Mars with aliens."]},
-  {index1:2, q:"Why is it important to you?", a:0, legacy:null, answers:[
+  {index1:2, q:"Why is it important to you?", a:0, answers:[
     "It is important because it helps my future.","Because my shoes told me to.","Because pizza is watching me.","I don’t know, my cat decided."]},
-  {index1:3, q:"How will you reach your goal?", a:0, legacy:null, answers:[
+  {index1:3, q:"How will you reach your goal?", a:0, answers:[
     "I will study and practice every day.","I will close my eyes and hope.","I will shout my goal at the moon.","I will wait for magic."]},
-  {index1:4, q:"Who helps you stay motivated?", a:0, legacy:null, answers:[
+  {index1:4, q:"Who helps you stay motivated?", a:0, answers:[
     "My family and teachers help me.","A talking sandwich helps me.","My pillow gives me advice.","Nobody, I talk to the wall."]},
-  {index1:5, q:"What habit do you want to change?", a:0, legacy:null, answers:[
+  {index1:5, q:"What habit do you want to change?", a:0, answers:[
     "I want to stop procrastinating.","I want to stop breathing air.","I want to stop being human.","I want to stop existing on Mondays."]},
-  {index1:6, q:"Do you like making resolutions?", a:0, legacy:null, answers:[
+  {index1:6, q:"Do you like making resolutions?", a:0, answers:[
     "Yes, I like making resolutions.","No, resolutions are scared of me.","I only make food, not resolutions.","I make resolutions for my socks."]},
-  {index1:7, q:"What do you want to try this year?", a:0, legacy:null, answers:[
+  {index1:7, q:"What do you want to try this year?", a:0, answers:[
     "I want to try something new this year.","I want to try flying without wings.","I want to try eating rocks.","I want to try sleeping in class forever."]},
-  {index1:8, q:"What’s something new you learned recently?", a:0, legacy:null, answers:[
+  {index1:8, q:"What’s something new you learned recently?", a:0, answers:[
     "I learned a new English word.","I learned how to talk to chairs.","I learned that water is dry.","I learned nothing since birth."]},
-  {index1:9, q:"Is it easy to keep goals?", a:0, legacy:null, answers:[
+  {index1:9, q:"Is it easy to keep goals?", a:0, answers:[
     "No, it is not always easy.","Yes, goals walk by themselves.","Goals are easy because they disappear.","Goals are easy when you never try."]},
-  {index1:10, q:"What happens when you don’t try?", a:0, legacy:null, answers:[
+  {index1:10, q:"What happens when you don’t try?", a:0, answers:[
     "You cannot improve if you don’t try.","You turn into a potato.","The world stops spinning.","Nothing, everything does itself."]},
-  {index1:11, q:"What makes you feel proud?", a:0, legacy:null, answers:[
+  {index1:11, q:"What makes you feel proud?", a:0, answers:[
     "Doing my best makes me feel proud.","Eating ten cakes makes me proud.","Falling asleep in class makes me proud.","Forgetting everything makes me proud."]},
-  {index1:12, q:"What’s your dream for the future?", a:0, legacy:null, answers:[
+  {index1:12, q:"What’s your dream for the future?", a:0, answers:[
     "I want to have a happy future.","I want to be a rock.","I want to live inside a video game.","I want to disappear forever."]},
-  {index1:13, q:"How do you stay positive?", a:0, legacy:null, answers:[
+  {index1:13, q:"How do you stay positive?", a:0, answers:[
     "I stay positive by thinking positively.","I stay positive by yelling at clouds.","I stay positive by running away.","I don’t, I hide under a desk."]},
-  {index1:14, q:"Who inspires you?", a:0, legacy:null, answers:[
+  {index1:14, q:"Who inspires you?", a:0, answers:[
     "My family inspires me.","A flying spoon inspires me.","A random tree inspires me.","Nobody, inspiration is scary."]},
-  {index1:15, q:"How can English help your goals?", a:0, legacy:null, answers:[
+  {index1:15, q:"How can English help your goals?", a:0, answers:[
     "English can help me in my future.","English helps my shoes run faster.","English helps me talk to fish.","English has no use at all."]}
 ];
 
-/* --- shuffle and assign correct answer text --- */
-function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
-questions=shuffle(questions.map(q=>{
-  const correct=q.answers[q.a];
-  const mixed=shuffle([...q.answers]);
-  return {...q,answers:mixed,correct};
+function shuffle(a){
+  for(let i=a.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    const tmp=a[i]; a[i]=a[j]; a[j]=tmp;
+  }
+  return a;
+}
+
+/* Shuffle question order + answer order (on refresh) */
+questions = shuffle(questions.map(function(q){
+  const correct = q.answers[q.a];
+  const mixed = shuffle(q.answers.slice());
+  return Object.assign({}, q, { answers:mixed, correct:correct });
 }));
 
 let current=0, points=0;
 let gotCorrect=false, firstAttempt=true;
 
-/* Speech */
 let recog=null;
 let listening=false;
-let lastHeard="";
 
-/* iOS selection */
 let iosSelectedIndex=null;
 let iosFirstAttempt=true;
 
-/* ---------- audio helpers ---------- */
 function playSfx(path){
   const a=new Audio(path);
   a.preload='auto';
-  a.play().catch(()=>{});
+  a.play().catch(function(){});
 }
+
 function playAudioFile(path){
-  return new Promise(resolve=>{
+  return new Promise(function(resolve){
     const a=new Audio(path);
     a.onended=resolve;
     a.onerror=resolve;
-    a.play().catch(()=>resolve());
+    a.play().catch(function(){ resolve(); });
     setTimeout(resolve, 9000);
   });
 }
 
-/* ✅ Sage question audio filename convention:
-   q01_what_is_your_goal_this_year.mp3
-   q02_...
-*/
+/* Sage filename convention: q01_what_is_your_goal_this_year.mp3 */
 function qAudioFilename(qText, index1){
   const n = String(index1).padStart(2,'0');
   const slug = qText
@@ -587,34 +584,35 @@ function qAudioFilename(qText, index1){
     .replace(/\?/g,'')
     .replace(/[^a-z0-9\s]/g,'')
     .replace(/\s+/g,'_');
-  return `q${n}_${slug}.mp3`;
+  return 'q' + n + '_' + slug + '.mp3';
 }
+
+function currentQuestion(){ return questions[current]; }
 
 async function playQuestionAudioForCurrent(){
   const q = currentQuestion();
   const file = qAudioFilename(q.q, q.index1);
   sageBox.classList.add('talking');
-  sageBox.setAttribute('aria-disabled','true');
   try{
     await playAudioFile('audio/questions/' + file);
   } finally {
     sageBox.classList.remove('talking');
-    sageBox.removeAttribute('aria-disabled');
   }
 }
 
-/* ---------- UI helpers ---------- */
 function pulsePoints(){
   const circle=document.getElementById('pointsCircle');
   circle.style.transform='scale(1.3)';
-  setTimeout(()=>circle.style.transform='scale(1)',300);
+  setTimeout(function(){ circle.style.transform='scale(1)'; },300);
 }
+
 function updateUI(){
   pointsValue.textContent=points;
-  counter.textContent=(current+1)+' / '+questions.length;
+  counter.textContent=(current+1) + ' / ' + questions.length;
 }
+
+/* Make rainbow question text fit */
 function fitSageText(){
-  // Ensure the question always fits inside the rainbow box
   const box = sageBox;
   const el = sageText;
   if(!box || !el) return;
@@ -622,12 +620,11 @@ function fitSageText(){
   const maxPx = 32;
   const minPx = 14;
   let size = maxPx;
-
   el.style.fontSize = size + 'px';
 
   for(let i=0;i<80;i++){
-    const fitsH = el.scrollHeight <= box.clientHeight - 8;
-    const fitsW = el.scrollWidth  <= box.clientWidth  - 8;
+    const fitsH = el.scrollHeight <= box.clientHeight - 10;
+    const fitsW = el.scrollWidth  <= box.clientWidth  - 10;
     if(fitsH && fitsW) break;
     size -= 1;
     if(size <= minPx) break;
@@ -637,16 +634,17 @@ function fitSageText(){
 
 function animateWords(t){
   sageText.innerHTML='';
-  t.split(' ').forEach((w,i)=>{
+  const parts = t.split(' ');
+  for(let i=0;i<parts.length;i++){
     const s=document.createElement('span');
     s.className='word';
-    s.textContent=w;
+    s.textContent=parts[i];
     sageText.appendChild(s);
-    setTimeout(()=>s.style.opacity=1,140*i);
-  });
-  requestAnimationFrame(()=>{
+    (function(span,delay){ setTimeout(function(){ span.style.opacity=1; }, delay); })(s, 110*i);
+  }
+  requestAnimationFrame(function(){
     fitSageText();
-    setTimeout(fitSageText, 240);
+    setTimeout(fitSageText, 250);
   });
 }
 
@@ -660,37 +658,27 @@ function normalize(s){
     .replace(/\s+/g,' ')
     .trim();
 }
-function isTimeLike(str){
-  return /\b\d+\b/.test(str) && (str.includes("oclock") || /\bclock\b/.test(str));
-}
-function timeMatch(ns,na){
-  let sa=ns.split(' ');
-  let aa=na.split(' ');
-  if(aa.includes('oclock') && sa.includes('00') && !sa.includes('oclock')){
-    sa = sa.map(w=>w==='00'?'oclock':w);
-  } else if(sa.includes('oclock') && aa.includes('00') && !aa.includes('oclock')){
-    aa = aa.map(w=>w==='00'?'oclock':w);
-  }
-  const overlap=aa.filter(w=>sa.includes(w)).length;
-  const extra=sa.filter(w=>!aa.includes(w));
-  return overlap/aa.length>=0.8 && extra.length<=2;
-}
+
 function strictMatch(s,a){
   const ns=normalize(s), na=normalize(a);
   if(!ns||!na) return false;
-  if(isTimeLike(na)) return timeMatch(ns,na);
   const sa=ns.split(' '), aa=na.split(' ');
-  const overlap=aa.filter(w=>sa.includes(w)).length;
-  const extra=sa.filter(w=>!aa.includes(w));
+  const overlap=aa.filter(function(w){ return sa.includes(w); }).length;
+  const extra=sa.filter(function(w){ return !aa.includes(w); });
   return overlap/aa.length>=0.9 && extra.length<=2;
 }
 
-function setHint(jp, en){
-  hintBox.innerHTML = `${jp}<small>${en}</small>`;
+function confetti(n){
+  n = n || 80;
+  for(let i=0;i<n;i++){
+    const c=document.createElement('div');
+    c.style.cssText='position:fixed;width:10px;height:10px;left:'+(Math.random()*100)+'%;top:-10px;background:hsl('+(Math.random()*360)+',100%,70%);opacity:.9;pointer-events:none;z-index:9999;';
+    document.body.appendChild(c);
+    const d=900+Math.random()*1200;
+    c.animate([{transform:'translateY(0)'},{transform:'translateY(100vh) rotate(720deg)'}],{duration:d,easing:'ease-out'});
+    setTimeout(function(){ c.remove(); }, d);
+  }
 }
-
-/* ---------- core state ---------- */
-function currentQuestion(){return questions[current];}
 
 function setModeUI(){
   if(isIOS){
@@ -710,60 +698,35 @@ function setModeUI(){
 function renderAnswers(){
   optionsBox.innerHTML='';
   const q=currentQuestion();
-  q.answers.forEach((a,i)=>{
+  for(let i=0;i<q.answers.length;i++){
+    const a=q.answers[i];
     const d=document.createElement('div');
     d.className='option';
     d.dataset.index=i;
     d.textContent=a;
 
-    d.addEventListener('click',()=>{
+    d.addEventListener('click',function(){
       if(!isIOS){
-        // Locked on Android/Desktop
-        setHint('パソコン・Android は「声で答える」モードだよ。', 'On computers/Android, answer by speaking.');
+        setHint('パソコン・Android は声で答えるよ。','On computers/Android, answer by speaking.');
         return;
       }
-      document.querySelectorAll('.option').forEach(o=>o.classList.remove('selected'));
+      document.querySelectorAll('.option').forEach(function(o){ o.classList.remove('selected'); });
       d.classList.add('selected');
       iosSelectedIndex=i;
       studentBox.textContent=a;
-      checkIOSAnswer(); // auto-check
+      checkIOSAnswer();
     });
 
     optionsBox.appendChild(d);
-  });
-}
-
-function loadQuestion(){
-  gotCorrect=false;
-  firstAttempt=true;
-  iosSelectedIndex=null;
-  iosFirstAttempt=true;
-  lastHeard="";
-  hintBox.textContent='';
-  studentBox.textContent='';
-  studentBox.style.background='#fff';
-  nextBtn.style.display='none';
-
-  const q = currentQuestion();
-  animateWords(q.q);
-  renderAnswers();
-  updateUI();
-  setModeUI();
-
-  if(!isIOS){
-    ensureRecog();
-    // do not auto-listen; student toggles mic by tapping the white box
   }
 }
 
-/* ---------- wrong behavior ---------- */
 async function wrongAndroidDesktop(){
-  // Keep wrong text visible until erase (no auto-clear)
   studentBox.classList.add('shake');
   studentBox.style.background='#fee2e2';
   playSfx(SFX.fart);
-  setHint('ちがう！どこがちがう？見てから「けす」！','Wrong! Look at it, then tap Erase.');
-  await new Promise(r=>setTimeout(r, 320));
+  setHint('ちがう。見てから消してもう一回。','Wrong. Look, erase, and try again.');
+  await new Promise(function(r){ setTimeout(r, 320); });
   studentBox.classList.remove('shake');
 }
 
@@ -771,16 +734,15 @@ async function wrongIOS(){
   playSfx(SFX.fart);
   studentBox.classList.add('shake');
   studentBox.style.background='#fee2e2';
-  setHint('ちがう！もう一回！','Wrong! Try again.');
-  await new Promise(r=>setTimeout(r, 1100));
+  setHint('ちがう。もう一回。','Wrong. Try again.');
+  await new Promise(function(r){ setTimeout(r, 950); });
   studentBox.classList.remove('shake');
   studentBox.style.background='#fff';
   studentBox.textContent='';
   iosSelectedIndex=null;
-  document.querySelectorAll('.option').forEach(o=>o.classList.remove('selected'));
+  document.querySelectorAll('.option').forEach(function(o){ o.classList.remove('selected'); });
 }
 
-/* ---------- correct behavior ---------- */
 function correctCommon(){
   gotCorrect=true;
   playSfx(SFX.ding);
@@ -788,23 +750,18 @@ function correctCommon(){
   points += firstAttempt ? 1 : 0;
   pulsePoints();
   updateUI();
-  setHint('正解！つぎへ進もう。','Correct! Tap Next.');
+  setHint('正解。つぎへ。','Correct. Tap Next.');
   nextBtn.style.display='inline-block';
 }
 
-/* ---------- iOS logic ---------- */
 async function checkIOSAnswer(){
   if(gotCorrect) return;
   const q=currentQuestion();
   if(iosSelectedIndex===null) return;
-
   const answer=q.answers[iosSelectedIndex];
   if(answer===q.correct){
-    if(!gotCorrect){
-      // first attempt scoring
-      if(!iosFirstAttempt) firstAttempt=false;
-      correctCommon();
-    }
+    if(!iosFirstAttempt) firstAttempt=false;
+    correctCommon();
   } else {
     iosFirstAttempt=false;
     firstAttempt=false;
@@ -812,12 +769,11 @@ async function checkIOSAnswer(){
   }
 }
 
-/* ---------- speech recognition (Android/Desktop) ---------- */
 function ensureRecog(){
   const R=window.SpeechRecognition||window.webkitSpeechRecognition;
   if(!R){
-    statusLine.style.display='block';
-    statusLine.innerHTML = `音声認識が使えません<small>Speech recognition is not supported on this device.</small>`;
+    setMicStatus(false);
+    setHint('この端末は音声認識に対応していません。','Speech recognition is not supported on this device.');
     return;
   }
   if(recog) return;
@@ -826,39 +782,36 @@ function ensureRecog(){
   recog.lang='en-US';
   recog.interimResults=true;
 
-  recog.onstart=()=>{
+  recog.onstart=function(){
     listening=true;
     studentBox.classList.add('listening');
     setMicStatus(true);
   };
 
-  recog.onend=()=>{
+  recog.onend=function(){
     listening=false;
     studentBox.classList.remove('listening');
     setMicStatus(false);
-    // no auto-restart (student toggles mic)
   };
 
-  recog.onerror=(e)=>{
-    statusLine.style.display='block';
-    statusLine.innerHTML = `マイクを許可してね<small>Please allow microphone access.</small>`;
+  recog.onerror=function(){
+    setMicStatus(false);
+    setHint('マイクを許可してね。','Please allow microphone access.');
   };
 
-  recog.onresult=e=>{
+  recog.onresult=function(e){
     let t='';
     for(const r of e.results){
       t += r[0].transcript + ' ';
       if(r.isFinal){
-        lastHeard=t.trim();
-        studentBox.textContent=lastHeard;
-        checkSpeech(lastHeard);
+        const finalText=t.trim();
+        studentBox.textContent=finalText;
+        checkSpeech(finalText);
       }
     }
-    // show interim but do NOT check until final
     const interim = t.trim();
     if(interim && !gotCorrect){
       studentBox.textContent=interim;
-      statusLine.innerHTML = `きこえた：${escapeHtml(interim)}<small>Heard: ${escapeHtml(interim)}</small>`;
     }
   };
 }
@@ -868,37 +821,32 @@ function startMic(){
   if(!recog) ensureRecog();
   if(!recog) return;
   if(!listening){
-    try{recog.start();}catch{}
+    try{recog.start();}catch(e){}
   }
 }
 
 function stopMic(){
   if(recog && listening){
-    try{recog.stop();}catch{}
+    try{recog.stop();}catch(e){}
+  } else {
+    setMicStatus(false);
   }
 }
 
 async function checkSpeech(spoken){
   if(isIOS || gotCorrect) return;
-
   const q=currentQuestion();
 
-  // Find if spoken matches ANY option first
-  const matchIndex=q.answers.findIndex(ans=>strictMatch(spoken,ans));
-
+  const matchIndex=q.answers.findIndex(function(ans){ return strictMatch(spoken,ans); });
   if(matchIndex===-1){
     firstAttempt=false;
     await wrongAndroidDesktop();
-    // keep text (studentBox already has it)
     return;
   }
 
-  // Matches an option, now check if it is the correct one
   const isCorrect = strictMatch(spoken, q.correct);
-
   if(isCorrect){
     correctCommon();
-    // keep mic running, but no more checks until next
     stopMic();
   } else {
     firstAttempt=false;
@@ -906,8 +854,84 @@ async function checkSpeech(spoken){
   }
 }
 
-/* ---------- navigation ---------- */
-nextBtn.onclick=()=>{
+function clearAnswer(){
+  studentBox.textContent='';
+  studentBox.style.background='#fff';
+  setHint('もう一回言ってね。','Say it again.');
+}
+
+function loadQuestion(){
+  gotCorrect=false;
+  firstAttempt=true;
+  iosSelectedIndex=null;
+  iosFirstAttempt=true;
+
+  hintBox.textContent='';
+  studentBox.textContent='';
+  studentBox.style.background='#fff';
+  nextBtn.style.display='none';
+
+  const q=currentQuestion();
+  animateWords(q.q);
+  renderAnswers();
+  updateUI();
+  setModeUI();
+}
+
+function showResults(){
+  stopMic();
+  const total=questions.length;
+  const pct=Math.round((points/total)*100);
+  resultsScore.textContent = points + '/' + total + '（' + pct + '%）';
+
+  let msg = 'いいね。あと少し。';
+  let snd = RES.r1114;
+
+  if(points<=5){ msg='ブーリキュラム見てないでしょ。'; snd=RES.r05; }
+  else if(points<=10){ msg='YouTube見すぎ。ブーリキュラムもやろう。'; snd=RES.r610; }
+  else if(points===15){ msg='すごい。パーフェクト。'; snd=RES.r15; }
+
+  resultsMsg.textContent = msg;
+  resultsOverlay.style.display='flex';
+  resultsOverlay.setAttribute('aria-hidden','false');
+
+  try{ snd.currentTime=0; snd.play(); }catch(e){}
+  if(points===15) confetti(140);
+}
+
+/* Rainbow tap: Sage audio */
+let audioLock=false;
+async function onTapSage(){
+  if(audioLock) return;
+  audioLock=true;
+  try{ await playQuestionAudioForCurrent(); }
+  finally{ audioLock=false; }
+}
+sageBox.addEventListener('click', onTapSage);
+
+/* White box tap: toggle mic (Android/Desktop) */
+studentBox.addEventListener('click', function(){
+  if(isIOS) return;
+  if(!recog) ensureRecog();
+  if(!recog) return;
+
+  if(listening){
+    stopMic();
+    setMicStatus(false);
+  } else {
+    startMic();
+    setMicStatus(true);
+  }
+});
+
+eraseBtn.addEventListener('click', function(){ clearAnswer(); });
+
+document.addEventListener('keydown', function(e){
+  if(isIOS) return;
+  if(e.key==='Backspace' || e.key==='Delete') clearAnswer();
+});
+
+nextBtn.onclick=function(){
   current++;
   if(current>=questions.length){
     showResults();
@@ -916,109 +940,41 @@ nextBtn.onclick=()=>{
   loadQuestion();
 };
 
-/* ---------- question audio trigger ---------- */
-let audioLock=false;
-async function onTapSage(){
-  if(audioLock) return;
-  audioLock=true;
-  try{
-    await playQuestionAudioForCurrent();
-  } finally {
-    audioLock=false;
-  }
-}
-sageBox.addEventListener('click', onTapSage);
-sageBox.addEventListener('touchend', (e)=>{ /* iOS fast tap */ onTapSage(); });
-
-/* ---------- erase ---------- */
-function clearAnswer(){
-  studentBox.textContent='';
-  studentBox.style.background='#fff';
-  setHint('もう一回言ってね。','Say it again.');
-}
-
-studentBox.addEventListener('click', ()=>{
-  if(isIOS) return;
-  if(!recog) ensureRecog();
-  if(!recog) return;
-
-  if(listening){
-    stopMic();
-    setMicStatus(false);
-  }else{
-    startMic();
-    setMicStatus(true);
-  }
-});
-  if(!recog) return;
-  if(listening){
-    stopMic();
-    setHint('マイク：オフ','Mic: OFF');
-  }else{
-    startMic();
-    setHint('マイク：オン（声で答えてね）','Mic: ON (Speak your answer)');
-  }
-});
-eraseBtn.addEventListener('click', ()=>{ clearAnswer(); });
-document.addEventListener('keydown', (e)=>{
-  if(isIOS) return;
-  if(e.key==='Backspace' || e.key==='Delete') clearAnswer();
-});
-
-/* ---------- results ---------- */
-function showResults(){
-  stopMic();
-  const total=questions.length;
-  const pct=Math.round((points/total)*100);
-  resultsScore.textContent = `${points}/${total}（${pct}%）`;
-
-  let msg = "いいね！あと少しでパーフェクト！";
-  let snd = RES.r1114;
-
-  if(points<=5){ msg="ブーリキュラム見てないでしょ！"; snd=RES.r05; }
-  else if(points<=10){ msg="YouTube見すぎ！ブーリキュラムもやろう！"; snd=RES.r610; }
-  else if(points===15){ msg="すごい！あなたは地球で一番頭がいい！"; snd=RES.r15; }
-
-  resultsMsg.textContent = msg;
-
-  resultsOverlay.style.display='flex';
-  resultsOverlay.setAttribute('aria-hidden','false');
-
-  try{ snd.currentTime=0; snd.play(); }catch(e){}
-  if(points===15) confetti(140);
-}
-
-restartBtn.onclick=()=>{
+restartBtn.onclick=function(){
   resultsOverlay.style.display='none';
   resultsOverlay.setAttribute('aria-hidden','true');
   current=0; points=0;
+
+  /* reshuffle answers + question order again */
+  questions = shuffle(questions.map(function(q){
+    const mixed = shuffle(q.answers.slice());
+    return Object.assign({}, q, { answers:mixed });
+  }));
   loadQuestion();
 };
 
-/* ---------- help modal ---------- */
+/* Help modal */
 if(helpBtn && helpModal){
   const closeEls=helpModal.querySelectorAll('[data-close-help]');
-  const openHelp=()=>{helpModal.classList.add('show');helpModal.setAttribute('aria-hidden','false');};
-  const closeHelp=()=>{helpModal.classList.remove('show');helpModal.setAttribute('aria-hidden','true');};
-  helpBtn.addEventListener('click',openHelp);
-  closeEls.forEach(el=>el.addEventListener('click',closeHelp));
-  helpModal.addEventListener('click',e=>{if(e.target===helpModal)closeHelp();});
-  document.addEventListener('keydown',e=>{if(e.key==='Escape')closeHelp();});
+  const openHelp=function(){ helpModal.classList.add('show'); helpModal.setAttribute('aria-hidden','false'); };
+  const closeHelp=function(){ helpModal.classList.remove('show'); helpModal.setAttribute('aria-hidden','true'); };
+  helpBtn.addEventListener('click', openHelp);
+  closeEls.forEach(function(el){ el.addEventListener('click', closeHelp); });
+  helpModal.addEventListener('click', function(e){ if(e.target===helpModal) closeHelp(); });
+  document.addEventListener('keydown', function(e){ if(e.key==='Escape') closeHelp(); });
 }
 
-/* ---------- init ---------- */
-// Attach stable index for q01/q02... after shuffle
-
-window.onload=()=>{
+/* Init */
+window.onload=function(){
   loadQuestion();
 
   if(isIOS){
-    setHint('iPad / iPhone：答えをタップすると自動チェック！', 'iPad/iPhone: Tap an answer to auto-check.');
+    setHint('iPad / iPhone：答えをタップすると自動チェック。', 'iPad/iPhone: Tap an answer to auto-check.');
     if(iosOverlay){
       iosOverlay.style.display='flex';
       iosOverlay.setAttribute('aria-hidden','false');
       if(iosOverlayOk){
-        iosOverlayOk.addEventListener('click', ()=>{
+        iosOverlayOk.addEventListener('click', function(){
           iosOverlay.style.display='none';
           iosOverlay.setAttribute('aria-hidden','true');
         });
@@ -1029,16 +985,5 @@ window.onload=()=>{
     setMicStatus(false);
   }
 };
-
-/* ---------- util ---------- */
-function escapeHtml(s){
-  return String(s)
-    .replaceAll('&','&amp;')
-    .replaceAll('<','&lt;')
-    .replaceAll('>','&gt;')
-    .replaceAll('"','&quot;')
-    .replaceAll("'",'&#039;');
-}
 </script>
-</body>
-</html>
+
