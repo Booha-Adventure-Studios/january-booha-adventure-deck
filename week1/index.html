@@ -7,6 +7,7 @@
 <meta name="theme-color" content="#000">
 <link rel="icon" type="image/png" href="booha-ghost.png">
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&display=swap" rel="stylesheet" />
+
 <style>
 :root{
   --pink:#ff7eb9; --blue:#5ee6ff; --yellow:#fff680;
@@ -23,6 +24,7 @@ html,body{
   color:#fff;
   overflow:hidden;
 }
+
 #welcome{
   display:flex;
   flex-direction:column;
@@ -69,6 +71,10 @@ a.deck{
   box-shadow:0 0 8px rgba(255,215,0,0.3),0 0 16px rgba(255,215,0,0.15);
   transition:box-shadow .3s ease,transform .3s ease,filter .4s ease;
   will-change:transform;
+
+  /* ✅ HARD CENTER (prevents left-shift during transform/clone animation) */
+  text-align:center;
+  transform-origin:center center;
 }
 
 a.deck.active{
@@ -124,17 +130,21 @@ a.deck::after{
 }
 
 a.deck:hover{filter:brightness(1.25);}
+
+/* ✅ HARD CENTER text blocks */
+a.deck b,
 a.deck span{
-  font-size:0.85em;
-  color:#222;
-  position:relative;
-  z-index:1;
-}
-a.deck b{
   position:relative;
   z-index:1;
   display:block;
+  width:100%;
+  text-align:center;
+  transform-origin:center center;
 }
+
+/* Keep titles from reflowing oddly while scaling (optional but helps) */
+a.deck b{ line-height:1.05; white-space:nowrap; }
+a.deck span{ font-size:0.85em; color:#222; white-space:nowrap; }
 
 @keyframes spin{
   0%{transform:translate(-50%,-50%) rotate(0deg);}
@@ -144,6 +154,7 @@ a.deck b{
   from{opacity:0;}
   to{opacity:1;}
 }
+
 footer{
   position:absolute;
   bottom:20px;
@@ -205,6 +216,7 @@ footer{
 }
 </style>
 </head>
+
 <body>
 
 <section id="welcome">
@@ -221,9 +233,7 @@ footer{
     <a class="deck" href="eigoadventure.html"><b>Eigo Adventure</b><span>英語アドベンチャー</span></a>
   </div>
 
-  <footer>
-    Bryan's English School
-  </footer>
+  <footer>Bryan's English School</footer>
 </section>
 
 <div id="fadeScreen"></div>
@@ -250,7 +260,7 @@ function sparkleBurst(rect, count = 35){
     const s = document.createElement('div');
     s.className = 'sparkle';
     s.style.left = (x - 3.5) + 'px';
-    s.style.top = (y - 3.5) + 'px';
+    s.style.top  = (y - 3.5) + 'px';
     s.style.setProperty('--dx', dx + 'px');
     s.style.setProperty('--dy', dy + 'px');
     document.body.appendChild(s);
@@ -280,13 +290,10 @@ if (deckContainer) {
     const target = deck.getAttribute('href');
     const fadeScreen = document.getElementById('fadeScreen');
 
-    // stop intro (optional)
     if (intro) { try { intro.pause(); } catch(_){} }
 
-    // play opening sound immediately
     safePlay(openSound, 1);
 
-    // make it "alive"
     deck.classList.add('active');
     deck.style.setProperty('--spinDur','1.2s');
 
@@ -296,6 +303,13 @@ if (deckContainer) {
     const clone = deck.cloneNode(true);
     clone.classList.add('active');
     clone.style.setProperty('--spinDur','1.2s');
+
+    /* ✅ HARD CENTER on clone while moving (prevents left-align drift) */
+    clone.style.display = 'flex';
+    clone.style.flexDirection = 'column';
+    clone.style.alignItems = 'center';
+    clone.style.justifyContent = 'center';
+    clone.style.textAlign = 'center';
 
     clone.style.position = 'fixed';
     clone.style.left = r.left + 'px';
@@ -307,6 +321,7 @@ if (deckContainer) {
     clone.style.zIndex = '9999';
     clone.style.pointerEvents = 'none';
     clone.style.willChange = 'transform';
+    clone.style.transformOrigin = 'center center';
 
     document.body.appendChild(clone);
     deck.classList.add('is-hidden');
@@ -318,14 +333,11 @@ if (deckContainer) {
     const maxHeightScale = (window.innerHeight * 0.9) / r.height;
     const safeScale = Math.min(3, maxWidthScale, maxHeightScale);
 
-    // ===== 5s AUDIO: slightly longer so it never cuts out =====
-    const MOVE_MS = 5500;  // finishes after the music
-    const OPEN_MS = 5800;  // open after audio fully ends
+    const MOVE_MS = 5500;
+    const OPEN_MS = 5800;
 
-    // sparkle pop on click
     sparkleBurst(r, 35);
 
-    // swipe near the end of the music
     if (fadeScreen) {
       setTimeout(() => {
         fadeScreen.classList.remove('show');
@@ -333,7 +345,6 @@ if (deckContainer) {
       }, 4700);
     }
 
-    // animate clone to center
     clone.animate(
       [
         { transform: 'translate(0px,0px) scale(1)' },
@@ -342,7 +353,6 @@ if (deckContainer) {
       { duration: MOVE_MS, easing: 'ease-in-out', fill: 'forwards' }
     );
 
-    // navigate after sound + swipe finish
     setTimeout(() => {
       window.location.href = target;
     }, OPEN_MS);
