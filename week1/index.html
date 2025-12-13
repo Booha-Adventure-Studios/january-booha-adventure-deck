@@ -40,7 +40,7 @@ h1{font-size:clamp(32px,5vw,60px);margin-bottom:.4em;font-weight:900;}
 h2{font-size:clamp(22px,3vw,36px);margin-bottom:.3em;font-weight:800;color:#ccc;}
 h3{font-size:clamp(18px,2.5vw,28px);color:#aaa;margin-bottom:2em;}
 
-/* Grid – responsive */
+/* Grid */
 .deck-links{
   display:grid;
   grid-template-columns:repeat(3, minmax(0, 1fr));
@@ -51,7 +51,7 @@ h3{font-size:clamp(18px,2.5vw,28px);color:#aaa;margin-bottom:2em;}
   width:100%;
 }
 
-/* Boxes */
+/* Deck tiles */
 a.deck{
   position:relative;
   display:flex;
@@ -64,33 +64,24 @@ a.deck{
   text-decoration:none;
   color:#111;
   font-weight:900;
-
-  /* ✅ Slightly smaller base so it never overflows while scaling */
   font-size:clamp(0.82rem, 1.35vw, 1.02rem);
-
+  padding:12px;
   overflow:hidden;
   cursor:pointer;
   border:8px solid #000;
   box-shadow:0 0 8px rgba(255,215,0,0.3),0 0 16px rgba(255,215,0,0.15);
   transition:box-shadow .3s ease,transform .3s ease,filter .4s ease;
   will-change:transform;
-
-  /* ✅ HARD CENTER */
   text-align:center;
   transform-origin:center center;
-
-  /* ✅ Keep content safely inside */
-  padding:12px;
 }
 
 a.deck.active{
   box-shadow:0 0 14px rgba(255,215,0,0.9),0 0 36px rgba(255,215,0,0.6);
 }
+a.deck.is-hidden{visibility:hidden;}
 
-/* Hide original tile when animating a clone */
-a.deck.is-hidden{ visibility:hidden; }
-
-/* Base colors */
+/* Colors */
 a.deck:nth-child(1){background:var(--pink);}
 a.deck:nth-child(2){background:var(--blue);}
 a.deck:nth-child(3){background:var(--yellow);}
@@ -98,7 +89,7 @@ a.deck:nth-child(4){background:var(--purple);}
 a.deck:nth-child(5){background:var(--mint);}
 a.deck:nth-child(6){background:var(--orange);}
 
-/* Spiral animation */
+/* Spiral overlay */
 a.deck::after{
   content:"";
   position:absolute;
@@ -108,25 +99,15 @@ a.deck::after{
   height:170%;
   border-radius:50%;
   transform:translate(-50%,-50%) rotate(0deg);
-  background:conic-gradient(from 0deg,
-    rgba(255,255,255,0.8) 0deg 20deg,
+  background:conic-gradient(
+    rgba(255,255,255,.8) 0deg 20deg,
     rgba(255,255,255,0) 20deg 40deg,
-    rgba(255,255,255,0.8) 40deg 60deg,
+    rgba(255,255,255,.8) 40deg 60deg,
     rgba(255,255,255,0) 60deg 80deg,
-    rgba(255,255,255,0.8) 80deg 100deg,
+    rgba(255,255,255,.8) 80deg 100deg,
     rgba(255,255,255,0) 100deg 120deg,
-    rgba(255,255,255,0.8) 120deg 140deg,
-    rgba(255,255,255,0) 140deg 160deg,
-    rgba(255,255,255,0.8) 160deg 180deg,
-    rgba(255,255,255,0) 180deg 200deg,
-    rgba(255,255,255,0.8) 200deg 220deg,
-    rgba(255,255,255,0) 220deg 240deg,
-    rgba(255,255,255,0.8) 240deg 260deg,
-    rgba(255,255,255,0) 260deg 280deg,
-    rgba(255,255,255,0.8) 280deg 300deg,
-    rgba(255,255,255,0) 300deg 320deg,
-    rgba(255,255,255,0.8) 320deg 340deg,
-    rgba(255,255,255,0) 340deg 360deg
+    rgba(255,255,255,.8) 120deg 140deg,
+    rgba(255,255,255,0) 140deg 360deg
   );
   opacity:.55;
   mix-blend-mode:overlay;
@@ -135,9 +116,7 @@ a.deck::after{
   z-index:0;
 }
 
-a.deck:hover{filter:brightness(1.25);}
-
-/* ✅ Text sizing + fit rules */
+/* Text */
 a.deck b,
 a.deck span{
   position:relative;
@@ -145,32 +124,28 @@ a.deck span{
   display:block;
   width:100%;
   text-align:center;
-  transform-origin:center center;
-
-  /* critical: keep inside tile */
-  max-width:100%;
-  overflow:hidden;
-  text-overflow:ellipsis;
-}
-
-/* Keep on one line (no breaking in half) */
-a.deck b{
-  line-height:1.05;
   white-space:nowrap;
-  font-size:1.0em; /* inherits from deck's clamp */
 }
+
 a.deck span{
-  white-space:nowrap;
-  font-size:0.80em;
+  font-size:0.78em;
   color:#222;
 }
 
-/* If Safari tries to reflow during transform, keep layout stable */
-a.deck, a.deck *{ -webkit-font-smoothing:antialiased; }
+/* Multi-line support (Make the Sentences) */
+a.deck .title-line{
+  display:block;
+  font-size:0.95em;
+  white-space:nowrap;
+}
+a.deck .jp{
+  display:block;
+  font-size:0.75em;
+  white-space:nowrap;
+}
 
 @keyframes spin{
-  0%{transform:translate(-50%,-50%) rotate(0deg);}
-  100%{transform:translate(-50%,-50%) rotate(360deg);}
+  to{transform:translate(-50%,-50%) rotate(360deg);}
 }
 @keyframes fadeIn{
   from{opacity:0;}
@@ -186,64 +161,24 @@ footer{
   color:#888;
 }
 
-/* Sparkles */
-.sparkle{
-  position:fixed;
-  width:8px;
-  height:8px;
-  border-radius:50%;
-  background:radial-gradient(circle at 35% 35%, #fff, #ffd86d 60%, rgba(255,215,0,0) 70%);
-  box-shadow:0 0 8px rgba(255,215,0,.9),0 0 22px rgba(255,215,0,.7);
-  pointer-events:none;
-  opacity:0;
-  animation:sparkleFly 2.5s ease-out forwards;
-}
-@keyframes sparkleFly{
-  0%{transform:translate(0,0) scale(1);opacity:1;}
-  100%{transform:translate(var(--dx),var(--dy)) scale(0.4);opacity:0;}
-}
-
-/* Black swipe screen */
+/* Fade screen */
 #fadeScreen{
   position:fixed;
   inset:0;
   background:#000;
   transform:translateY(100%);
-  opacity:1;
   pointer-events:none;
-  transition:transform 0.085s ease-in-out;
+  transition:transform .085s ease-in-out;
   z-index:9000;
 }
-#fadeScreen.show{
-  transform:translateY(0%);
-}
+#fadeScreen.show{transform:translateY(0);}
 
-/* ===== Mobile tweaks ===== */
-@media (max-width: 768px){
-  #welcome{
-    justify-content:flex-start;
-    padding-top:1.5rem;
-  }
-  h1{margin-bottom:.2em;}
-  h2{margin-bottom:.2em;}
-  h3{margin-bottom:1.2em;}
-
-  .deck-links{
-    grid-template-columns:repeat(2, minmax(0, 1fr));
-    gap:1.2rem;
-  }
-
-  /* a little smaller on phones to prevent overflow */
-  a.deck{
-    font-size:clamp(0.78rem, 3.2vw, 0.95rem);
-    padding:10px;
-  }
-  a.deck span{font-size:0.78em;}
-
-  footer{
-    font-size:13px;
-    bottom:10px;
-  }
+/* Mobile */
+@media (max-width:768px){
+  #welcome{justify-content:flex-start;padding-top:1.5rem;}
+  .deck-links{grid-template-columns:repeat(2,1fr);}
+  a.deck{font-size:clamp(0.78rem,3.2vw,.95rem);}
+  footer{font-size:13px;bottom:10px;}
 }
 </style>
 </head>
@@ -260,7 +195,16 @@ footer{
     <a class="deck" href="saytheword.html"><b>Say the Word</b><span>ワードを言おう</span></a>
     <a class="deck" href="wordbuilder.html"><b>Word Builder</b><span>ワードビルダー</span></a>
     <a class="deck" href="eigoperapera.html"><b>Eigo Pera Pera</b><span>英語ペラペラ</span></a>
-    <a class="deck" href="makethesentences.html"><b>Make the Sentences</b><span>文を作ろう</span></a>
+
+    <!-- MAKE THE SENTENCES (fixed multiline) -->
+    <a class="deck" href="makethesentences.html">
+      <b>
+        <span class="title-line">MAKE THE</span>
+        <span class="title-line">SENTENCES</span>
+      </b>
+      <span class="jp">文を作ろう</span>
+    </a>
+
     <a class="deck" href="eigoadventure.html"><b>Eigo Adventure</b><span>英語アドベンチャー</span></a>
   </div>
 
@@ -269,126 +213,58 @@ footer{
 
 <div id="fadeScreen"></div>
 
-<!-- Audio -->
-<audio id="introSound" src="assets/audio/intro.mp3" preload="auto"></audio>
 <audio id="openSound" src="assets/audio/gameopening.mp3" preload="auto"></audio>
 
 <script>
-const intro = document.getElementById('introSound');
 const openSound = document.getElementById('openSound');
 const deckContainer = document.querySelector('.deck-links');
 let isTransitioning = false;
 
-function sparkleBurst(rect, count = 35){
-  const cx = rect.left + rect.width / 2;
-  const cy = rect.top + rect.height / 2;
-  for(let i = 0; i < count; i++){
-    const a = Math.random() * Math.PI * 2;
-    const x = cx + Math.cos(a) * (rect.width / 2);
-    const y = cy + Math.sin(a) * (rect.height / 2);
-    const dx = (Math.cos(a) * (70 + Math.random() * 40)).toFixed(2);
-    const dy = (Math.sin(a) * (70 + Math.random() * 40)).toFixed(2);
-    const s = document.createElement('div');
-    s.className = 'sparkle';
-    s.style.left = (x - 3.5) + 'px';
-    s.style.top  = (y - 3.5) + 'px';
-    s.style.setProperty('--dx', dx + 'px');
-    s.style.setProperty('--dy', dy + 'px');
-    document.body.appendChild(s);
-    setTimeout(() => s.remove(), 2500);
-  }
+function safePlay(aud){
+  try{ aud.currentTime=0; aud.play().catch(()=>{});}catch{}
 }
 
-function safePlay(aud, vol = 1){
-  if(!aud) return;
-  try{
-    aud.pause();
-    aud.currentTime = 0;
-    aud.volume = vol;
-    aud.play().catch(() => {});
-  }catch(e){}
-}
+deckContainer.addEventListener('click', e=>{
+  const deck = e.target.closest('.deck');
+  if(!deck || isTransitioning) return;
+  e.preventDefault();
+  isTransitioning = true;
 
-if (deckContainer) {
-  deckContainer.addEventListener('click', (e) => {
-    const deck = e.target.closest('.deck');
-    if (!deck) return;
+  safePlay(openSound);
 
-    e.preventDefault();
-    if (isTransitioning) return;
-    isTransitioning = true;
+  const target = deck.getAttribute('href');
+  const fade = document.getElementById('fadeScreen');
 
-    const target = deck.getAttribute('href');
-    const fadeScreen = document.getElementById('fadeScreen');
+  const r = deck.getBoundingClientRect();
+  const clone = deck.cloneNode(true);
+  clone.style.position='fixed';
+  clone.style.left=r.left+'px';
+  clone.style.top=r.top+'px';
+  clone.style.width=r.width+'px';
+  clone.style.height=r.height+'px';
+  clone.style.display='flex';
+  clone.style.alignItems='center';
+  clone.style.justifyContent='center';
+  clone.style.textAlign='center';
+  clone.style.zIndex='9999';
+  clone.style.pointerEvents='none';
 
-    if (intro) { try { intro.pause(); } catch(_){} }
+  document.body.appendChild(clone);
+  deck.classList.add('is-hidden');
 
-    safePlay(openSound, 1);
+  const cx=window.innerWidth/2-(r.left+r.width/2);
+  const cy=window.innerHeight/2-(r.top+r.height/2);
 
-    deck.classList.add('active');
-    deck.style.setProperty('--spinDur','1.2s');
+  clone.animate([
+    {transform:'translate(0,0) scale(1)'},
+    {transform:`translate(${cx}px,${cy}px) scale(2.6)`}
+  ],{duration:1800,easing:'ease-in-out',fill:'forwards'});
 
-    const r = deck.getBoundingClientRect();
-
-    const clone = deck.cloneNode(true);
-    clone.classList.add('active');
-    clone.style.setProperty('--spinDur','1.2s');
-
-    /* ✅ HARD CENTER on clone while moving */
-    clone.style.display = 'flex';
-    clone.style.flexDirection = 'column';
-    clone.style.alignItems = 'center';
-    clone.style.justifyContent = 'center';
-    clone.style.textAlign = 'center';
-    clone.style.padding = getComputedStyle(deck).padding;
-
-    clone.style.position = 'fixed';
-    clone.style.left = r.left + 'px';
-    clone.style.top = r.top + 'px';
-    clone.style.width = r.width + 'px';
-    clone.style.height = r.height + 'px';
-    clone.style.margin = '0';
-    clone.style.transform = 'translate(0px,0px) scale(1)';
-    clone.style.zIndex = '9999';
-    clone.style.pointerEvents = 'none';
-    clone.style.willChange = 'transform';
-    clone.style.transformOrigin = 'center center';
-
-    document.body.appendChild(clone);
-    deck.classList.add('is-hidden');
-
-    const cx = window.innerWidth / 2 - (r.left + r.width / 2);
-    const cy = window.innerHeight / 2 - (r.top + r.height / 2);
-
-    const maxWidthScale = (window.innerWidth * 0.9) / r.width;
-    const maxHeightScale = (window.innerHeight * 0.9) / r.height;
-    const safeScale = Math.min(3, maxWidthScale, maxHeightScale);
-
-    const MOVE_MS = 5500;
-    const OPEN_MS = 5800;
-
-    sparkleBurst(r, 35);
-
-    if (fadeScreen) {
-      setTimeout(() => {
-        fadeScreen.classList.remove('show');
-        requestAnimationFrame(() => fadeScreen.classList.add('show'));
-      }, 4700);
-    }
-
-    clone.animate(
-      [
-        { transform: 'translate(0px,0px) scale(1)' },
-        { transform: `translate(${cx}px,${cy}px) scale(${safeScale})` }
-      ],
-      { duration: MOVE_MS, easing: 'ease-in-out', fill: 'forwards' }
-    );
-
-    setTimeout(() => {
-      window.location.href = target;
-    }, OPEN_MS);
-  });
-}
+  setTimeout(()=>{
+    fade.classList.add('show');
+    setTimeout(()=>location.href=target,200);
+  },1500);
+});
 </script>
 </body>
 </html>
