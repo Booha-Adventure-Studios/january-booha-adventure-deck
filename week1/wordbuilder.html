@@ -374,8 +374,7 @@ helpClose.addEventListener("click",closeHelp);
 helpModal.addEventListener("click",e=>{ if(e.target===helpModal) closeHelp(); });
 
 /* ====== Audio ====== */
-/* ✅ Works whether this HTML is at repo root OR inside /week1/ */
-
+/* ✅ SFX: Works whether this HTML is at repo root OR inside /week1/ */
 const sfx = {
   ding:  new Audio(WEEK_PREFIX + 'assets/audio/ding.mp3'),
   fart:  new Audio(WEEK_PREFIX + 'assets/audio/fart.mp3'),
@@ -391,27 +390,34 @@ Object.values(sfx).forEach(a=>{
   try{ a.load(); }catch{}
 });
 
-  
 function playSfx(audio){
   try{
     audio.currentTime=0;
     audio.play().catch(()=>{
       const clone = audio.cloneNode(true);
       clone.preload='auto';
+      clone.playsInline = true;
       clone.play().catch(()=>{});
     });
   }catch{}
 }
 
-/* Sage voice (LOCAL)
-   ✅ Vocab audio lives in: week1/audio/vocab/
-   This HTML file lives in week1/, so the relative path is: audio/vocab/<word>.mp3
+/* ====== Sage voice (LOCAL) ======
+   Your Sage files are inside:
+   week1/audio/vocab/v01_goal.mp3 ... v15_motivation.mp3
+
+   ✅ If this HTML is in week1/, use: "audio/vocab/..."
+   ✅ If this HTML is in repo root, use: "week1/audio/vocab/..."
 */
-const sage=new Map();
-MASTER_BASE.forEach(word=>{
-  const src = SAGE_INDEX[word];
+const SAGE_PREFIX = location.pathname.includes('/week1/') ? 'audio/vocab/' : 'week1/audio/vocab/';
+
+const sage = new Map();
+MASTER_BASE.forEach((word, i) => {
+  const num = String(i + 1).padStart(2, '0');
+  const src = `${SAGE_PREFIX}v${num}_${word}.mp3`;
   const a = new Audio(src);
   a.preload = 'auto';
+  a.playsInline = true;
   a.loop = false;
   try{ a.load(); }catch{}
   sage.set(word, a);
@@ -421,25 +427,56 @@ function stopAllSage(){
   sage.forEach(a=>{ try{ a.pause(); a.currentTime = 0; }catch{} });
 }
 
-function speak(){
+/* iOS/Safari: must unlock audio with a USER gesture */
+let audioUnlocked = false;
+async function unlockAudioOnce(){
+  if(audioUnlocked) return;
+  audioUnlocked = true;
+
+  // try a tiny play/pause on a real element to satisfy iOS
+  const probe = sfx.ding; // short local file
+  try{
+    probe.muted = true;
+    await probe.play();
+    probe.pause();
+    probe.currentTime = 0;
+    probe.muted = false;
+  }catch{
+    // If this fails, Sage may still work, but keep going
+  }
+}
+
+async function speak(){
+  await unlockAudioOnce();
+
   const word = WORDS[index];
   const a = sage.get(word);
-  if(!a){ console.warn('[Sage] missing audio for:', word); return; }
+
+  if(!a){
+    console.warn('[Sage] missing audio object for:', word);
+    return;
+  }
 
   stopAllSage();
   play.classList.add('fizzy');
 
   try{ a.currentTime = 0; }catch{}
+
   const clear = ()=>play.classList.remove('fizzy');
   a.onended = clear;
 
-  const p = a.play();
-  if(p && typeof p.catch === 'function'){
-    p.catch(err=>{ console.warn('[Sage] play blocked or missing:', err); clear(); });
+  try{
+    await a.play();
+  }catch(err){
+    clear();
+    console.warn('[Sage] play blocked or file missing:', err, 'src=', a.src);
+
+    // quick visible hint if you want (optional):
+    // alert('Sage audio failed: ' + a.src);
   }
 }
-play.addEventListener('click', speak);
 
+play.addEventListener('click', speak);
 
 /* ====== Visual FX ====== */
 function flashRedScreen(){
