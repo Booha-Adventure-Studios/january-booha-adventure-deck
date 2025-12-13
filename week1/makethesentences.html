@@ -22,7 +22,7 @@ body{
   font-family:system-ui,"Noto Sans JP",sans-serif;
   transition:background 1s;
   overflow-x:hidden;
-  overflow-y:auto;                 /* ✅ scrollable */
+  overflow-y:auto;
   -webkit-overflow-scrolling:touch;
   padding-bottom:env(safe-area-inset-bottom);
 }
@@ -128,7 +128,7 @@ header{text-align:center;padding:26px 12px 12px}
   font-size:clamp(18px,4.2vw,26px);
   border:none;
   border-radius:20px;
-  cursor:pointer;                  /* ✅ tap UI */
+  cursor:pointer;
   user-select:none;
   -webkit-tap-highlight-color:transparent;
   touch-action:manipulation;
@@ -148,7 +148,7 @@ header{text-align:center;padding:26px 12px 12px}
     0 12px 22px rgba(0,0,0,.35);
 }
 
-/* ✅ glow when in the sentence area */
+/* glow when in the sentence area */
 .word.inSentence{
   box-shadow:var(--slotGlow);
   background:#fff7cf;
@@ -178,7 +178,7 @@ header{text-align:center;padding:26px 12px 12px}
 }
 .btn:disabled{opacity:.45;cursor:not-allowed}
 
-/* ONE big heart / ONE big fart */
+/* ONE big heart / ONE big fart (SVG) */
 .bigFx{
   position:fixed;
   left:50%; top:52%;
@@ -195,6 +195,7 @@ header{text-align:center;padding:26px 12px 12px}
   20%{opacity:1;transform:translate(-50%,-54%) scale(1.25)}
   100%{opacity:0;transform:translate(-50%,-64%) scale(1.55)}
 }
+.bigFx svg{width:140px;height:140px;display:block;}
 
 /* results glow colors */
 .redGlow{background:#5c0000;}
@@ -221,7 +222,7 @@ header{text-align:center;padding:26px 12px 12px}
 .end .score{font-weight:900;font-size:clamp(22px,5vw,30px);margin:10px auto 20px;}
 footer{text-align:center;color:#c9d4ec;font-family:'Cinzel',serif;font-weight:700;padding:40px 10px}
 
-/* 🔘 Quit + ❓ Help match other games */
+/* Quit + Help */
 .top-nav-btn{
   position:fixed; top:10px; left:10px; z-index:12001;
   border-radius:999px; padding:6px 14px;
@@ -284,7 +285,7 @@ footer{text-align:center;color:#c9d4ec;font-family:'Cinzel',serif;font-weight:70
 
 <body>
 
-<!-- 🔘 Quit + ❓ Help -->
+<!-- Quit + Help -->
 <button type="button" class="top-nav-btn" onclick="window.location.href='index.html'">
   <span class="jp">やめる</span>
   <span class="en">QUIT</span>
@@ -321,7 +322,7 @@ footer{text-align:center;color:#c9d4ec;font-family:'Cinzel',serif;font-weight:70
   </div>
 </div>
 
-<!-- ❓ Help popup (JP -> EN) -->
+<!-- Help popup (JP -> EN) -->
 <div id="helpModal" class="help-modal" aria-hidden="true">
   <div class="help-backdrop" data-close-help></div>
   <div class="help-dialog">
@@ -337,8 +338,8 @@ footer{text-align:center;color:#c9d4ec;font-family:'Cinzel',serif;font-weight:70
         <li>グレーのエリアの単語をタップすると、単語バンクに戻ります。</li>
         <li><strong>並べ替え</strong>：グレーの中の単語をタップして選んでから、別の単語をタップすると、その前に入ります。</li>
         <li>できたら <strong>Check</strong> を押します。</li>
-        <li>正解：❤️（大）+ Sage音声 → <strong>Next</strong></li>
-        <li>不正解：💨（大）→ タイルが戻るので、もう一度ならべ直します（点数は増えません）。</li>
+        <li>正解：<strong>大きいハート</strong> → <strong>ding.mp3</strong> → Sage音声 → <strong>Next</strong></li>
+        <li>不正解：<strong>大きいおなら</strong> → <strong>fart.mp3</strong> → タイルが戻るので、もう一度ならべ直します（点数は増えません）。</li>
         <li>金色の<strong>▶</strong>で Sage が正しい英文を読んでくれます。</li>
       </ul>
 
@@ -349,8 +350,8 @@ footer{text-align:center;color:#c9d4ec;font-family:'Cinzel',serif;font-weight:70
         <li>Tap a word in the sentence area to send it back to the bank.</li>
         <li><strong>Reorder</strong>: tap a word in the sentence area to select it, then tap another word to insert it before that word.</li>
         <li>Tap <strong>Check</strong> when you finish.</li>
-        <li>Correct: ONE big ❤️ + Sage voice → <strong>Next</strong></li>
-        <li>Wrong: ONE big 💨 → tiles return, try again (no point).</li>
+        <li>Correct: <strong>big heart</strong> → <strong>ding.mp3</strong> → Sage → <strong>Next</strong></li>
+        <li>Wrong: <strong>big fart</strong> → <strong>fart.mp3</strong> → tiles return, try again (no point).</li>
         <li>Tap the gold <strong>▶</strong> to hear Sage read the correct sentence.</li>
       </ul>
 
@@ -366,13 +367,33 @@ footer{text-align:center;color:#c9d4ec;font-family:'Cinzel',serif;font-weight:70
   <footer style="opacity:.8">Bryan’s English School</footer>
 </div>
 
-<!-- Big FX nodes -->
-<div class="bigFx" id="bigHeart" aria-hidden="true" style="font-size:120px;">❤️</div>
-<div class="bigFx" id="bigFart" aria-hidden="true" style="font-size:120px;">💨</div>
+<!-- Big FX nodes (no emoji) -->
+<div class="bigFx" id="bigHeart" aria-hidden="true">
+  <svg viewBox="0 0 128 128" aria-hidden="true" focusable="false">
+    <path d="M64 112S14 84 14 44c0-16 12-28 28-28 10 0 18 5 22 12 4-7 12-12 22-12 16 0 28 12 28 28 0 40-50 68-50 68Z" fill="#ff3b6e"/>
+    <path d="M64 112S14 84 14 44c0-16 12-28 28-28 10 0 18 5 22 12 4-7 12-12 22-12 16 0 28 12 28 28 0 40-50 68-50 68Z" fill="none" stroke="#ffffff" stroke-opacity=".7" stroke-width="4"/>
+  </svg>
+</div>
+<div class="bigFx" id="bigFart" aria-hidden="true">
+  <svg viewBox="0 0 128 128" aria-hidden="true" focusable="false">
+    <g fill="#cbd5e1">
+      <path d="M44 92c-14 0-26-10-26-23 0-11 8-20 19-22 3-13 15-23 30-23 12 0 23 6 28 16 10 1 18 10 18 21 0 12-10 21-22 21H44Z"/>
+    </g>
+    <g fill="none" stroke="#ffffff" stroke-opacity=".65" stroke-width="4" stroke-linecap="round">
+      <path d="M28 50c-8-10-2-22 10-26"/>
+      <path d="M92 44c6-10 18-12 24-4"/>
+      <path d="M78 98c12 4 20 14 18 22"/>
+    </g>
+  </svg>
+</div>
 
 <footer>Bryan’s English School</footer>
 
-<!-- RESULTS AUDIO (non-sage) -->
+<!-- SFX (week1/assets/audio) -->
+<audio id="s_ding" src="assets/audio/ding.mp3" preload="auto"></audio>
+<audio id="s_fart" src="assets/audio/fart.mp3" preload="auto"></audio>
+
+<!-- RESULTS AUDIO (week1/assets/audio) -->
 <audio id="s_r05" src="assets/audio/result_0-5.mp3" preload="auto"></audio>
 <audio id="s_r610" src="assets/audio/result_6-10.mp3" preload="auto"></audio>
 <audio id="s_r1114" src="assets/audio/result_11-14.mp3" preload="auto"></audio>
@@ -383,28 +404,25 @@ footer{text-align:center;color:#c9d4ec;font-family:'Cinzel',serif;font-weight:70
 
 <script>
 /* =========================
-   DATA
+   DATA (KEEP ORDER for s01...s15)
    ========================= */
 const DATA=[
-  {en:"I will study every day.",jp:"毎日勉強します。",hira:"まいにち べんきょう します"},
-  {en:"I will clean my desk today.",jp:"今日は机を片づけます。",hira:"きょう は つくえ を かたづけ ます"},
-  {en:"I will speak more English.",jp:"もっと英語を話します。",hira:"もっと えいご を はなし ます"},
-  {en:"I will make a new friend.",jp:"新しい友だちを作ります。",hira:"あたらしい ともだち を つくり ます"},
-  {en:"I will not be late anymore.",jp:"もう遅刻しません。",hira:"もう ちこく しません"},
-  {en:"I will listen carefully in class.",jp:"授業でしっかり聞きます。",hira:"じゅぎょう で しっかり きき ます"},
-  {en:"I will read more books.",jp:"もっと本を読みます。",hira:"もっと ほん を よみ ます"},
-  {en:"I will write in my diary every week.",jp:"毎週日記を書きます。",hira:"まいしゅう にっき を かき ます"},
-  {en:"I will enjoy learning.",jp:"学ぶことを楽しみます。",hira:"まなぶ こと を たのしみ ます"},
-  {en:"I will try new things.",jp:"新しいことに挑戦します。",hira:"あたらしい こと に ちょうせん します"},
-  {en:"I will help my friends.",jp:"友だちを助けます。",hira:"ともだち を たすけ ます"},
-  {en:"I will eat more vegetables.",jp:"もっと野菜を食べます。",hira:"もっと やさい を たべ ます"},
-  {en:"I will sleep early.",jp:"早く寝ます。",hira:"はやく ね ます"},
-  {en:"I will do my homework first.",jp:"まず宿題をします。",hira:"まず しゅくだい を し ます"},
-  {en:"I will be kind to everyone.",jp:"みんなにやさしくします。",hira:"みんな に やさしく し ます"}
+  {en:"I will study every day.", jp:"毎日勉強します。", hira:"まいにち べんきょう します"},
+  {en:"I’m going to try something new.", jp:"新しいことをやってみます。", hira:"あたらしい こと を やってみます"},
+  {en:"I will do my best this year.", jp:"今年はがんばります。", hira:"ことし は がんばります"},
+  {en:"I will make a new friend.", jp:"新しい友だちを作ります。", hira:"あたらしい ともだち を つくり ます"},
+  {en:"I will not be late anymore.", jp:"もう遅刻しません。", hira:"もう ちこく しません"},
+  {en:"I will help my classmates.", jp:"クラスメートを助けます。", hira:"くらすめーと を たすけ ます"},
+  {en:"I will clean my desk today.", jp:"今日は机を片づけます。", hira:"きょう は つくえ を かたづけ ます"},
+  {en:"I will read more books.", jp:"もっと本を読みます。", hira:"もっと ほん を よみ ます"},
+  {en:"I will start a good habit.", jp:"良い習慣を始めます。", hira:"よい しゅうかん を はじめ ます"},
+  {en:"I will speak more English.", jp:"もっと英語を話します。", hira:"もっと えいご を はなし ます"},
+  {en:"I will write in my diary every week.", jp:"毎週日記を書きます。", hira:"まいしゅう にっき を かき ます"},
+  {en:"I will wake up earlier.", jp:"もっと早く起きます。", hira:"もっと はやく おき ます"},
+  {en:"I will listen carefully in class.", jp:"授業でしっかり聞きます。", hira:"じゅぎょう で しっかり きき ます"},
+  {en:"I will smile more.", jp:"もっと笑います。", hira:"もっと わらい ます"},
+  {en:"I will enjoy learning.", jp:"学ぶことを楽しみます。", hira:"まなぶ こと を たのしみ ます"}
 ];
-
-// 🔀 shuffle each load
-shuffle(DATA);
 
 /* =========================
    DOM
@@ -417,6 +435,9 @@ const playBtn=qs('#playBtn'), progress=qs('#progress');
 const bigHeart = qs('#bigHeart');
 const bigFart  = qs('#bigFart');
 
+const sfxDing = qs('#s_ding');
+const sfxFart = qs('#s_fart');
+
 const sageVoice = qs('#sageVoice');
 let sagePrimed = false;
 
@@ -426,28 +447,28 @@ let sagePrimed = false;
 let i=0;
 let score=0;
 let wrongMode=false;
-let selectedWord = null; // for reorder inside sentence
+let selectedWord = null; // reorder inside sentence
+let locked=false;
 
 /* =========================
    SAGE (week1/audio/sentences/)
-   filenames: v01_<slug>.mp3, v02_<slug>.mp3 ...
+   format: s01_<slug>.mp3
    ========================= */
 function slugFromSentence(en){
   return (en||'')
     .toLowerCase()
     .trim()
     .replace(/[’‘´`]/g,"'")
+    .replace(/\b(i'm|i’m)\b/g,'im')
+    .replace(/\b(can't|can’t)\b/g,'cant')
+    .replace(/\b(won't|won’t)\b/g,'wont')
     .replace(/[^a-z0-9]+/g,'_')
     .replace(/^_+|_+$/g,'');
 }
-
-function vNum(n){ return String(n).padStart(2,'0'); }
-
+function sNum(n){ return String(n).padStart(2,'0'); }
 function sagePathForIndex(idx){
-  const en = DATA[idx]?.en || '';
-  const slug = slugFromSentence(en);
-  // primary expected: v01_<slug>.mp3
-  return `audio/sentences/v${vNum(idx+1)}_${slug}.mp3`;
+  const slug = slugFromSentence(DATA[idx]?.en || '');
+  return `audio/sentences/s${sNum(idx+1)}_${slug}.mp3`;
 }
 
 async function primeSage(){
@@ -466,36 +487,30 @@ async function primeSage(){
   }
 }
 
-function playSageForCurrent(onEnd){
-  const src = sagePathForIndex(i);
+function playSageForIndex(idx, onEnd){
+  const src = sagePathForIndex(idx);
   let done=false;
 
-  sageVoice.onended = () => {
+  const finish = ()=>{
     if(done) return;
     done=true;
     sageVoice.onended=null; sageVoice.onerror=null;
     if(onEnd) onEnd();
   };
-  sageVoice.onerror = () => {
-    if(done) return;
-    done=true;
-    sageVoice.onended=null; sageVoice.onerror=null;
-    if(onEnd) onEnd();
-  };
+
+  sageVoice.onended = finish;
+  sageVoice.onerror = finish;
 
   try{
     sageVoice.src = src;
     sageVoice.currentTime = 0;
     const p = sageVoice.play();
-    if(p && p.catch){
-      p.catch(()=>{ if(!done){ done=true; if(onEnd) onEnd(); } });
-    }
+    if(p && p.catch) p.catch(()=>finish());
   }catch(_){
-    if(onEnd) onEnd();
+    finish();
   }
 
-  // safety
-  setTimeout(()=>{ if(!done){ done=true; if(onEnd) onEnd(); } }, 9000);
+  setTimeout(()=>finish(), 9000);
 }
 
 /* =========================
@@ -525,7 +540,7 @@ function clearSelected(){
 }
 
 function refreshCheckState(){
-  check.disabled = (bank.querySelectorAll('.word').length !== 0);
+  check.disabled = (bank.querySelectorAll('.word').length !== 0) || locked;
 }
 
 function moveToBank(word){
@@ -544,13 +559,18 @@ function moveToSentence(word, beforeEl=null){
   refreshCheckState();
 }
 
+function lockUI(on){
+  locked = !!on;
+  [...document.querySelectorAll('.word')].forEach(w=>w.disabled = locked);
+  playBtn.disabled = locked;
+  check.disabled = locked || (bank.querySelectorAll('.word').length !== 0);
+}
+
 /* =========================
    Build round
    ========================= */
 function mount(){
-  // reset
   bank.innerHTML='';
-  // keep playBtn inside sentence container
   sent.innerHTML='';
   sent.appendChild(playBtn);
 
@@ -561,6 +581,7 @@ function mount(){
 
   wrongMode=false;
   clearSelected();
+  locked=false;
 
   const item = DATA[i];
   jp.textContent=item.jp;
@@ -574,11 +595,9 @@ function mount(){
     b.className='word';
     b.style.setProperty('--color', chipColor(idx));
 
-    // ✅ tap-to-move only
     b.addEventListener('click',(e)=>{
       e.stopPropagation();
-
-      // always prime Sage on real user interaction
+      if(locked) return;
       primeSage();
 
       const parent = b.parentElement;
@@ -586,14 +605,11 @@ function mount(){
         moveToSentence(b);
         clearSelected();
       }else{
-        // in sentence:
-        // if another word is selected, insert selected before tapped word
         if(selectedWord && selectedWord !== b && selectedWord.parentElement === sent){
           const moving = selectedWord;
           clearSelected();
           moveToSentence(moving, b);
         }else{
-          // toggle selection for reorder, OR send back if already selected
           if(b.classList.contains('selected')){
             moveToBank(b);
             clearSelected();
@@ -610,21 +626,16 @@ function mount(){
   updateProgress();
   refreshCheckState();
 
-  // Check handler
   check.onclick = () => {
     primeSage();
-    check.disabled = true;
     checkLogic();
   };
 }
 
-/* sentence click = drop selection (nice UX on mobile) */
 sent.addEventListener('click',(e)=>{
   if(e.target === sent || e.target === playBtn) clearSelected();
 });
-bank.addEventListener('click',(e)=>{
-  if(e.target === bank) clearSelected();
-});
+bank.addEventListener('click',(e)=>{ if(e.target === bank) clearSelected(); });
 
 /* =========================
    Logic
@@ -636,57 +647,74 @@ function currentCorrect(){
   return DATA[i].en.trim();
 }
 
+function playOnce(el){
+  try{ el.pause(); el.currentTime = 0; }catch(_){ }
+  try{ return el.play(); }catch(_){ return null; }
+}
+
 function checkLogic(){
+  if(locked) return;
+
   const correct = currentCorrect();
   const built = currentBuilt();
 
   if(built === correct){
-    if(!wrongMode){
-      score++;
-      showBig(bigHeart);
-    }else{
-      showBig(bigHeart); // still reward the finish
-    }
+    lockUI(true);
 
-    // Sage reads it, THEN Next shows (consistent with other games)
+    if(!wrongMode) score++;
+    showBig(bigHeart);
+
     nextWrap.style.display='none';
     playBtn.classList.remove('show');
 
-    setTimeout(()=>{
-      playSageForCurrent(()=>{
+    // Correct flow:
+    // ding.mp3 -> Sage -> Next button
+    sfxDing.onended = null;
+    const p = playOnce(sfxDing);
+
+    const afterDing = ()=>{
+      sfxDing.onended = null;
+      playSageForIndex(i, ()=>{
         nextWrap.style.display='block';
+        lockUI(false);
       });
-    }, 250);
+    };
+
+    if(p && p.then){
+      p.then(()=>{ /* handled by ended */ }).catch(()=>afterDing());
+    }
+    sfxDing.onended = afterDing;
+
+    // Safety: in case ended doesn't fire
+    setTimeout(()=>{
+      if(nextWrap.style.display !== 'block') afterDing();
+    }, 3500);
 
   }else{
-    // wrong = ONE big fart, return everything to bank, enable retry
     wrongMode = true;
     showBig(bigFart);
+    playOnce(sfxFart);
 
     // return all tiles
     [...sent.querySelectorAll('.word')].forEach(ch=>moveToBank(ch));
     clearSelected();
 
-    // show gold play button for listening
     playBtn.classList.add('show');
-
-    // keep Check available
-    check.disabled = false;
+    refreshCheckState();
   }
 }
 
-/* Next button */
 nextBtn.onclick = () => {
   i++;
   if(i >= DATA.length) return finish();
   mount();
 };
 
-/* Gold play button = Sage */
 playBtn.onclick = (e) => {
   e.stopPropagation();
+  if(locked) return;
   primeSage();
-  playSageForCurrent();
+  playSageForIndex(i);
 };
 
 /* =========================
@@ -715,7 +743,7 @@ function showResults(){
   msgEl.textContent = msg;
   scoreEl.textContent = `${totalScore}/15（${pct}%）`;
 
-  try{ snd.currentTime=0; snd.play().catch(()=>{}); }catch(_){}
+  try{ snd.currentTime=0; snd.play().catch(()=>{}); }catch(_){ }
 
   if(totalScore===15){
     for(let k=0;k<160;k++){
