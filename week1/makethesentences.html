@@ -469,11 +469,9 @@ let locked=false;
 let wrongStreak=0;   // wrong answers in a row for the current sentence
 let solved=false;    // once correct, hide Check and lock tiles
 
-// ✅ gold help control (reliable across all 15 rounds)
 let helpReady=false; // turns true after 3 wrong on THIS sentence
 
-// ✅ audio flow guards (prevents “Sage after wrong”)
-let flowToken = 0;
+let flowToken = 0;   // cancels old audio callbacks
 let dingTimer = null;
 
 /* =========================
@@ -482,16 +480,13 @@ let dingTimer = null;
 function cancelAudioFlow(){
   flowToken++; // invalidate any pending callbacks
 
-  // stop ding
   try{ sfxDing.pause(); sfxDing.currentTime = 0; }catch(_){}
   sfxDing.onended = null;
 
-  // stop sage
   try{ sageVoice.pause(); sageVoice.currentTime = 0; }catch(_){}
   sageVoice.onended = null;
   sageVoice.onerror = null;
 
-  // clear fallback timer
   if(dingTimer){ clearTimeout(dingTimer); dingTimer = null; }
 }
 
@@ -510,6 +505,7 @@ function slugFromSentence(en){
     .replace(/^_+|_+$/g,'');
 }
 function sNum(n){ return String(n).padStart(2,'0'); }
+
 function sagePathForIndex(idx){
   const item = DATA[idx];
   const id = item?.id ?? (idx+1);
@@ -533,9 +529,10 @@ async function primeSage(){
   }
 }
 
+// ✅ single reliable Sage play (with filename logging)
 function playSageForIndex(idx, onEnd){
   const src = sagePathForIndex(idx);
-  const myToken = flowToken; // must match current flow token
+  const myToken = flowToken;
   let done=false;
 
   const finish = ()=>{
@@ -545,15 +542,27 @@ function playSageForIndex(idx, onEnd){
     if(onEnd) onEnd();
   };
 
+  // helpful debug (you can leave this in)
+  console.log('[Sage src]', src);
+
   sageVoice.onended = ()=>{ if(myToken!==flowToken) return; finish(); };
-  sageVoice.onerror = ()=>{ if(myToken!==flowToken) return; finish(); };
+  sageVoice.onerror = ()=>{ 
+    if(myToken!==flowToken) return;
+    console.warn('[Sage missing or blocked]', src);
+    finish();
+  };
 
   try{
     sageVoice.src = src;
     sageVoice.currentTime = 0;
     const p = sageVoice.play();
-    if(p && p.catch) p.catch(()=>{ if(myToken!==flowToken) return; finish(); });
-  }catch(_){
+    if(p && p.catch) p.catch((err)=>{
+      if(myToken!==flowToken) return;
+      console.warn('[Sage play blocked]', err, 'src=', src);
+      finish();
+    });
+  }catch(err){
+    console.warn('[Sage play error]', err, 'src=', src);
     finish();
   }
 
@@ -620,7 +629,7 @@ function lockUI(on){
 }
 
 function showPlayHint(on){
-  helpReady = !!on;                // ✅ real state for “gold help is active”
+  helpReady = !!on;
   if(on) playBtn.classList.add('show');
   else playBtn.classList.remove('show');
 }
@@ -629,7 +638,7 @@ function showPlayHint(on){
    Build round
    ========================= */
 function mount(){
-  cancelAudioFlow(); // ✅ kill any old callbacks or delayed timeouts
+  cancelAudioFlow();
 
   bank.innerHTML='';
   sent.innerHTML='';
@@ -645,10 +654,10 @@ function mount(){
   locked=false;
 
   wrongStreak=0;
-  showPlayHint(false); // ✅ resets helpReady each round
+  showPlayHint(false);
   solved=false;
 
-  // ✅ Rainbow is display-only (no replay, no Sage)
+  // Rainbow is display-only (no Sage)
   jpCard.classList.remove('replay');
   jpCard.classList.add('locked');
 
@@ -705,7 +714,7 @@ sent.addEventListener('click',(e)=>{
 });
 bank.addEventListener('click',(e)=>{ if(e.target === bank) clearSelected(); });
 
-/* ✅ Rainbow touch disabled completely */
+// Rainbow touch disabled completely
 if(jpCard){
   jpCard.addEventListener('click', (e)=>{
     e.preventDefault();
@@ -713,14 +722,16 @@ if(jpCard){
   });
 }
 
-/* ✅ Gold hint (after 3 wrong, for every round) */
+// ✅ Gold hint (after 3 wrong, for every question)
 playBtn.addEventListener('click', (e)=>{
   e.preventDefault();
   e.stopPropagation();
   if(locked) return;
-  if(!helpReady) return;      // ✅ reliable: not tied to CSS class glitches
-  if(solved) return;          // (not really needed, but safe)
-  cancelAudioFlow();          // ✅ stop anything that might interfere
+  if(!helpReady) return;
+  if(solved) return;
+
+  // IMPORTANT: do NOT cancel after this point; just stop current audio and play Sage
+  cancelAudioFlow();
   primeSage();
   playSageForIndex(i);
 });
@@ -743,9 +754,7 @@ function playOnce(el){
 }
 
 function checkLogic(){
-  // ✅ critical: cancel any old flows so Sage can never fire after wrong
   cancelAudioFlow();
-
   if(locked || solved) return;
 
   const correct = currentCorrect();
@@ -753,7 +762,6 @@ function checkLogic(){
 
   if(built === correct){
     solved = true;
-
     lockUI(true);
 
     if(!wrongMode) score++;
@@ -762,20 +770,25 @@ function checkLogic(){
     wrongStreak = 0;
     showPlayHint(false);
 
-    // After correct: hide Check, show Next
     check.style.display = 'none';
     nextWrap.style.display = 'block';
 
-    // ✅ Correct flow (ONCE): ding -> Sage
+    // ✅ Correct flow: ding -> Sage (ONLY ONCE)
     const myToken = ++flowToken;
+    let fired = false;
 
     const afterDingOnce = ()=>{
-      if(myToken !== flowToken) return; // canceled
+      if(fired) return;               // ✅ prevents double call
+      fired = true;
+
+      if(dingTimer){ clearTimeout(dingTimer); dingTimer = null; } // ✅ kill fallback timer
       sfxDing.onended = null;
+
+      if(myToken !== flowToken) return;
 
       playSageForIndex(i, ()=>{
         if(myToken !== flowToken) return;
-        // keep tiles locked; Next works
+        // tiles stay locked; Next works
       });
     };
 
@@ -790,9 +803,7 @@ function checkLogic(){
 
   }else{
     wrongMode = true;
-
-    // ✅ guarantee Sage is stopped and cannot start from any pending callback
-    cancelAudioFlow();
+    cancelAudioFlow(); // extra safety
 
     showBig(bigFart);
     playOnce(sfxFart);
@@ -802,7 +813,6 @@ function checkLogic(){
       showPlayHint(true);
     }
 
-    // return all tiles
     [...sent.querySelectorAll('.word')].forEach(ch=>{
       if(ch !== playBtn) moveToBank(ch);
     });
@@ -813,9 +823,7 @@ function checkLogic(){
 }
 
 nextBtn.onclick = () => {
-  // stop everything when moving on
   cancelAudioFlow();
-
   i++;
   if(i >= DATA.length) return finish();
   mount();
@@ -895,6 +903,7 @@ if(helpBtnEl && helpModal){
    ========================= */
 mount();
 </script>
+
 
 </body>
 </html>
