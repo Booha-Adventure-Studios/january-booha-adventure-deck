@@ -101,14 +101,13 @@ header{text-align:center;padding:26px 12px 12px}
   position:relative;
 }
 
-/* gold play button (appears after 3 wrong in a row) */
-/* gold play button (appears after 3 wrong in a row) */
+/* ✅ GOLD PLAY BUTTON (FLOATING, NEVER COVERS TILES) */
 .playBtn{
-  position:absolute;
-  left:12px;
-  bottom:12px;              /* ✅ was -64px */
-  width:54px;
-  height:54px;
+  position:fixed;
+  left:14px;
+  bottom:calc(14px + env(safe-area-inset-bottom));
+  width:56px;
+  height:56px;
   border:none;
   border-radius:50%;
   background:linear-gradient(135deg,#c59b10 0%,#ffd95e 40%,#ffe898 60%,#b68006 100%);
@@ -119,12 +118,11 @@ header{text-align:center;padding:26px 12px 12px}
   opacity:0;
   pointer-events:none;
   transition:opacity .28s, transform .15s;
-  z-index:9999;             /* ✅ optional: bump it */
+  z-index:12050;
 }
-
 .playBtn.show{opacity:1;pointer-events:auto;animation:twinkle 2.4s ease-in-out infinite;}
 .playBtn:active{transform:scale(.96)}
-.playBtn::before{content:"▶";display:block;text-align:center;line-height:54px;}
+.playBtn::before{content:"▶";display:block;text-align:center;line-height:56px;}
 @keyframes twinkle{
   0%,100%{box-shadow:var(--goldGlow);}
   50%{box-shadow:0 0 14px rgba(255,235,94,1),0 0 26px rgba(255,235,94,1);}
@@ -317,11 +315,7 @@ footer{text-align:center;color:#c9d4ec;font-family:'Cinzel',serif;font-weight:70
 
     <div id="bank" class="wordbank"></div>
 
-    <div style="position:relative;">
-      <div id="sentence" class="sentence">
-        <button id="playBtn" class="playBtn" type="button" aria-label="Play"></button>
-      </div>
-    </div>
+    <div id="sentence" class="sentence"></div>
 
     <button id="checkBtn" class="btn green" disabled>Check</button>
 
@@ -332,6 +326,9 @@ footer{text-align:center;color:#c9d4ec;font-family:'Cinzel',serif;font-weight:70
     <div id="progress" style="text-align:center;opacity:.9;font-weight:800;margin-top:6px">1 / 15</div>
   </div>
 </div>
+
+<!-- ✅ Floating Gold Help Button (not inside tiles) -->
+<button id="playBtn" class="playBtn" type="button" aria-label="Play"></button>
 
 <!-- Help popup (JP -> EN) -->
 <div id="helpModal" class="help-modal" aria-hidden="true">
@@ -369,6 +366,7 @@ footer{text-align:center;color:#c9d4ec;font-family:'Cinzel',serif;font-weight:70
     </div>
   </div>
 </div>
+
 <!-- Results page -->
 <div id="page-results" class="end">
   <div class="msg" id="resultMsg"></div>
@@ -412,6 +410,7 @@ footer{text-align:center;color:#c9d4ec;font-family:'Cinzel',serif;font-weight:70
 
 <!-- Sage player (single element, reliable) -->
 <audio id="sageVoice" preload="auto"></audio>
+
 <script>
 /* =========================
    DATA (KEEP ORDER for s01...s15)
@@ -544,6 +543,7 @@ function playSageForIndex(idx, onEnd){
   sageVoice.onerror = ()=>{ 
     if(myToken!==flowToken) return;
     console.warn('[Sage missing or blocked]', src);
+    alert('Sage audio failed:\n' + src + '\n\n(ファイル名/パスを確認してください)');
     finish();
   };
 
@@ -554,10 +554,12 @@ function playSageForIndex(idx, onEnd){
     if(p && p.catch) p.catch((err)=>{
       if(myToken!==flowToken) return;
       console.warn('[Sage play blocked]', err, 'src=', src);
+      alert('Sage playback blocked:\n' + src + '\n\nSafariの自動再生制限の可能性があります。');
       finish();
     });
   }catch(err){
     console.warn('[Sage play error]', err, 'src=', src);
+    alert('Sage play error:\n' + src);
     finish();
   }
 
@@ -606,7 +608,7 @@ function moveToSentence(word, beforeEl=null){
   if(beforeEl && beforeEl.parentElement === sent){
     sent.insertBefore(word, beforeEl);
   }else{
-    sent.insertBefore(word, playBtn);
+    sent.appendChild(word);
   }
   refreshCheckState();
 }
@@ -628,12 +630,14 @@ function showPlayHint(on){
 }
 
 /* =========================
-   GOLD: bind exactly once
+   GOLD: bind exactly once (reliable)
    ========================= */
+let goldBound = false;
 function bindGoldOnce(){
-  if(!playBtn) return;
+  if(!playBtn || goldBound) return;
+  goldBound = true;
 
-  playBtn.onclick = (e)=>{
+  playBtn.addEventListener('click', (e)=>{
     e.preventDefault();
     e.stopPropagation();
 
@@ -646,7 +650,7 @@ function bindGoldOnce(){
 
     console.log('[Gold ▶]', 'question=', i+1, 'id=', DATA[i]?.id, 'src=', sagePathForIndex(i));
     playSageForIndex(i);
-  };
+  }, {passive:false});
 }
 
 /* =========================
@@ -657,7 +661,6 @@ function mount(){
 
   bank.innerHTML='';
   sent.innerHTML='';
-  sent.appendChild(playBtn);
 
   nextWrap.style.display='none';
 
@@ -724,7 +727,7 @@ function mount(){
 }
 
 sent.addEventListener('click',(e)=>{
-  if(e.target === sent || e.target === playBtn) clearSelected();
+  if(e.target === sent) clearSelected();
 });
 bank.addEventListener('click',(e)=>{ if(e.target === bank) clearSelected(); });
 
@@ -732,9 +735,7 @@ bank.addEventListener('click',(e)=>{ if(e.target === bank) clearSelected(); });
    Logic
    ========================= */
 function currentBuilt(){
-  return [...sent.querySelectorAll('.word')]
-    .filter(el => el !== playBtn)
-    .map(e=>e.textContent).join(' ').trim();
+  return [...sent.querySelectorAll('.word')].map(e=>e.textContent).join(' ').trim();
 }
 function currentCorrect(){
   return DATA[i].en.trim();
@@ -798,9 +799,7 @@ function checkLogic(){
       showPlayHint(true);
     }
 
-    [...sent.querySelectorAll('.word')].forEach(ch=>{
-      if(ch !== playBtn) moveToBank(ch);
-    });
+    [...sent.querySelectorAll('.word')].forEach(ch=> moveToBank(ch));
     clearSelected();
 
     refreshCheckState();
