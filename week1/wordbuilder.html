@@ -375,7 +375,6 @@ helpModal.addEventListener("click",e=>{ if(e.target===helpModal) closeHelp(); })
 
 /* ====== Audio ====== */
 /* ✅ Works whether this HTML is at repo root OR inside /week1/ */
-const WEEK_PREFIX = location.pathname.includes('/week1/') ? '' : 'week1/';
 
 const sfx = {
   ding:  new Audio(WEEK_PREFIX + 'assets/audio/ding.mp3'),
