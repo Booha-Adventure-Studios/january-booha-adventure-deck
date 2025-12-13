@@ -75,7 +75,7 @@ text-shadow:0 0 6px rgba(255,255,255,.4);
 .btn.next{background:linear-gradient(180deg,#ff9ad7,#ff4fa6);color:#38001a}
 .scoreBox{margin:14px auto 6px;max-width:620px;text-align:center;padding:14px 16px;border-radius:18px;background:rgba(255,255,255,.05);font-weight:900;font-size:clamp(18px,4.2vw,24px)}
 
-/* RESULT PAGES */
+/* FULL-SCREEN RESULT PAGES */
 .resultPage{display:none;position:fixed;inset:0;z-index:9999;color:#fff}
 .resultInner{min-height:100vh;display:flex;flex-direction:column}
 .resultCenter{flex:1;display:flex;align-items:center;justify-content:center;text-align:center;padding:24px}
@@ -97,75 +97,196 @@ text-shadow:0 0 6px rgba(255,255,255,.4);
 .confetti{position:fixed;top:-12px;width:10px;height:14px;opacity:.9;animation:fall linear forwards}
 @keyframes fall{to{transform:translateY(110vh) rotate(720deg);opacity:1}}
 
-/* QUIT */
+/* 🔘 Standard Booha QUIT button (small version) */
 .top-nav-btn{
-position:fixed; top:10px; left:10px; z-index:12001;
-border-radius:999px; padding:6px 14px;
-border:1px solid #ffffff66; background:rgba(15,23,42,.95);
-color:#fff; font-size:.78rem; font-weight:700; letter-spacing:.04em;
-cursor:pointer; display:flex; align-items:center; gap:4px;
-box-shadow:0 0 12px rgba(0,0,0,.6); backdrop-filter:blur(4px);
+position:fixed;
+top:10px;
+left:10px;
+z-index:12001;
+border-radius:999px;
+padding:6px 14px;
+border:1px solid #ffffff66;
+background:rgba(15,23,42,.95);
+color:#fff;
+font-size:.78rem;
+font-weight:700;
+letter-spacing:.04em;
+cursor:pointer;
+display:flex;
+align-items:center;
+gap:4px;
+box-shadow:0 0 12px rgba(0,0,0,.6);
+backdrop-filter:blur(4px);
 }
 .top-nav-btn .jp{font-size:.72em;}
 .top-nav-btn .en{font-size:.8em;}
 
-/* Help */
+/* ❓ Glowing help button */
 .help-btn{
-position:fixed; top:10px; right:10px; z-index:12001;
-width:40px; height:40px; border-radius:999px;
+position:fixed;
+top:10px;
+right:10px;
+z-index:12001;
+width:40px;
+height:40px;
+border-radius:999px;
 border:1px solid #ffffff88;
 background:radial-gradient(circle at 30% 30%,#7dd3fc,#1e3a8a 65%,#020617 100%);
-color:#fff; font-weight:900; font-size:20px;
-cursor:pointer; display:flex; align-items:center; justify-content:center;
-box-shadow:0 0 12px rgba(125,211,252,.9), 0 0 28px rgba(59,130,246,.9), 0 0 52px rgba(56,189,248,.9);
+color:#fff;
+font-weight:900;
+font-size:20px;
+cursor:pointer;
+display:flex;
+align-items:center;
+justify-content:center;
+box-shadow:
+0 0 12px rgba(125,211,252,.9),
+0 0 28px rgba(59,130,246,.9),
+0 0 52px rgba(56,189,248,.9);
 backdrop-filter:blur(4px);
 }
 
-/* Help modal */
-.help-modal{position:fixed; inset:0; z-index:12000; display:none; align-items:center; justify-content:center;}
+/* 🪟 Help modal */
+.help-modal{
+position:fixed;
+inset:0;
+z-index:12000;
+display:none;
+align-items:center;
+justify-content:center;
+}
 .help-modal.show{display:flex;}
-.help-backdrop{position:absolute; inset:0; background:rgba(15,23,42,.8); backdrop-filter:blur(6px);}
+.help-backdrop{
+position:absolute;
+inset:0;
+background:rgba(15,23,42,.8);
+backdrop-filter:blur(6px);
+}
 .help-dialog{
-position:relative; z-index:1; max-width:720px; width:calc(100% - 32px); max-height:80vh;
-border-radius:20px; border:1px solid #ffffff33;
+position:relative;
+z-index:1;
+max-width:720px;
+width:calc(100% - 32px);
+max-height:80vh;
+border-radius:20px;
+border:1px solid #ffffff33;
 background:radial-gradient(circle at top,#111827,#020617 55%);
 box-shadow:0 22px 70px rgba(0,0,0,.9);
-padding:18px 18px 20px; display:flex; flex-direction:column;
+padding:18px 18px 20px;
+display:flex;
+flex-direction:column;
 }
-.help-dialog h2{font-family:'Cinzel',serif; font-size:1.2rem; text-align:center; margin-bottom:6px;}
-.help-sub{font-size:.85rem; text-align:center; color:#c7d2fe; margin-bottom:10px;}
-.help-body{margin-top:6px; padding-right:4px; font-size:.9rem; line-height:1.6; color:#e5e7f5; overflow-y:auto;}
-.help-body h3{font-size:.9rem; margin:10px 0 4px; color:#bfdbfe;}
-.help-body ul{padding-left:1.1rem; margin:4px 0 10px;}
-.help-body li{margin-bottom:4px;}
-.help-close{position:absolute; top:8px; right:10px; border:none; background:transparent; color:#e5e7f5; font-size:22px; cursor:pointer;}
-@media (max-width:480px){ .help-dialog{max-height:82vh; padding:16px 14px 18px;} }
+.help-dialog h2{
+font-family:'Cinzel',serif;
+font-size:1.2rem;
+text-align:center;
+margin-bottom:6px;
+}
+.help-sub{
+font-size:.85rem;
+text-align:center;
+color:#c7d2fe;
+margin-bottom:10px;
+}
+.help-body{
+margin-top:6px;
+padding-right:4px;
+font-size:.9rem;
+line-height:1.6;
+color:#e5e7f5;
+overflow-y:auto;
+}
+.help-body h3{
+font-size:.9rem;
+margin:10px 0 4px;
+color:#bfdbfe;
+}
+.help-body ul{
+padding-left:1.1rem;
+margin:4px 0 10px;
+}
+.help-body li{
+margin-bottom:4px;
+}
+.help-close{
+position:absolute;
+top:8px;
+right:10px;
+border:none;
+background:transparent;
+color:#e5e7f5;
+font-size:22px;
+cursor:pointer;
+}
+@media (max-width:480px){
+.help-dialog{
+max-height:82vh;
+padding:16px 14px 18px;
+}
+}
 
-/* iOS overlay */
-.ios-overlay{position:fixed; inset:0; background:rgba(15,23,42,.94); display:none; align-items:center; justify-content:center; z-index:13000;}
+/* 🍎 iOS-only overlay */
+.ios-overlay{
+position:fixed;
+inset:0;
+background:rgba(15,23,42,.94);
+display:none;
+align-items:center;
+justify-content:center;
+z-index:13000;
+}
 .ios-overlay.show{display:flex;}
 .ios-dialog{
-max-width:520px; width:calc(100% - 40px);
-border-radius:22px; padding:18px 20px 20px;
+max-width:520px;
+width:calc(100% - 40px);
+border-radius:22px;
+padding:18px 20px 20px;
 background:radial-gradient(circle at top,#111827,#020617 60%);
-border:1px solid #ffffff44; box-shadow:0 24px 70px rgba(0,0,0,.9);
-color:#e5e7eb; font-size:.9rem; line-height:1.7;
+border:1px solid #ffffff44;
+box-shadow:0 24px 70px rgba(0,0,0,.9);
+color:#e5e7eb;
+font-size:.9rem;
+line-height:1.7;
 }
-.ios-title{font-weight:800; font-size:1rem; margin-bottom:10px; text-align:center;}
-.ios-body{font-size:.9rem; line-height:1.7; white-space:pre-line;}
+.ios-title{
+font-weight:800;
+font-size:1rem;
+margin-bottom:10px;
+text-align:center;
+}
+.ios-body{
+font-size:.9rem;
+line-height:1.7;
+white-space:pre-line;
+}
 .ios-ok-btn{
-margin-top:14px; display:block; margin-left:auto; margin-right:auto;
-border:none; border-radius:999px; padding:10px 24px;
-font-weight:800; font-size:.95rem; background:#22c55e; color:#022c16;
-cursor:pointer; box-shadow:0 0 14px rgba(34,197,94,.7);
+margin-top:14px;
+display:block;
+margin-left:auto;
+margin-right:auto;
+border:none;
+border-radius:999px;
+padding:10px 24px;
+font-weight:800;
+font-size:.95rem;
+background:#22c55e;
+color:#022c16;
+cursor:pointer;
+box-shadow:0 0 14px rgba(34,197,94,.7);
 }
 
-/* Big burst */
+/* ✅ Big correct/wrong burst */
 .burst{
-position:fixed; left:50%; top:50%;
+position:fixed;
+left:50%;
+top:50%;
 transform:translate(-50%,-50%) scale(.6);
-opacity:0; z-index:14000; pointer-events:none;
-font-family:'Cinzel',serif; font-weight:900; text-align:center;
+opacity:0;
+z-index:14000;
+pointer-events:none;
+font-family:'Cinzel',serif;
+font-weight:900;
+text-align:center;
 filter:drop-shadow(0 0 22px rgba(255,255,255,.25));
 animation:burstPop 1.05s ease-out forwards;
 }
@@ -174,119 +295,122 @@ animation:burstPop 1.05s ease-out forwards;
 15%{opacity:1;transform:translate(-50%,-50%) scale(1.08)}
 100%{opacity:0;transform:translate(-50%,-50%) scale(1.25)}
 }
-.burst .big{font-size:clamp(84px,18vw,160px); line-height:1;}
-.burst .label{margin-top:8px; font-size:clamp(18px,4vw,30px); opacity:.95;}
+.burst .big{
+font-size:clamp(84px,18vw,190px);
+line-height:1;
+}
+.burst .label{
+margin-top:8px;
+font-size:clamp(18px,4vw,30px);
+opacity:.95;
+}
+.burst.ok .big{color:#ff7eb9;text-shadow:0 0 18px rgba(255,126,185,.55),0 0 44px rgba(255,126,185,.25)}
+.burst.ng .big{color:#ffd166;text-shadow:0 0 18px rgba(255,209,102,.55),0 0 44px rgba(255,209,102,.25)}
 </style>
 </head>
 <body>
 
+<!-- 🔘 Quit + ❓ Help -->
 <button type="button" class="top-nav-btn" onclick="window.location.href='index.html'">
-  <span class="jp">やめる</span>
-  <span class="en">QUIT</span>
+<span class="jp">やめる</span>
+<span class="en">QUIT</span>
 </button>
 <button id="helpBtn" type="button" class="help-btn">?</button>
 
 <header>
-  <div class="h1">THE BOO-RICULUM</div>
-  <div class="h2">EIGO PERA PERA</div>
-  <div class="h3">January Week 1 – Speaking Practice</div>
-  <div class="h4">１月第１週 – スピーキング練習</div>
+<div class="h1">THE BOO-RICULUM</div>
+<div class="h2">EIGO PERA PERA</div>
+<div class="h3">January Week 1 – Speaking Practice</div>
+<div class="h4">１月第１週 – スピーキング練習</div>
 </header>
 
 <div class="wrap">
-  <div class="panel">
-    <div class="card">
-      <div id="sweep" class="sweep"></div>
-      <button id="playBtn" class="playBtn">▶</button>
-      <div id="en" class="en">Press スタート to start</div>
-    </div>
-    <div id="jp" class="jp"></div>
-    <div id="hira" class="hira"></div>
+<div class="panel">
+<div class="card">
+<div id="sweep" class="sweep"></div>
+<button id="playBtn" class="playBtn">▶</button>
+<div id="en" class="en">Press スタート to start</div>
+</div>
+<div id="jp" class="jp"></div>
+<div id="hira" class="hira"></div>
 
-    <div class="meterWrap">
-      <div class="meter">
-        <div class="ring"></div>
-        <div id="meterCore" class="meterCore"><div id="meterText" class="meterText">Ready<br><small>スタンバイ</small></div></div>
-      </div>
-      <div id="counter" class="counter">1 / 15</div>
-    </div>
-
-    <div class="btnRow">
-      <button id="beginBtn" class="btn begin">スタート<br><small>Start</small></button>
-      <button id="retryBtn" class="btn retry" style="display:none">もう一回<br><small>Retry</small></button>
-      <button id="nextBtn" class="btn next" style="display:none">つぎへ<br><small>Next</small></button>
-    </div>
-    <div id="scoreBox" class="scoreBox" style="display:none"></div>
-  </div>
+<div class="meterWrap">
+<div class="meter">
+<div class="ring"></div>
+<div id="meterCore" class="meterCore"><div id="meterText" class="meterText">Ready<br><small>スタンバイ</small></div></div>
+</div>
+<div id="counter" class="counter">1 / 15</div>
 </div>
 
+<div class="btnRow">
+<button id="beginBtn" class="btn begin">スタート<br><small>Start</small></button>
+<button id="retryBtn" class="btn retry" style="display:none">もう一回<br><small>Retry</small></button>
+<button id="nextBtn" class="btn next" style="display:none">つぎへ<br><small>Next</small></button>
+</div>
+<div id="scoreBox" class="scoreBox" style="display:none"></div>
+</div>
+</div>
+
+<!-- ❓ Help popup -->
 <div id="helpModal" class="help-modal" aria-hidden="true">
-  <div class="help-backdrop" data-close-help></div>
-  <div class="help-dialog">
-    <button class="help-close" type="button" data-close-help>×</button>
-    <h2>遊び方 / How to Play</h2>
-    <div class="help-sub">Booha Eigo Pera Pera</div>
-    <div class="help-body">
-      <h3>日本語</h3>
-      <ul>
-        <li><strong>スタート</strong>で、1つ目の英文が出ます。</li>
-        <li><strong>金色の ▶</strong>で、Sage の音声を聞けます。</li>
-        <li>まんなかが <strong>Listening</strong> のあいだ、英文を声に出して読みます。</li>
-        <li><strong>100%</strong> なら正解（大きい表示＋ ding）。</li>
-        <li><strong>100%</strong> じゃなければ間違い（大きい表示＋ fart）。</li>
-        <li>各ラウンドの最後に <strong>fart</strong> が鳴ります。</li>
-        <li>全部で <strong>15問</strong>。最後は結果画面（色と音）が出ます。</li>
-      </ul>
+<div class="help-backdrop" data-close-help></div>
+<div class="help-dialog">
+<button class="help-close" type="button" data-close-help>×</button>
+<h2>遊び方 / How to Play</h2>
+<div class="help-sub">Booha Eigo Pera Pera</div>
+<div class="help-body">
+<h3>日本語</h3>
+<ul>
+<li><strong>スタート</strong>で、1つ目の英文が出ます。</li>
+<li><strong>金色の ▶</strong>で、Sage の音声を聞けます。</li>
+<li>まんなかが <strong>聞き取り中</strong> のあいだ、英文を声に出して読みます。</li>
+<li><strong>100%</strong> なら正解：大きいハート ＋ ding。</li>
+<li><strong>100%</strong> じゃなければ間違い：大きいおなら ＋ fart。</li>
+<li>正解のときは、ding のあとに <strong>つぎへ</strong> が出ます。</li>
+</ul>
 
-      <h3>English</h3>
-      <ul>
-        <li>Tap <strong>Start</strong> to show the first sentence.</li>
-        <li>Tap the <strong>gold ▶</strong> to hear Sage read it.</li>
-        <li>While the center says <strong>Listening</strong>, read the sentence aloud.</li>
-        <li><strong>100%</strong> is correct (big display + ding).</li>
-        <li>Not <strong>100%</strong> is wrong (big display + fart).</li>
-        <li><strong>Fart plays at the end of every round.</strong></li>
-        <li>There are <strong>15 rounds</strong>. Final results use the same color + sound system.</li>
-      </ul>
-
-      <h3>マイク / Mic</h3>
-      <ul>
-        <li>Android / パソコン：マイクで判定する「フル版」です。</li>
-        <li>iPad / iPhone：音声認識が使えないので、読む練習モードになります。</li>
-      </ul>
-    </div>
-  </div>
+<h3>English</h3>
+<ul>
+<li>Tap <strong>Start</strong> to show the first sentence.</li>
+<li>Tap the <strong>gold ▶</strong> to hear Sage read it.</li>
+<li>While the center says <strong>聞き取り中</strong>, read the sentence aloud.</li>
+<li><strong>100%</strong> is correct: big heart + ding.</li>
+<li>Not <strong>100%</strong> is wrong: big fart + fart sound.</li>
+<li>On correct, <strong>Next</strong> appears after the ding.</li>
+</ul>
+</div>
+</div>
 </div>
 
+<!-- 🍎 iOS-only notice -->
 <div id="iosNotice" class="ios-overlay" aria-hidden="true">
-  <div class="ios-dialog">
-    <div class="ios-title">iPad / iPhone のみなさんへ</div>
-    <div class="ios-body">
+<div class="ios-dialog">
+<div class="ios-title">iPad / iPhone をお使いのみなさんへ</div>
+<div class="ios-body">
 このゲームの「フル版（マイクで判定）」は、
-Android と パソコン だけで遊べます。
+Androidスマホ と パソコン だけで遊べます。
 
-iPad / iPhone は「れんしゅう版」です。
+iPad / iPhone 版は、
+「大きい声で！」れんしゅうモード です。
 
-1) きんいろの ▶ で音声を聞く
-2) スタート
-3) Listening のあいだ、英文を声に出して読む
-
-判定は出ないけど、
-読む練習はちゃんと効果があります。
-    </div>
-    <button id="iosNoticeBtn" type="button" class="ios-ok-btn">OK / はじめる</button>
-  </div>
+① きんいろの ▶ ボタンを押して、文をよく聞こう。
+② スタート ボタンを押す。
+③ メーターが動いているあいだ、
+英文を大きい声で読んでみよう。
+</div>
+<button id="iosNoticeBtn" type="button" class="ios-ok-btn">OK ／ はじめる</button>
+</div>
 </div>
 
 <footer>Bryan’s English School</footer>
 
-<!-- RESULT PAGES -->
+<!-- RESULT PAGES (same as before) -->
 <div id="resRed" class="resultPage"><div class="resultInner glowRed">
 <header><div class="h1">THE BOO-RICULUM</div><div class="h2">EIGO PERA PERA</div><div class="h3">January Week 1 – Speaking Practice</div></header>
 <div class="resultCenter"><div>
-  <div id="msgRed" class="resultMsg">ブーリキュラム見てないでしょ！</div>
-  <div id="scoreRed" class="resultScore">0/15（0%）</div>
-  <div><button class="btnSmall btnRestart" data-restart>もう一度</button><a class="btnSmall btnMenu" href="index.html">メニューへ</a></div>
+<div id="msgRed" class="resultMsg">ブーリキュラム見てないでしょ！</div>
+<div id="scoreRed" class="resultScore">0/15（0%）</div>
+<div><button class="btnSmall btnRestart" data-restart>もう一度</button><a class="btnSmall btnMenu" href="index.html">メニューへ</a></div>
 </div></div>
 <footer>Bryan’s English School</footer>
 </div></div>
@@ -294,9 +418,9 @@ iPad / iPhone は「れんしゅう版」です。
 <div id="resOrange" class="resultPage"><div class="resultInner glowOrange">
 <header><div class="h1">THE BOO-RICULUM</div><div class="h2">EIGO PERA PERA</div><div class="h3">January Week 1 – Speaking Practice</div></header>
 <div class="resultCenter"><div>
-  <div id="msgOrange" class="resultMsg">YouTube見すぎ！ブーリキュラムもやろう！</div>
-  <div id="scoreOrange" class="resultScore">0/15（0%）</div>
-  <div><button class="btnSmall btnRestart" data-restart>もう一度</button><a class="btnSmall btnMenu" href="index.html">メニューへ</a></div>
+<div id="msgOrange" class="resultMsg">YouTube見すぎ！ブーリキュラムもやろう！</div>
+<div id="scoreOrange" class="resultScore">0/15（0%）</div>
+<div><button class="btnSmall btnRestart" data-restart>もう一度</button><a class="btnSmall btnMenu" href="index.html">メニューへ</a></div>
 </div></div>
 <footer>Bryan’s English School</footer>
 </div></div>
@@ -304,9 +428,9 @@ iPad / iPhone は「れんしゅう版」です。
 <div id="resBlue" class="resultPage"><div class="resultInner glowBlue">
 <header><div class="h1">THE BOO-RICULUM</div><div class="h2">EIGO PERA PERA</div><div class="h3">January Week 1 – Speaking Practice</div></header>
 <div class="resultCenter"><div>
-  <div id="msgBlue" class="resultMsg">いいね！あと少しでパーフェクト！</div>
-  <div id="scoreBlue" class="resultScore">0/15（0%）</div>
-  <div><button class="btnSmall btnRestart" data-restart>もう一度</button><a class="btnSmall btnMenu" href="index.html">メニューへ</a></div>
+<div id="msgBlue" class="resultMsg">いいね！あと少しでパーフェクト！</div>
+<div id="scoreBlue" class="resultScore">0/15（0%）</div>
+<div><button class="btnSmall btnRestart" data-restart>もう一度</button><a class="btnSmall btnMenu" href="index.html">メニューへ</a></div>
 </div></div>
 <footer>Bryan’s English School</footer>
 </div></div>
@@ -314,9 +438,9 @@ iPad / iPhone は「れんしゅう版」です。
 <div id="resGold" class="resultPage"><div class="resultInner glowGold">
 <header><div class="h1">THE BOO-RICULUM</div><div class="h2">EIGO PERA PERA</div><div class="h3">January Week 1 – Speaking Practice</div></header>
 <div class="resultCenter"><div>
-  <div id="msgGold" class="resultMsg">すごい！あなたは地球で一番頭がいい！</div>
-  <div id="scoreGold" class="resultScore">15/15（100%）</div>
-  <div><button class="btnSmall btnRestart" data-restart>もう一度</button><a class="btnSmall btnMenu" href="index.html">メニューへ</a></div>
+<div id="msgGold" class="resultMsg">すごい！あなたは地球で一番頭がいい！</div>
+<div id="scoreGold" class="resultScore">15/15（100%）</div>
+<div><button class="btnSmall btnRestart" data-restart>もう一度</button><a class="btnSmall btnMenu" href="index.html">メニューへ</a></div>
 </div></div>
 <footer>Bryan’s English School</footer>
 </div></div>
@@ -353,7 +477,6 @@ Object.values(SFX).forEach(a => { a.preload = 'auto'; try{ a.load(); }catch(e){}
 
 const RES = { red:$('#a_r05'), orange:$('#a_r610'), blue:$('#a_r1114'), gold:$('#a_r15') };
 
-/* ✅ EXACT filenames to match your GitHub (s01...s15) */
 const ITEMS = [
   { en:"I will study every day.", jp:"毎日勉強します。", hira:"(まいにち べんきょう します)", audio:"s01_i_will_study_every_day.mp3" },
   { en:"I’m going to try something new.", jp:"何か新しいことに挑戦します。", hira:"(なにか あたらしい こと に ちょうせん します)", audio:"s02_im_going_to_try_something_new.mp3" },
@@ -372,7 +495,7 @@ const ITEMS = [
   { en:"I will enjoy learning.", jp:"学ぶことを楽しみます。", hira:"(まなぶ こと を たのしみます)", audio:"s15_i_will_enjoy_learning.mp3" }
 ].sort(()=>Math.random()-0.5);
 
-/* Preload Sage (local) */
+/* Preload Sage */
 const sageBank = {};
 ITEMS.forEach(it=>{
   const a = new Audio('audio/sentences/' + it.audio);
@@ -385,96 +508,84 @@ const sleep = ms => new Promise(r=>setTimeout(r, ms));
 function normalize(s){return s.toLowerCase().replace(/[’‘´`]/g,"'").replace(/[^a-z0-9'\s]/g,' ').replace(/\s+/g,' ').trim();}
 function toSet(s){return new Set(normalize(s).split(' ').filter(Boolean));}
 
-function mountWords(t){
-  enEl.innerHTML = t.split(/\s+/).map(w=>`<span class="word">${w}</span>`).join(' ');
-}
+function mountWords(t){ enEl.innerHTML = t.split(/\s+/).map(w=>`<span class="word">${w}</span>`).join(' '); }
 function markSpoken(sp){
   const set = toSet(sp);
   enEl.querySelectorAll('.word').forEach(w=>{
     const v = normalize(w.textContent);
-    if(set.has(v) && !w.classList.contains('blue')){
-      w.classList.add('blue');
-    }
+    if(set.has(v) && !w.classList.contains('blue')) w.classList.add('blue');
   });
 }
-function finalizeColors(){
-  enEl.querySelectorAll('.word').forEach(w=>{
-    if(!w.classList.contains('blue')) w.classList.add('red');
-  });
-}
+function finalizeColors(){ enEl.querySelectorAll('.word').forEach(w=>{ if(!w.classList.contains('blue')) w.classList.add('red'); }); }
 function keywordScore(t, sp){
   const k = toSet(t), said = toSet(sp);
-  let hit = 0, total = 0;
-  k.forEach(x=>{
-    if(x.length > 2){
-      total++;
-      if(said.has(x)) hit++;
-    }
-  });
+  let hit=0,total=0;
+  k.forEach(x=>{ if(x.length>2){ total++; if(said.has(x)) hit++; }});
   return total ? Math.round((hit/total)*100) : 0;
 }
 
 function setReady(){ meterText.innerHTML='Ready<br><small>スタンバイ</small>'; }
-function setListening(){ meterText.textContent='Listening'; }
+function setListening(){
+  // ✅ Android/Desktop: Listening is Japanese; iOS: 大きい声で！
+  meterText.textContent = isIOS ? '大きい声で！' : '聞き取り中';
+}
 function setFinished(){ meterText.innerHTML='Finished<br><small>おわり！</small>'; }
 
 function startSweep(){
   sweep.style.setProperty('--dur', DUR_MS + 'ms');
-  sweep.classList.remove('run');
-  void sweep.offsetWidth;
-  sweep.classList.add('run');
+  sweep.classList.remove('run'); void sweep.offsetWidth; sweep.classList.add('run');
 }
 function stopSweep(){ sweep.classList.remove('run'); }
 function updateCounter(){ counter.textContent = `${idx+1} / 15`; }
 
 async function countdown321(){
-  const colors = ['#ff7eb9','#7dd3fc','#a6f7b2'];
-  const nums = [3,2,1];
+  const colors=['#ff7eb9','#7dd3fc','#a6f7b2'];
+  const nums=[3,2,1];
   for(let i=0;i<nums.length;i++){
-    meterText.innerHTML = `<span class="popNum" style="color:${colors[i]}">${nums[i]}</span>`;
+    meterText.innerHTML=`<span class="popNum" style="color:${colors[i]}">${nums[i]}</span>`;
     await sleep(700);
   }
 }
 
 async function ensureMicPermission(){
   try{
-    const s = await navigator.mediaDevices.getUserMedia({audio:true});
+    const s=await navigator.mediaDevices.getUserMedia({audio:true});
     s.getTracks().forEach(t=>t.stop());
-    streamAllowed = true;
+    streamAllowed=true;
   }catch(e){
     alert('マイクが使えません。Chrome を使用してください。');
   }
 }
 
 function makeRecognizer(){
-  const R = window.SpeechRecognition || window.webkitSpeechRecognition;
+  const R=window.SpeechRecognition||window.webkitSpeechRecognition;
   if(!R) return null;
-  const r = new R();
-  r.lang = 'en-US';
-  r.continuous = true;
-  r.interimResults = true;
-  try{ r.maxAlternatives = 5; }catch(e){}
+  const r=new R();
+  r.lang='en-US';
+  r.continuous=true;
+  r.interimResults=true;
+  try{ r.maxAlternatives=5; }catch(e){}
   return r;
 }
 
 function playAudioWithWait(a){
   return new Promise(resolve=>{
     if(!a){ resolve(); return; }
-    try{ a.pause(); a.currentTime = 0; }catch(e){}
-    const done = ()=>{ a.onended = null; resolve(); };
-    const tryPlay = ()=>{
-      const p = a.play();
-      if(p && p.then){ p.then(()=>{}).catch(()=>{ setTimeout(tryPlay, 120); }); }
+    try{ a.pause(); a.currentTime=0; }catch(e){}
+    const done=()=>{ a.onended=null; resolve(); };
+    const tryPlay=()=>{
+      const p=a.play();
+      if(p&&p.then){ p.then(()=>{}).catch(()=>setTimeout(tryPlay,120)); }
     };
-    const safety = setTimeout(()=>{ a.onended = null; resolve(); }, Math.max(2500, (a.duration||2.5)*1000 + 200));
-    a.addEventListener('ended', ()=>clearTimeout(safety), {once:true});
-    a.onended = done;
+    const safety=setTimeout(()=>{ a.onended=null; resolve(); }, Math.max(2500,(a.duration||2.5)*1000+200));
+    a.addEventListener('ended',()=>clearTimeout(safety),{once:true});
+    a.onended=done;
     tryPlay();
   });
 }
 
 function disableControls(disabled){
-  [beginBtn, retryBtn, nextBtn, playBtn].forEach(b=>{ if(b) b.disabled = disabled; });
+  [beginBtn,retryBtn,nextBtn,playBtn].forEach(b=>{ if(b) b.disabled=disabled; });
 }
 function resetVisuals(){
   stopSweep(); void sweep.offsetWidth;
@@ -483,36 +594,38 @@ function resetVisuals(){
   setReady();
 }
 function showItem(){
-  const it = ITEMS[idx];
+  const it=ITEMS[idx];
   mountWords(it.en);
-  jpEl.textContent = it.jp;
-  hiraEl.textContent = it.hira;
+  jpEl.textContent=it.jp;
+  hiraEl.textContent=it.hira;
   resetVisuals();
   updateCounter();
 }
 
 function showBurst(kind){
-  const el = document.createElement('div');
-  el.className = 'burst';
-  if(kind === 'ok'){
-    el.innerHTML = `<div class="big">OK</div><div class="label">Perfect</div>`;
+  const el=document.createElement('div');
+  el.className='burst ' + (kind==='ok'?'ok':'ng');
+  if(kind==='ok'){
+    // ✅ Big Heart for correct
+    el.innerHTML = `<div class="big">♥</div><div class="label">Perfect</div>`;
   }else{
-    el.innerHTML = `<div class="big">!</div><div class="label">Try Again</div>`;
+    // ✅ Big "fart" visual
+    el.innerHTML = `<div class="big">💨</div><div class="label">Try Again</div>`;
   }
   document.body.appendChild(el);
-  setTimeout(()=>el.remove(), 1100);
+  setTimeout(()=>el.remove(),1100);
 }
 
 /* iOS practice mode */
 async function beginRoundIOS(){
   if(isBusy) return;
-  isBusy = true;
+  isBusy=true;
 
   resetVisuals();
   disableControls(true);
 
   await countdown321();
-  meterText.innerHTML = `<span class="popNum flashGo" style="color:#fff680">GO!</span>`;
+  meterText.innerHTML=`<span class="popNum flashGo" style="color:#fff680">GO!</span>`;
   await sleep(120);
 
   setListening();
@@ -528,24 +641,24 @@ async function beginRoundIOS(){
   nextBtn.style.display='inline-block';
 
   disableControls(false);
-  isBusy = false;
+  isBusy=false;
 }
 
 /* Android/Desktop mic mode */
 async function beginRound(){
   if(isIOS) return beginRoundIOS();
   if(isBusy) return;
-  isBusy = true;
+  isBusy=true;
 
-  const R = window.SpeechRecognition || window.webkitSpeechRecognition;
+  const R=window.SpeechRecognition||window.webkitSpeechRecognition;
   if(!R){
     alert('このブラウザでは音声認識が使えません。Chrome を使用してください。');
-    isBusy = false;
+    isBusy=false;
     return;
   }
   if(!streamAllowed){
     await ensureMicPermission();
-    if(!streamAllowed){ isBusy = false; return; }
+    if(!streamAllowed){ isBusy=false; return; }
   }
 
   resetVisuals();
@@ -553,22 +666,22 @@ async function beginRound(){
 
   await countdown321();
 
-  meterText.innerHTML = `<span class="popNum flashGo" style="color:#fff680">GO!</span>`;
+  meterText.innerHTML=`<span class="popNum flashGo" style="color:#fff680">GO!</span>`;
 
-  let heard = "";
-  listening = true;
-  SR = makeRecognizer();
+  let heard="";
+  listening=true;
+  SR=makeRecognizer();
 
   if(SR){
-    SR.onresult = (e)=>{
-      let txt = "";
+    SR.onresult=(e)=>{
+      let txt="";
       for(let i=e.resultIndex;i<e.results.length;i++){
-        txt += e.results[i][0].transcript + " ";
+        txt+=e.results[i][0].transcript+" ";
       }
-      heard = (heard + " " + txt).trim();
+      heard=(heard+" "+txt).trim();
       markSpoken(heard);
     };
-    SR.onend = ()=>{ if(listening){ try{ SR.start(); }catch(e){} } };
+    SR.onend=()=>{ if(listening){ try{ SR.start(); }catch(e){} } };
     try{ SR.start(); }catch(e){}
   }
 
@@ -578,54 +691,51 @@ async function beginRound(){
 
   await sleep(DUR_MS);
 
-  listening = false;
+  listening=false;
   try{ SR && SR.stop(); }catch(e){}
   setFinished();
   stopSweep();
   finalizeColors();
 
-  const s = keywordScore(ITEMS[idx].en, heard);
-  scoreBox.textContent = 'スコア：' + s + '％';
-  scoreBox.style.display = 'block';
+  const s=keywordScore(ITEMS[idx].en,heard);
+  scoreBox.textContent='スコア：'+s+'％';
+  scoreBox.style.display='block';
 
-  /* First attempt scoring + SFX */
-  if(firstScores[idx] === null){
-    firstScores[idx] = s;
-    if(s === 100) firstPerfectCount++;
+  if(firstScores[idx]===null){
+    firstScores[idx]=s;
+    if(s===100) firstPerfectCount++;
   }
 
-  /* ✅ Your rule: fart after each answer */
-  if(s === 100){
+  // ✅ Correct: big heart + ding, then Next appears (no fart)
+  // ✅ Wrong: big fart + fart.mp3
+  if(s===100){
     showBurst('ok');
     await playAudioWithWait(SFX.ding);
-    await playAudioWithWait(SFX.fart);
-  }else{
-    showBurst('ng');
-    await playAudioWithWait(SFX.fart);
-  }
 
-  if(s === 100){
     nextBtn.style.display='inline-block';
     retryBtn.style.display='none';
     beginBtn.style.display='none';
   }else{
+    showBurst('ng');
+    await playAudioWithWait(SFX.fart);
+
     retryBtn.style.display='inline-block';
     nextBtn.style.display='none';
     beginBtn.style.display='none';
   }
 
   disableControls(false);
-  isBusy = false;
+  isBusy=false;
 }
 
 /* Results */
 function avgPercent(){
-  const sum = firstScores.reduce((a,b)=>a + (b ?? 0), 0);
-  return Math.round(sum / 15);
+  const sum=firstScores.reduce((a,b)=>a+(b??0),0);
+  return Math.round(sum/15);
 }
 function hideAllResults(){
   ['resRed','resOrange','resBlue','resGold'].forEach(id=>{
-    const el = $('#'+id);
+    const el=$('#'+id);
     if(el) el.style.display='none';
   });
 }
@@ -633,39 +743,39 @@ function hideAllResults(){
 async function showResults(){
   if(isIOS){
     hideAllResults();
-    const msgBlue = document.getElementById('msgBlue');
-    const scoreBlue = document.getElementById('scoreBlue');
+    const msgBlue=document.getElementById('msgBlue');
+    const scoreBlue=document.getElementById('scoreBlue');
     if(msgBlue){
-      msgBlue.textContent =
+      msgBlue.textContent=
         "おつかれさま！\n\n" +
         "このゲームのフル版（マイクで判定）は、Android と パソコンだけです。\n\n" +
         "iPad / iPhone は、れんしゅう版として遊びます。\n" +
-        "Listening のあいだ、英文を声に出して読むだけでOK。\n\n" +
+        "メーターが動いているあいだ、英文を大きい声で読めばOK。\n\n" +
         "いつか Android / パソコン で遊ぶと、\n" +
         "マイク判定つきの本気モードもできます。";
     }
-    if(scoreBlue) scoreBlue.textContent = "";
+    if(scoreBlue) scoreBlue.textContent="";
     $('#resBlue').style.display='block';
     await playAudioWithWait(RES.blue);
     return;
   }
 
-  const pct = avgPercent();
-  const xOf15 = firstPerfectCount;
+  const pct=avgPercent();
+  const xOf15=firstPerfectCount;
 
   let page='resBlue', snd=RES.blue, scoreSel='#scoreBlue';
-  if(pct <= 43){ page='resRed'; snd=RES.red; scoreSel='#scoreRed'; }
-  else if(pct <= 74){ page='resOrange'; snd=RES.orange; scoreSel='#scoreOrange'; }
-  else if(pct === 100){ page='resGold'; snd=RES.gold; scoreSel='#scoreGold'; }
+  if(pct<=43){page='resRed'; snd=RES.red; scoreSel='#scoreRed';}
+  else if(pct<=74){page='resOrange'; snd=RES.orange; scoreSel='#scoreOrange';}
+  else if(pct===100){page='resGold'; snd=RES.gold; scoreSel='#scoreGold';}
 
-  const se = $(scoreSel);
-  if(se) se.textContent = `${xOf15}/15（${pct}%）`;
+  const se=$(scoreSel);
+  if(se) se.textContent=`${xOf15}/15（${pct}%）`;
 
   hideAllResults();
   $('#'+page).style.display='block';
   await playAudioWithWait(snd);
 
-  if(page === 'resGold'){
+  if(page==='resGold'){
     for(let i=0;i<160;i++){
       setTimeout(()=>{
         const c=document.createElement('div');
@@ -692,16 +802,14 @@ beginBtn.addEventListener('click', async()=>{
   showItem();
   beginRound();
 });
-
 retryBtn.addEventListener('click', ()=>{
   showItem();
   beginRound();
 });
-
 nextBtn.addEventListener('click', ()=>{
   if(isBusy) return;
   idx++;
-  if(idx >= ITEMS.length){
+  if(idx>=ITEMS.length){
     nextBtn.style.display='none';
     retryBtn.style.display='none';
     beginBtn.style.display='none';
@@ -714,18 +822,17 @@ nextBtn.addEventListener('click', ()=>{
   beginBtn.style.display='inline-block';
 });
 
-/* ✅ Sage plays only when NOT listening */
-let sageNow = null;
+/* Sage: play only when NOT listening / busy */
+let sageNow=null;
 playBtn.addEventListener('click', async()=>{
   if(isBusy || listening) return;
-  const it = ITEMS[idx];
-  const a = sageBank[it.audio] || new Audio('audio/sentences/' + it.audio);
-
-  if(sageNow && sageNow !== a){
+  const it=ITEMS[idx];
+  const a=sageBank[it.audio] || new Audio('audio/sentences/' + it.audio);
+  if(sageNow && sageNow!==a){
     try{ sageNow.pause(); }catch(e){}
-    try{ sageNow.currentTime = 0; }catch(e){}
+    try{ sageNow.currentTime=0; }catch(e){}
   }
-  sageNow = a;
+  sageNow=a;
   await playAudioWithWait(a);
 });
 
@@ -745,21 +852,21 @@ Array.from(document.querySelectorAll('[data-restart]')).forEach(b=>b.addEventLis
 showItem();
 
 /* Help modal */
-const helpBtnEl = $('#helpBtn');
-const helpModal = $('#helpModal');
+const helpBtnEl=$('#helpBtn');
+const helpModal=$('#helpModal');
 if(helpBtnEl && helpModal){
-  const closeEls = helpModal.querySelectorAll('[data-close-help]');
-  const openHelp = ()=>{ helpModal.classList.add('show'); helpModal.setAttribute('aria-hidden','false'); };
-  const closeHelp = ()=>{ helpModal.classList.remove('show'); helpModal.setAttribute('aria-hidden','true'); };
-  helpBtnEl.addEventListener('click', openHelp);
-  closeEls.forEach(el=>el.addEventListener('click', closeHelp));
-  helpModal.addEventListener('click', e=>{ if(e.target===helpModal) closeHelp(); });
-  document.addEventListener('keydown', e=>{ if(e.key==='Escape') closeHelp(); });
+  const closeEls=helpModal.querySelectorAll('[data-close-help]');
+  const openHelp=()=>{helpModal.classList.add('show');helpModal.setAttribute('aria-hidden','false');};
+  const closeHelp=()=>{helpModal.classList.remove('show');helpModal.setAttribute('aria-hidden','true');};
+  helpBtnEl.addEventListener('click',openHelp);
+  closeEls.forEach(el=>el.addEventListener('click',closeHelp));
+  helpModal.addEventListener('click',e=>{if(e.target===helpModal)closeHelp();});
+  document.addEventListener('keydown',e=>{if(e.key==='Escape')closeHelp();});
 }
 
 /* iOS notice overlay */
-const iosNotice = document.getElementById('iosNotice');
-const iosNoticeBtn = document.getElementById('iosNoticeBtn');
+const iosNotice=document.getElementById('iosNotice');
+const iosNoticeBtn=document.getElementById('iosNoticeBtn');
 if(isIOS && iosNotice && iosNoticeBtn){
   iosNotice.classList.add('show');
   iosNotice.setAttribute('aria-hidden','false');
