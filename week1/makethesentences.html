@@ -349,7 +349,6 @@ footer{text-align:center;color:#c9d4ec;font-family:'Cinzel',serif;font-weight:70
         <li>できたら <strong>Check</strong> を押します。</li>
         <li>正解：<strong>大きいハート</strong> → <strong>ding</strong> → 音声 → <strong>Next</strong></li>
         <li>不正解：<strong>大きいおなら</strong> → <strong>fart</strong> → タイルが戻るので、もう一度ならべ直します（点数は増えません）。</li>
-        <li>正解したあと、もう一度聞きたいときは上の<strong>カラフルな文</strong>をタップします。</li>
         <li>同じ文を<strong>3回連続でまちがえた</strong>ときは、金色の<strong>▶</strong>が出てヒントが聞けます。</li>
       </ul>
 
@@ -362,14 +361,12 @@ footer{text-align:center;color:#c9d4ec;font-family:'Cinzel',serif;font-weight:70
         <li>Tap <strong>Check</strong> when you finish.</li>
         <li>Correct: <strong>big heart</strong> → <strong>ding</strong> → voice → <strong>Next</strong></li>
         <li>Wrong: <strong>big fart</strong> → <strong>fart</strong> → tiles return, try again (no point).</li>
-        <li>After you get it correct, tap the <strong>colorful sentence</strong> to hear it again.</li>
         <li>If you get the same sentence wrong <strong>3 times in a row</strong>, a gold <strong>▶</strong> button appears to help you.</li>
       </ul>
 
     </div>
   </div>
 </div>
-
 <!-- Results page -->
 <div id="page-results" class="end">
   <div class="msg" id="resultMsg"></div>
@@ -378,13 +375,14 @@ footer{text-align:center;color:#c9d4ec;font-family:'Cinzel',serif;font-weight:70
   <footer style="opacity:.8">Bryan’s English School</footer>
 </div>
 
-<!-- Big FX nodes (no emoji) -->
+<!-- Big FX nodes -->
 <div class="bigFx" id="bigHeart" aria-hidden="true">
   <svg viewBox="0 0 128 128" aria-hidden="true" focusable="false">
     <path d="M64 112S14 84 14 44c0-16 12-28 28-28 10 0 18 5 22 12 4-7 12-12 22-12 16 0 28 12 28 28 0 40-50 68-50 68Z" fill="#ff3b6e"/>
     <path d="M64 112S14 84 14 44c0-16 12-28 28-28 10 0 18 5 22 12 4-7 12-12 22-12 16 0 28 12 28 28 0 40-50 68-50 68Z" fill="none" stroke="#ffffff" stroke-opacity=".7" stroke-width="4"/>
   </svg>
 </div>
+
 <div class="bigFx" id="bigFart" aria-hidden="true">
   <svg viewBox="0 0 128 128" aria-hidden="true" focusable="false">
     <g fill="#cbd5e1">
@@ -412,7 +410,6 @@ footer{text-align:center;color:#c9d4ec;font-family:'Cinzel',serif;font-weight:70
 
 <!-- Sage player (single element, reliable) -->
 <audio id="sageVoice" preload="auto"></audio>
-
 <script>
 /* =========================
    DATA (KEEP ORDER for s01...s15)
@@ -435,7 +432,6 @@ const BASE_DATA=[
   {id:15, en:"I will enjoy learning.", jp:"学ぶことを楽しみます。", hira:"まなぶ こと を たのしみ ます"}
 ];
 
-// 🔀 shuffle questions each refresh (audio stays tied to BASE id)
 const DATA = shuffle([...BASE_DATA]);
 
 /* =========================
@@ -466,19 +462,18 @@ let wrongMode=false;
 let selectedWord = null;
 let locked=false;
 
-let wrongStreak=0;   // wrong answers in a row for the current sentence
-let solved=false;    // once correct, hide Check and lock tiles
+let wrongStreak=0;
+let solved=false;
+let helpReady=false;
 
-let helpReady=false; // turns true after 3 wrong on THIS sentence
-
-let flowToken = 0;   // cancels old audio callbacks
+let flowToken = 0;
 let dingTimer = null;
 
 /* =========================
    AUDIO CANCEL / GUARD
    ========================= */
 function cancelAudioFlow(){
-  flowToken++; // invalidate any pending callbacks
+  flowToken++;
 
   try{ sfxDing.pause(); sfxDing.currentTime = 0; }catch(_){}
   sfxDing.onended = null;
@@ -529,7 +524,6 @@ async function primeSage(){
   }
 }
 
-// ✅ single reliable Sage play (with filename logging)
 function playSageForIndex(idx, onEnd){
   const src = sagePathForIndex(idx);
   const myToken = flowToken;
@@ -542,7 +536,6 @@ function playSageForIndex(idx, onEnd){
     if(onEnd) onEnd();
   };
 
-  // helpful debug (you can leave this in)
   console.log('[Sage src]', src);
 
   sageVoice.onended = ()=>{ if(myToken!==flowToken) return; finish(); };
@@ -566,7 +559,6 @@ function playSageForIndex(idx, onEnd){
     finish();
   }
 
-  // failsafe
   setTimeout(()=>{ if(myToken!==flowToken) return; finish(); }, 9000);
 }
 
@@ -612,7 +604,7 @@ function moveToSentence(word, beforeEl=null){
   if(beforeEl && beforeEl.parentElement === sent){
     sent.insertBefore(word, beforeEl);
   }else{
-    sent.insertBefore(word, playBtn); // keep play button last
+    sent.insertBefore(word, playBtn);
   }
   refreshCheckState();
 }
@@ -620,7 +612,6 @@ function moveToSentence(word, beforeEl=null){
 function lockTiles(on){
   [...document.querySelectorAll('.word')].forEach(w=>w.disabled = !!on);
 }
-
 function lockUI(on){
   locked = !!on;
   lockTiles(locked);
@@ -632,6 +623,28 @@ function showPlayHint(on){
   helpReady = !!on;
   if(on) playBtn.classList.add('show');
   else playBtn.classList.remove('show');
+}
+
+/* =========================
+   GOLD: bind exactly once
+   ========================= */
+function bindGoldOnce(){
+  if(!playBtn) return;
+
+  playBtn.onclick = (e)=>{
+    e.preventDefault();
+    e.stopPropagation();
+
+    if(locked) return;
+    if(solved) return;
+    if(!helpReady) return;
+
+    cancelAudioFlow();
+    primeSage();
+
+    console.log('[Gold ▶]', 'question=', i+1, 'id=', DATA[i]?.id, 'src=', sagePathForIndex(i));
+    playSageForIndex(i);
+  };
 }
 
 /* =========================
@@ -657,7 +670,6 @@ function mount(){
   showPlayHint(false);
   solved=false;
 
-  // Rainbow is display-only (no Sage)
   jpCard.classList.remove('replay');
   jpCard.classList.add('locked');
 
@@ -714,15 +726,6 @@ sent.addEventListener('click',(e)=>{
 });
 bank.addEventListener('click',(e)=>{ if(e.target === bank) clearSelected(); });
 
-// Rainbow touch disabled completely
-if(jpCard){
-  jpCard.addEventListener('click', (e)=>{
-    e.preventDefault();
-    e.stopPropagation();
-  });
-}
-
-
 /* =========================
    Logic
    ========================= */
@@ -734,9 +737,8 @@ function currentBuilt(){
 function currentCorrect(){
   return DATA[i].en.trim();
 }
-
 function playOnce(el){
-  try{ el.pause(); el.currentTime = 0; }catch(_){ }
+  try{ el.pause(); el.currentTime = 0; }catch(_){}
   try{ return el.play(); }catch(_){ return null; }
 }
 
@@ -760,37 +762,31 @@ function checkLogic(){
     check.style.display = 'none';
     nextWrap.style.display = 'block';
 
-    // ✅ Correct flow: ding -> Sage (ONLY ONCE)
     const myToken = ++flowToken;
     let fired = false;
 
     const afterDingOnce = ()=>{
-      if(fired) return;               // ✅ prevents double call
+      if(fired) return;
       fired = true;
 
-      if(dingTimer){ clearTimeout(dingTimer); dingTimer = null; } // ✅ kill fallback timer
+      if(dingTimer){ clearTimeout(dingTimer); dingTimer = null; }
       sfxDing.onended = null;
 
       if(myToken !== flowToken) return;
 
       playSageForIndex(i, ()=>{
         if(myToken !== flowToken) return;
-        // tiles stay locked; Next works
       });
     };
 
     sfxDing.onended = afterDingOnce;
 
     const p = playOnce(sfxDing);
-
-    // fallback in case onended doesn't fire
     dingTimer = setTimeout(afterDingOnce, 3500);
-
     if(p && p.catch) p.catch(()=>afterDingOnce());
 
   }else{
     wrongMode = true;
-    cancelAudioFlow(); // extra safety
 
     showBig(bigFart);
     playOnce(sfxFart);
@@ -842,7 +838,7 @@ function showResults(){
   msgEl.textContent = msg;
   scoreEl.textContent = `${totalScore}/15（${pct}%）`;
 
-  try{ snd.currentTime=0; snd.play().catch(()=>{}); }catch(_){ }
+  try{ snd.currentTime=0; snd.play().catch(()=>{}); }catch(_){}
 
   if(totalScore===15){
     for(let k=0;k<160;k++){
@@ -886,46 +882,11 @@ if(helpBtnEl && helpModal){
 }
 
 /* =========================
-   Init (SAFE AUDIO + GOLD HELP FIX)
+   Init
    ========================= */
+bindGoldOnce();
 mount();
-
-/* 
-  🔒 HARD BIND GOLD HELP
-  This guarantees:
-  - Gold button always works (Q1–Q15)
-  - No duplicate listeners
-  - No accidental Sage after wrong
-*/
-(function bindGoldHelpSafely(){
-  if(!playBtn) return;
-
-  playBtn.onclick = (e)=>{
-    e.preventDefault();
-    e.stopPropagation();
-
-    // Guard rails
-    if(locked) return;
-    if(!helpReady) return;
-    if(solved) return;
-
-    // Kill anything pending (ding timers, old Sage, etc.)
-    cancelAudioFlow();
-
-    primeSage();
-
-    console.log(
-      '[Gold ▶]',
-      'question=', i+1,
-      'id=', DATA[i]?.id,
-      'src=', sagePathForIndex(i)
-    );
-
-    playSageForIndex(i);
-  };
-})();
 </script>
 
 </body>
 </html>
-
