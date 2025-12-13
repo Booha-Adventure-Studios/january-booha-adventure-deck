@@ -466,9 +466,31 @@ let wrongMode=false;
 let selectedWord = null;
 let locked=false;
 
-let wrongStreak=0;        // wrong answers in a row for the current sentence
-let replayUnlocked=false; // rainbow replay is only allowed after correct
-let solved=false;         // ✅ once correct, hide Check and lock tiles
+let wrongStreak=0;  // wrong answers in a row for the current sentence
+let solved=false;   // once correct, hide Check and lock tiles
+
+// ✅ audio flow guards (prevents “Sage after wrong”)
+let flowToken = 0;
+let dingTimer = null;
+
+/* =========================
+   AUDIO CANCEL / GUARD
+   ========================= */
+function cancelAudioFlow(){
+  flowToken++; // invalidate any pending callbacks
+
+  // stop ding
+  try{ sfxDing.pause(); sfxDing.currentTime = 0; }catch(_){}
+  sfxDing.onended = null;
+
+  // stop sage
+  try{ sageVoice.pause(); sageVoice.currentTime = 0; }catch(_){}
+  sageVoice.onended = null;
+  sageVoice.onerror = null;
+
+  // clear fallback timer
+  if(dingTimer){ clearTimeout(dingTimer); dingTimer = null; }
+}
 
 /* =========================
    SAGE
@@ -510,6 +532,7 @@ async function primeSage(){
 
 function playSageForIndex(idx, onEnd){
   const src = sagePathForIndex(idx);
+  const myToken = flowToken; // must match current flow token
   let done=false;
 
   const finish = ()=>{
@@ -519,19 +542,20 @@ function playSageForIndex(idx, onEnd){
     if(onEnd) onEnd();
   };
 
-  sageVoice.onended = finish;
-  sageVoice.onerror = finish;
+  sageVoice.onended = ()=>{ if(myToken!==flowToken) return; finish(); };
+  sageVoice.onerror = ()=>{ if(myToken!==flowToken) return; finish(); };
 
   try{
     sageVoice.src = src;
     sageVoice.currentTime = 0;
     const p = sageVoice.play();
-    if(p && p.catch) p.catch(()=>finish());
+    if(p && p.catch) p.catch(()=>{ if(myToken!==flowToken) return; finish(); });
   }catch(_){
     finish();
   }
 
-  setTimeout(()=>finish(), 9000);
+  // failsafe
+  setTimeout(()=>{ if(myToken!==flowToken) return; finish(); }, 9000);
 }
 
 /* =========================
@@ -561,7 +585,6 @@ function clearSelected(){
 }
 
 function refreshCheckState(){
-  // ✅ once solved, Check is hidden anyway
   if(solved) { check.disabled = true; return; }
   check.disabled = (bank.querySelectorAll('.word').length !== 0) || locked;
 }
@@ -583,7 +606,6 @@ function moveToSentence(word, beforeEl=null){
 }
 
 function lockTiles(on){
-  // locks only word tiles (not Next button)
   [...document.querySelectorAll('.word')].forEach(w=>w.disabled = !!on);
 }
 
@@ -592,17 +614,6 @@ function lockUI(on){
   lockTiles(locked);
   playBtn.disabled = locked;
   refreshCheckState();
-}
-
-function setReplayUnlocked(on){
-  replayUnlocked = !!on;
-  if(replayUnlocked){
-    jpCard.classList.remove('locked');
-    jpCard.classList.add('replay');
-  }else{
-    jpCard.classList.remove('replay');
-    jpCard.classList.add('locked');
-  }
 }
 
 function showPlayHint(on){
@@ -614,13 +625,14 @@ function showPlayHint(on){
    Build round
    ========================= */
 function mount(){
+  cancelAudioFlow(); // ✅ kill any old ding->sage callbacks or delayed timeouts
+
   bank.innerHTML='';
   sent.innerHTML='';
   sent.appendChild(playBtn);
 
   nextWrap.style.display='none';
 
-  // ✅ Check is visible at start of each round
   check.style.display='block';
   check.disabled=true;
 
@@ -630,9 +642,12 @@ function mount(){
 
   wrongStreak=0;
   showPlayHint(false);
-  setReplayUnlocked(false);
 
-  solved=false; // ✅ reset solved state
+  solved=false;
+
+  // ✅ Rainbow is display-only (no replay, no Sage)
+  jpCard.classList.remove('replay');
+  jpCard.classList.add('locked');
 
   const item = DATA[i];
   jp.textContent=item.jp;
@@ -676,7 +691,6 @@ function mount(){
   updateProgress();
   refreshCheckState();
 
-  // ✅ Sage primes only when student first uses Check (not before)
   check.onclick = () => {
     primeSage();
     checkLogic();
@@ -688,14 +702,12 @@ sent.addEventListener('click',(e)=>{
 });
 bank.addEventListener('click',(e)=>{ if(e.target === bank) clearSelected(); });
 
-/* Rainbow replay (ONLY after correct) */
+/* ✅ Rainbow touch disabled completely */
 if(jpCard){
   jpCard.addEventListener('click', (e)=>{
+    // do nothing; prevent accidental interactions
     e.preventDefault();
     e.stopPropagation();
-    if(!replayUnlocked) return;
-    primeSage();
-    playSageForIndex(i);
   });
 }
 
@@ -703,8 +715,8 @@ if(jpCard){
 playBtn.addEventListener('click', (e)=>{
   e.preventDefault();
   e.stopPropagation();
-  if(!playBtn.classList.contains('show')) return;
-  if(solved) return; // ✅ after solved, replay is rainbow only
+  if(locked) return;
+  if(!playBtn.classList.contains('show')) return; // only after 3 wrong
   primeSage();
   playSageForIndex(i);
 });
@@ -727,6 +739,9 @@ function playOnce(el){
 }
 
 function checkLogic(){
+  // ✅ critical: cancel any old flows so Sage can never fire after wrong
+  cancelAudioFlow();
+
   if(locked || solved) return;
 
   const correct = currentCorrect();
@@ -735,7 +750,6 @@ function checkLogic(){
   if(built === correct){
     solved = true;
 
-    // lock everything immediately
     lockUI(true);
 
     if(!wrongMode) score++;
@@ -744,30 +758,38 @@ function checkLogic(){
     wrongStreak = 0;
     showPlayHint(false);
 
-    // ✅ After correct: hide Check, show Next (no more checking needed)
+    // After correct: hide Check, show Next
     check.style.display = 'none';
     nextWrap.style.display = 'block';
 
-    // ✅ Correct flow (ONCE): ding -> Sage -> then unlock rainbow replay (but keep tiles locked)
-    let afterDone = false;
+    // ✅ Correct flow (ONCE): ding -> Sage
+    const myToken = ++flowToken;
+
     const afterDingOnce = ()=>{
-      if(afterDone) return;
-      afterDone = true;
+      if(myToken !== flowToken) return; // canceled
       sfxDing.onended = null;
 
       playSageForIndex(i, ()=>{
-        setReplayUnlocked(true); // replay after success
+        if(myToken !== flowToken) return;
         // keep tiles locked; Next works
       });
     };
 
     sfxDing.onended = afterDingOnce;
+
     const p = playOnce(sfxDing);
-    setTimeout(afterDingOnce, 3500);
+
+    // fallback in case onended doesn't fire
+    dingTimer = setTimeout(afterDingOnce, 3500);
+
     if(p && p.catch) p.catch(()=>afterDingOnce());
 
   }else{
     wrongMode = true;
+
+    // ✅ guarantee Sage is stopped and cannot start from any pending callback
+    cancelAudioFlow();
+
     showBig(bigFart);
     playOnce(sfxFart);
 
@@ -787,8 +809,9 @@ function checkLogic(){
 }
 
 nextBtn.onclick = () => {
-  // stop Sage when moving on (prevents overlap if they skip fast)
-  try{ sageVoice.pause(); }catch(_){}
+  // stop everything when moving on
+  cancelAudioFlow();
+
   i++;
   if(i >= DATA.length) return finish();
   mount();
@@ -868,5 +891,6 @@ if(helpBtnEl && helpModal){
    ========================= */
 mount();
 </script>
+
 </body>
 </html>
