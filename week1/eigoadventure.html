@@ -300,6 +300,14 @@ footer{text-align:center;color:#fff;padding:16px 0 22px;font-family:'Cinzel',ser
 .rb{border:none;border-radius:999px;padding:12px 18px;font-weight:900;cursor:pointer;}
 .rb.green{background:linear-gradient(135deg,#4ade80,#22c55e);color:#022c22;}
 .rb.blue{background:linear-gradient(135deg,#93c5fd,#3b82f6);color:#00163a;}
+
+/* iPad / iPhone overlay */
+.ios-overlay{position:fixed;inset:0;z-index:13000;display:none;align-items:center;justify-content:center;}
+.ios-overlay-inner{max-width:420px;width:calc(100% - 40px);border-radius:24px;background:#f9fafb;color:#0f172a;padding:18px 18px 20px;box-shadow:0 22px 60px rgba(0,0,0,.8);font-size:.9rem;}
+.ios-overlay-inner h2{font-family:'Cinzel',serif;font-size:1.1rem;text-align:center;margin-bottom:6px;}
+.ios-overlay-inner p{margin:6px 0;line-height:1.45;}
+.ios-overlay-inner strong{font-weight:800;}
+.ios-ok{margin-top:10px;display:block;width:100%;border:none;border-radius:999px;padding:10px 0;font-weight:800;font-family:'Noto Sans JP',system-ui,sans-serif;background:linear-gradient(135deg,#4ade80,#22c55e);color:#022c22;cursor:pointer;}
 </style>
 </head>
 
@@ -322,7 +330,7 @@ footer{text-align:center;color:#fff;padding:16px 0 22px;font-family:'Cinzel',ser
     <div id="sageBox" role="button" aria-label="Tap to listen">
       <div id="sageText"></div>
     </div>
-    <div class="tapHint">🌈 ここをタップして Sage を聞こう！<small>Tap the rainbow box to listen to Sage.</small></div>
+    <div class="tapHint">ここをタップして Sage を聞こう！<small>Tap the rainbow box to listen to Sage.</small></div>
   </div>
 
   <div class="studentWrapper">
@@ -377,6 +385,18 @@ footer{text-align:center;color:#fff;padding:16px 0 22px;font-family:'Cinzel',ser
         <li>There are <strong>15 questions</strong>. At the end, you get a results screen + sound.</li>
       </ul>
     </div>
+  </div>
+</div>
+
+<!-- iPad / iPhone overlay -->
+<div id="iosOverlay" class="ios-overlay" aria-hidden="true">
+  <div class="ios-overlay-inner">
+    <h2>iPad / iPhone モード</h2>
+    <p><strong>フルの音声チェック（話すバージョン）はパソコン・Androidだけです。</strong></p>
+    <p>iPad / iPhone は、答えをタップすると自動でチェックされます。</p>
+    <p><strong>Full speaking mode is only on computers/Android.</strong></p>
+    <p>On iPad/iPhone, tap an answer to auto-check.</p>
+    <button id="iosOverlayOk" class="ios-ok">OK</button>
   </div>
 </div>
 
@@ -444,6 +464,9 @@ const counter=$('#counter');
 
 const helpBtn=$('#helpBtn');
 const helpModal=$('#helpModal');
+
+const iosOverlay = document.getElementById('iosOverlay');
+const iosOverlayOk = document.getElementById('iosOverlayOk');
 
 const resultsOverlay = document.getElementById('resultsOverlay');
 const resultsScore = document.getElementById('resultsScore');
@@ -638,7 +661,7 @@ function setModeUI(){
     eraseBtn.style.display='inline-block';
     optionsBox.classList.add('locked');
     studentBox.style.cursor='pointer';
-    statusLine.innerHTML = `🎤 声で言ってね（タップは無効）<small>Speak your answer (taps are disabled).</small>`;
+    statusLine.innerHTML = `声で言ってね（タップは無効）<small>Speak your answer (taps are disabled).</small>`;
   }
 }
 
@@ -687,7 +710,7 @@ function loadQuestion(){
 
   if(!isIOS){
     ensureRecog();
-    startMic();
+    // do not auto-listen; student toggles mic by tapping the white box
   }
 }
 
@@ -752,7 +775,7 @@ function ensureRecog(){
   const R=window.SpeechRecognition||window.webkitSpeechRecognition;
   if(!R){
     statusLine.style.display='block';
-    statusLine.innerHTML = `⚠️ 音声認識が使えません<small>Speech recognition is not supported on this device.</small>`;
+    statusLine.innerHTML = `音声認識が使えません<small>Speech recognition is not supported on this device.</small>`;
     return;
   }
   if(recog) return;
@@ -765,19 +788,18 @@ function ensureRecog(){
     listening=true;
     studentBox.classList.add('listening');
     statusLine.style.display='block';
-    statusLine.innerHTML = `🎤 聞いてるよ…<small>Listening…</small>`;
+    statusLine.innerHTML = `聞いてるよ…<small>Listening…</small>`;
   };
 
   recog.onend=()=>{
     listening=false;
     studentBox.classList.remove('listening');
-    // auto-restart to stay always-on
-    setTimeout(()=>{ if(!isIOS && !gotCorrect) startMic(); }, 250);
+    // no auto-restart (student toggles mic)
   };
 
   recog.onerror=(e)=>{
     statusLine.style.display='block';
-    statusLine.innerHTML = `⚠️ マイクを許可してね<small>Please allow microphone access.</small>`;
+    statusLine.innerHTML = `マイクを許可してね<small>Please allow microphone access.</small>`;
   };
 
   recog.onresult=e=>{
@@ -794,7 +816,7 @@ function ensureRecog(){
     const interim = t.trim();
     if(interim && !gotCorrect){
       studentBox.textContent=interim;
-      statusLine.innerHTML = `🎧 きこえた：${escapeHtml(interim)}<small>Heard: ${escapeHtml(interim)}</small>`;
+      statusLine.innerHTML = `きこえた：${escapeHtml(interim)}<small>Heard: ${escapeHtml(interim)}</small>`;
     }
   };
 }
@@ -873,7 +895,18 @@ function clearAnswer(){
   setHint('もう一回言ってね。','Say it again.');
 }
 
-studentBox.addEventListener('click', ()=>{ if(!isIOS) clearAnswer(); });
+studentBox.addEventListener('click', ()=>{
+  if(isIOS) return;
+  if(!recog) ensureRecog();
+  if(!recog) return;
+  if(listening){
+    stopMic();
+    setHint('マイク：オフ','Mic: OFF');
+  }else{
+    startMic();
+    setHint('マイク：オン（声で答えてね）','Mic: ON (Speak your answer)');
+  }
+});
 eraseBtn.addEventListener('click', ()=>{ clearAnswer(); });
 document.addEventListener('keydown', (e)=>{
   if(isIOS) return;
@@ -926,11 +959,21 @@ if(helpBtn && helpModal){
 
 window.onload=()=>{
   loadQuestion();
-  // tiny onboarding hint
+
   if(isIOS){
     setHint('iPad / iPhone：答えをタップすると自動チェック！', 'iPad/iPhone: Tap an answer to auto-check.');
+    if(iosOverlay){
+      iosOverlay.style.display='flex';
+      iosOverlay.setAttribute('aria-hidden','false');
+      if(iosOverlayOk){
+        iosOverlayOk.addEventListener('click', ()=>{
+          iosOverlay.style.display='none';
+          iosOverlay.setAttribute('aria-hidden','true');
+        });
+      }
+    }
   } else {
-    setHint('パソコン・Android：声で答える（まちがいは消すまで残る）', 'Computers/Android: Speak your answer (wrong stays until erased).');
+    setHint('白いボックスを押してマイクをオン・オフ','Tap the white box to toggle the mic');
   }
 };
 
