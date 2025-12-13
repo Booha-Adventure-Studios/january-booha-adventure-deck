@@ -102,10 +102,11 @@ header{text-align:center;padding:26px 12px 12px}
 }
 
 /* gold play button (appears after 3 wrong in a row) */
+/* gold play button (appears after 3 wrong in a row) */
 .playBtn{
   position:absolute;
   left:12px;
-  bottom:-64px;
+  bottom:12px;              /* ✅ was -64px */
   width:54px;
   height:54px;
   border:none;
@@ -118,8 +119,9 @@ header{text-align:center;padding:26px 12px 12px}
   opacity:0;
   pointer-events:none;
   transition:opacity .28s, transform .15s;
-  z-index:3;
+  z-index:9999;             /* ✅ optional: bump it */
 }
+
 .playBtn.show{opacity:1;pointer-events:auto;animation:twinkle 2.4s ease-in-out infinite;}
 .playBtn:active{transform:scale(.96)}
 .playBtn::before{content:"▶";display:block;text-align:center;line-height:54px;}
