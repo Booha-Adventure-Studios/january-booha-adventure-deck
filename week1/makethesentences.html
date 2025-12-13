@@ -466,8 +466,11 @@ let wrongMode=false;
 let selectedWord = null;
 let locked=false;
 
-let wrongStreak=0;  // wrong answers in a row for the current sentence
-let solved=false;   // once correct, hide Check and lock tiles
+let wrongStreak=0;   // wrong answers in a row for the current sentence
+let solved=false;    // once correct, hide Check and lock tiles
+
+// ✅ gold help control (reliable across all 15 rounds)
+let helpReady=false; // turns true after 3 wrong on THIS sentence
 
 // ✅ audio flow guards (prevents “Sage after wrong”)
 let flowToken = 0;
@@ -617,6 +620,7 @@ function lockUI(on){
 }
 
 function showPlayHint(on){
+  helpReady = !!on;                // ✅ real state for “gold help is active”
   if(on) playBtn.classList.add('show');
   else playBtn.classList.remove('show');
 }
@@ -625,7 +629,7 @@ function showPlayHint(on){
    Build round
    ========================= */
 function mount(){
-  cancelAudioFlow(); // ✅ kill any old ding->sage callbacks or delayed timeouts
+  cancelAudioFlow(); // ✅ kill any old callbacks or delayed timeouts
 
   bank.innerHTML='';
   sent.innerHTML='';
@@ -641,8 +645,7 @@ function mount(){
   locked=false;
 
   wrongStreak=0;
-  showPlayHint(false);
-
+  showPlayHint(false); // ✅ resets helpReady each round
   solved=false;
 
   // ✅ Rainbow is display-only (no replay, no Sage)
@@ -705,18 +708,19 @@ bank.addEventListener('click',(e)=>{ if(e.target === bank) clearSelected(); });
 /* ✅ Rainbow touch disabled completely */
 if(jpCard){
   jpCard.addEventListener('click', (e)=>{
-    // do nothing; prevent accidental interactions
     e.preventDefault();
     e.stopPropagation();
   });
 }
 
-/* Gold hint (appears after 3 wrong in a row) */
+/* ✅ Gold hint (after 3 wrong, for every round) */
 playBtn.addEventListener('click', (e)=>{
   e.preventDefault();
   e.stopPropagation();
   if(locked) return;
-  if(!playBtn.classList.contains('show')) return; // only after 3 wrong
+  if(!helpReady) return;      // ✅ reliable: not tied to CSS class glitches
+  if(solved) return;          // (not really needed, but safe)
+  cancelAudioFlow();          // ✅ stop anything that might interfere
   primeSage();
   playSageForIndex(i);
 });
