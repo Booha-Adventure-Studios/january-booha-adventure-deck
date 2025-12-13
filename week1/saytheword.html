@@ -400,11 +400,12 @@ body.ios #counter{margin-top:2px;}
   </div>
 </div>
 
-<!-- non-Sage (SFX/results) live in week1/assets/audio -->
-<audio id="s_r05" src="assets/audio/result_0-5.mp3" preload="auto"></audio>
-<audio id="s_r610" src="assets/audio/result_6-10.mp3" preload="auto"></audio>
-<audio id="s_r1114" src="assets/audio/result_11-14.mp3" preload="auto"></audio>
-<audio id="s_r15" src="assets/audio/result_15.mp3" preload="auto"></audio>
+<!-- Results (src assigned by JS so it works from root OR inside /week1/) -->
+<audio id="s_r05" preload="auto" playsinline></audio>
+<audio id="s_r610" preload="auto" playsinline></audio>
+<audio id="s_r1114" preload="auto" playsinline></audio>
+<audio id="s_r15" preload="auto" playsinline></audio>
+
 
 <!-- Sage voice mp3s live in week1/audio/vocab (numbered: v01_goal.mp3 ...) -->
 <audio id="sageVoice" preload="auto"></audio>
@@ -431,6 +432,33 @@ const MASTER=[
 const $=s=>document.querySelector(s);
 function shuffle(a){return a.map(v=>[Math.random(),v]).sort((x,y)=>x[0]-y[0]).map(x=>x[1]);}
 
+/* ✅ Works whether this HTML is at repo root OR inside /week1/ */
+const WEEK_PREFIX = location.pathname.includes('/week1/') ? '' : 'week1/';
+
+function setAudioSrc(id, relPath){
+  const el = document.getElementById(id);
+  if(!el) return;
+  el.src = WEEK_PREFIX + relPath;
+}
+
+function initResultAudioPaths(){
+  setAudioSrc('s_r05',   'assets/audio/result_0-5.mp3');
+  setAudioSrc('s_r610',  'assets/audio/result_6-10.mp3');
+  setAudioSrc('s_r1114', 'assets/audio/result_11-14.mp3');
+  setAudioSrc('s_r15',   'assets/audio/result_15.mp3');
+}
+initResultAudioPaths();
+
+/* Safer playback (iOS-friendly) */
+function playEndCard(el){
+  if(!el) return;
+  const a = el.cloneNode(true);
+  a.setAttribute('playsinline','');
+  a.currentTime = 0;
+  document.body.appendChild(a);
+  a.play().catch(()=>{}).finally(()=>setTimeout(()=>a.remove(), 12000));
+}
+  
 /* =========================
    ✅ Sage audio (FINAL naming)
    - Files: week1/audio/vocab/v01_goal.mp3 ... v15_motivation.mp3
@@ -443,7 +471,7 @@ let sagePrimed = false;
 // Build lookup based on MASTER order (1..15)
 const SAGE_LOOKUP = MASTER.reduce((acc, item, i)=>{
   const n = String(i+1).padStart(2,'0');
-  acc[item.en] = `audio/vocab/v${n}_${item.en}.mp3`;
+  acc[item.en] = `${WEEK_PREFIX}audio/vocab/v${n}_${item.en}.mp3`;
   return acc;
 }, {});
 
@@ -630,6 +658,8 @@ function iosCheckFlow(){
   if(answered) return;
 
   answered = true;
+  score = Math.min(15, score + 1);
+
 
   const item = order[idx];
   answerText.textContent = item.en;
@@ -725,21 +755,42 @@ nextBtn.addEventListener('click',()=>{
 
 function showResults(){
   $('#page-game').classList.remove('active');
-  const res=$('#page-results');
+  const res = $('#page-results');
   res.classList.add('active');
-  const pct=Math.round((score/order.length)*100);
-  let msg='いいね！あと少しでパーフェクト！',snd=$('#s_r1114');
-  if(score<=5){msg='ブーリキュラム見てないでしょ！';snd=$('#s_r05');}
-  else if(score<=10){msg='YouTube見すぎ！ブーリキュラムもやろう！';snd=$('#s_r610');}
-  else if(score===15){msg='すごい！あなたは地球で一番頭がいい！';snd=$('#s_r15');}
-  $('#resultMsg').textContent=msg;
-  $('#resultScore').textContent=`${score}/15（${pct}%）`;
-  try{ snd.currentTime=0; }catch{}
-  snd.play().catch(()=>{});
-  if(score===15){
-    for(let i=0;i<160;i++) setTimeout(()=>{confettiBurst(document.body,1)},i*10);
+
+  // ✅ iPad/iPhone: always perfect score (no speech judging)
+  if(isIOS){
+    score = 15;
+  }
+
+  const pct = Math.round((score / order.length) * 100);
+
+  let msg = 'いいね！あと少しでパーフェクト！';
+  let snd = $('#s_r1114');
+
+  if(score <= 5){
+    msg = 'ブーリキュラム見てないでしょ！';
+    snd = $('#s_r05');
+  } else if(score <= 10){
+    msg = 'YouTube見すぎ！ブーリキュラムもやろう！';
+    snd = $('#s_r610');
+  } else if(score === 15){
+    msg = 'すごい！あなたは地球で一番頭がいい！';
+    snd = $('#s_r15');
+  }
+
+  $('#resultMsg').textContent = msg;
+  $('#resultScore').textContent = `${score}/15（${pct}%）`;
+
+  playEndCard(snd);
+
+  if(score === 15){
+    for(let i=0;i<160;i++){
+      setTimeout(()=>{ confettiBurst(document.body, 1); }, i*10);
+    }
   }
 }
+
 
 $('#playAgain').addEventListener('click',()=>{
   order=shuffle([...MASTER]);
