@@ -64,7 +64,10 @@ a.deck{
   text-decoration:none;
   color:#111;
   font-weight:900;
-  font-size:1.1rem;
+
+  /* ✅ Slightly smaller base so it never overflows while scaling */
+  font-size:clamp(0.82rem, 1.35vw, 1.02rem);
+
   overflow:hidden;
   cursor:pointer;
   border:8px solid #000;
@@ -72,9 +75,12 @@ a.deck{
   transition:box-shadow .3s ease,transform .3s ease,filter .4s ease;
   will-change:transform;
 
-  /* ✅ HARD CENTER (prevents left-shift during transform/clone animation) */
+  /* ✅ HARD CENTER */
   text-align:center;
   transform-origin:center center;
+
+  /* ✅ Keep content safely inside */
+  padding:12px;
 }
 
 a.deck.active{
@@ -131,7 +137,7 @@ a.deck::after{
 
 a.deck:hover{filter:brightness(1.25);}
 
-/* ✅ HARD CENTER text blocks */
+/* ✅ Text sizing + fit rules */
 a.deck b,
 a.deck span{
   position:relative;
@@ -140,11 +146,27 @@ a.deck span{
   width:100%;
   text-align:center;
   transform-origin:center center;
+
+  /* critical: keep inside tile */
+  max-width:100%;
+  overflow:hidden;
+  text-overflow:ellipsis;
 }
 
-/* Keep titles from reflowing oddly while scaling (optional but helps) */
-a.deck b{ line-height:1.05; white-space:nowrap; }
-a.deck span{ font-size:0.85em; color:#222; white-space:nowrap; }
+/* Keep on one line (no breaking in half) */
+a.deck b{
+  line-height:1.05;
+  white-space:nowrap;
+  font-size:1.0em; /* inherits from deck's clamp */
+}
+a.deck span{
+  white-space:nowrap;
+  font-size:0.80em;
+  color:#222;
+}
+
+/* If Safari tries to reflow during transform, keep layout stable */
+a.deck, a.deck *{ -webkit-font-smoothing:antialiased; }
 
 @keyframes spin{
   0%{transform:translate(-50%,-50%) rotate(0deg);}
@@ -205,10 +227,19 @@ footer{
   h1{margin-bottom:.2em;}
   h2{margin-bottom:.2em;}
   h3{margin-bottom:1.2em;}
+
   .deck-links{
     grid-template-columns:repeat(2, minmax(0, 1fr));
     gap:1.2rem;
   }
+
+  /* a little smaller on phones to prevent overflow */
+  a.deck{
+    font-size:clamp(0.78rem, 3.2vw, 0.95rem);
+    padding:10px;
+  }
+  a.deck span{font-size:0.78em;}
+
   footer{
     font-size:13px;
     bottom:10px;
@@ -297,19 +328,19 @@ if (deckContainer) {
     deck.classList.add('active');
     deck.style.setProperty('--spinDur','1.2s');
 
-    // ---- SMOOTH CLONE ANIMATION (no grid jitter) ----
     const r = deck.getBoundingClientRect();
 
     const clone = deck.cloneNode(true);
     clone.classList.add('active');
     clone.style.setProperty('--spinDur','1.2s');
 
-    /* ✅ HARD CENTER on clone while moving (prevents left-align drift) */
+    /* ✅ HARD CENTER on clone while moving */
     clone.style.display = 'flex';
     clone.style.flexDirection = 'column';
     clone.style.alignItems = 'center';
     clone.style.justifyContent = 'center';
     clone.style.textAlign = 'center';
+    clone.style.padding = getComputedStyle(deck).padding;
 
     clone.style.position = 'fixed';
     clone.style.left = r.left + 'px';
