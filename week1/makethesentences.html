@@ -406,23 +406,26 @@ footer{text-align:center;color:#c9d4ec;font-family:'Cinzel',serif;font-weight:70
 /* =========================
    DATA (KEEP ORDER for s01...s15)
    ========================= */
-const DATA=[
-  {en:"I will study every day.", jp:"毎日勉強します。", hira:"まいにち べんきょう します"},
-  {en:"I’m going to try something new.", jp:"新しいことをやってみます。", hira:"あたらしい こと を やってみます"},
-  {en:"I will do my best this year.", jp:"今年はがんばります。", hira:"ことし は がんばります"},
-  {en:"I will make a new friend.", jp:"新しい友だちを作ります。", hira:"あたらしい ともだち を つくり ます"},
-  {en:"I will not be late anymore.", jp:"もう遅刻しません。", hira:"もう ちこく しません"},
-  {en:"I will help my classmates.", jp:"クラスメートを助けます。", hira:"くらすめーと を たすけ ます"},
-  {en:"I will clean my desk today.", jp:"今日は机を片づけます。", hira:"きょう は つくえ を かたづけ ます"},
-  {en:"I will read more books.", jp:"もっと本を読みます。", hira:"もっと ほん を よみ ます"},
-  {en:"I will start a good habit.", jp:"良い習慣を始めます。", hira:"よい しゅうかん を はじめ ます"},
-  {en:"I will speak more English.", jp:"もっと英語を話します。", hira:"もっと えいご を はなし ます"},
-  {en:"I will write in my diary every week.", jp:"毎週日記を書きます。", hira:"まいしゅう にっき を かき ます"},
-  {en:"I will wake up earlier.", jp:"もっと早く起きます。", hira:"もっと はやく おき ます"},
-  {en:"I will listen carefully in class.", jp:"授業でしっかり聞きます。", hira:"じゅぎょう で しっかり きき ます"},
-  {en:"I will smile more.", jp:"もっと笑います。", hira:"もっと わらい ます"},
-  {en:"I will enjoy learning.", jp:"学ぶことを楽しみます。", hira:"まなぶ こと を たのしみ ます"}
+const BASE_DATA=[
+  {id:1, en:"I will study every day.", jp:"毎日勉強します。", hira:"まいにち べんきょう します"},
+  {id:2, en:"I’m going to try something new.", jp:"新しいことをやってみます。", hira:"あたらしい こと を やってみます"},
+  {id:3, en:"I will do my best this year.", jp:"今年はがんばります。", hira:"ことし は がんばります"},
+  {id:4, en:"I will make a new friend.", jp:"新しい友だちを作ります。", hira:"あたらしい ともだち を つくり ます"},
+  {id:5, en:"I will not be late anymore.", jp:"もう遅刻しません。", hira:"もう ちこく しません"},
+  {id:6, en:"I will help my classmates.", jp:"クラスメートを助けます。", hira:"くらすめーと を たすけ ます"},
+  {id:7, en:"I will clean my desk today.", jp:"今日は机を片づけます。", hira:"きょう は つくえ を かたづけ ます"},
+  {id:8, en:"I will read more books.", jp:"もっと本を読みます。", hira:"もっと ほん を よみ ます"},
+  {id:9, en:"I will start a good habit.", jp:"良い習慣を始めます。", hira:"よい しゅうかん を はじめ ます"},
+  {id:10, en:"I will speak more English.", jp:"もっと英語を話します。", hira:"もっと えいご を はなし ます"},
+  {id:11, en:"I will write in my diary every week.", jp:"毎週日記を書きます。", hira:"まいしゅう にっき を かき ます"},
+  {id:12, en:"I will wake up earlier.", jp:"もっと早く起きます。", hira:"もっと はやく おき ます"},
+  {id:13, en:"I will listen carefully in class.", jp:"授業でしっかり聞きます。", hira:"じゅぎょう で しっかり きき ます"},
+  {id:14, en:"I will smile more.", jp:"もっと笑います。", hira:"もっと わらい ます"},
+  {id:15, en:"I will enjoy learning.", jp:"学ぶことを楽しみます。", hira:"まなぶ こと を たのしみ ます"}
 ];
+
+// 🔀 shuffle questions each refresh (audio stays tied to BASE id)
+const DATA = shuffle([...BASE_DATA]);
 
 /* =========================
    DOM
@@ -467,8 +470,11 @@ function slugFromSentence(en){
 }
 function sNum(n){ return String(n).padStart(2,'0'); }
 function sagePathForIndex(idx){
-  const slug = slugFromSentence(DATA[idx]?.en || '');
-  return `audio/sentences/s${sNum(idx+1)}_${slug}.mp3`;
+  const item = DATA[idx];
+  const id = item?.id ?? (idx+1);
+  const slug = slugFromSentence(item?.en || '');
+  return `audio/sentences/s${sNum(id)}_${slug}.mp3`;
+}_${slug}.mp3`;
 }
 
 async function primeSage(){
@@ -488,6 +494,8 @@ async function primeSage(){
 }
 
 function playSageForIndex(idx, onEnd){
+  // idx is current round index; filename is based on the original BASE id
+
   const src = sagePathForIndex(idx);
   let done=false;
 
@@ -667,12 +675,11 @@ function checkLogic(){
     nextWrap.style.display='none';
     playBtn.classList.remove('show');
 
-    // Correct flow:
-    // ding.mp3 -> Sage -> Next button
-    sfxDing.onended = null;
-    const p = playOnce(sfxDing);
-
-    const afterDing = ()=>{
+    // Correct flow (ONCE): ding.mp3 -> Sage -> Next
+    let afterDone = false;
+    const afterDingOnce = ()=>{
+      if(afterDone) return;
+      afterDone = true;
       sfxDing.onended = null;
       playSageForIndex(i, ()=>{
         nextWrap.style.display='block';
@@ -680,15 +687,15 @@ function checkLogic(){
       });
     };
 
-    if(p && p.then){
-      p.then(()=>{ /* handled by ended */ }).catch(()=>afterDing());
-    }
-    sfxDing.onended = afterDing;
+    sfxDing.onended = afterDingOnce;
+    const p = playOnce(sfxDing);
 
-    // Safety: in case ended doesn't fire
-    setTimeout(()=>{
-      if(nextWrap.style.display !== 'block') afterDing();
-    }, 3500);
+    // Fallback: if "ended" doesn't fire, run once
+    setTimeout(afterDingOnce, 3500);
+
+    if(p && p.catch){
+      p.catch(()=>afterDingOnce());
+    }
 
   }else{
     wrongMode = true;
