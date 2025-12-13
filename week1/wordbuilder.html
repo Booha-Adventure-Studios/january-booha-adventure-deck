@@ -345,7 +345,8 @@ const MASTER_BASE=["goal","plan","future","dream","challenge","try","change","ha
 // Build a lookup so WORD index → correct file
 const SAGE_INDEX = MASTER_BASE.reduce((acc, word, i) => {
   const num = String(i + 1).padStart(2, '0');
-  acc[word] = `audio/vocab/v${num}_${word}.mp3`;
+ acc[word] = `${WEEK_PREFIX}audio/vocab/v${num}_${word}.mp3`;
+
   return acc;
 }, {});
 let WORDS=[]; // shuffled on load
@@ -371,15 +372,25 @@ helpClose.addEventListener("click",closeHelp);
 helpModal.addEventListener("click",e=>{ if(e.target===helpModal) closeHelp(); });
 
 /* ====== Audio ====== */
-const sfx={
-  fart:new Audio('assets/audio/fart.mp3'),
-  r0_5:new Audio('assets/audio/result_0-5.mp3'),
-  r6_10:new Audio('assets/audio/result_6-10.mp3'),
-  r11_14:new Audio('assets/audio/result_11-14.mp3'),
-  r15:new Audio('assets/audio/result_15.mp3'),
-};
-Object.values(sfx).forEach(a=>{a.preload='auto'; a.load();});
+/* ✅ Works whether this HTML is at repo root OR inside /week1/ */
+const WEEK_PREFIX = location.pathname.includes('/week1/') ? '' : 'week1/';
 
+const sfx = {
+  ding:  new Audio(WEEK_PREFIX + 'assets/audio/ding.mp3'),
+  fart:  new Audio(WEEK_PREFIX + 'assets/audio/fart.mp3'),
+  r0_5:  new Audio(WEEK_PREFIX + 'assets/audio/result_0-5.mp3'),
+  r6_10: new Audio(WEEK_PREFIX + 'assets/audio/result_6-10.mp3'),
+  r11_14:new Audio(WEEK_PREFIX + 'assets/audio/result_11-14.mp3'),
+  r15:   new Audio(WEEK_PREFIX + 'assets/audio/result_15.mp3'),
+};
+
+Object.values(sfx).forEach(a=>{
+  a.preload='auto';
+  a.playsInline = true;
+  try{ a.load(); }catch{}
+});
+
+  
 function playSfx(audio){
   try{
     audio.currentTime=0;
@@ -572,14 +583,16 @@ function sendToBank(tile){
 /* ====== Round / Check ====== */
 check.addEventListener("click",()=>{
   const ans=currentAnswer(), correct=WORDS[index];
-  if(ans===correct){
-    if(firstTry) totalScore++;
+ if(ans===correct){
+  if(firstTry) totalScore++;
 
-    showBig(bigHeart);
+  showBig(bigHeart);
+  playSfx(sfx.ding);   // ✅ DING after correct answer
 
-    nextWrap.style.display="flex";
-    check.style.display="none";
-  } else {
+  nextWrap.style.display="flex";
+  check.style.display="none";
+} else {
+
     firstTry=false;
     flashRedScreen();
     showBig(bigFart);
