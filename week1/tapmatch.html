@@ -480,14 +480,14 @@ text-align:center;
 </div>
 </div>
 
-<!-- SFX + results (✅ week1 paths) -->
-<audio id="s_ding"   src="week1/assets/audio/ding.mp3" preload="auto"></audio>
-<audio id="s_fart"   src="week1/assets/audio/fart.mp3" preload="auto"></audio>
+<!-- SFX + results (paths assigned by JS so it works from root OR inside /week1/) -->
+<audio id="s_ding"  preload="auto" playsinline></audio>
+<audio id="s_fart"  preload="auto" playsinline></audio>
+<audio id="s_r05"   preload="auto" playsinline></audio>
+<audio id="s_r610"  preload="auto" playsinline></audio>
+<audio id="s_r1114" preload="auto" playsinline></audio>
+<audio id="s_r15"   preload="auto" playsinline></audio>
 
-<audio id="s_r05"    src="week1/assets/audio/result_0-5.mp3" preload="auto"></audio>
-<audio id="s_r610"   src="week1/assets/audio/result_6-10.mp3" preload="auto"></audio>
-<audio id="s_r1114"  src="week1/assets/audio/result_11-14.mp3" preload="auto"></audio>
-<audio id="s_r15"    src="week1/assets/audio/result_15.mp3" preload="auto"></audio>
 
 
 <!-- ✅ One reusable vocab player -->
@@ -524,6 +524,28 @@ let isGrading = false;
 /* Helpers */
 const $ = s => document.querySelector(s);
 
+/* ✅ Works whether this HTML is at repo root OR inside /week1/ */
+const WEEK_PREFIX = location.pathname.includes('/week1/') ? '' : 'week1/';
+
+function setAudioSrc(id, relPath){
+  const el = document.getElementById(id);
+  if(!el) return;
+  el.src = WEEK_PREFIX + relPath;
+}
+
+function initAudioPaths(){
+  setAudioSrc('s_ding',  'assets/audio/ding.mp3');
+  setAudioSrc('s_fart',  'assets/audio/fart.mp3');
+
+  setAudioSrc('s_r05',   'assets/audio/result_0-5.mp3');
+  setAudioSrc('s_r610',  'assets/audio/result_6-10.mp3');
+  setAudioSrc('s_r1114', 'assets/audio/result_11-14.mp3');
+  setAudioSrc('s_r15',   'assets/audio/result_15.mp3');
+}
+
+/* Call immediately (safe before gameplay) */
+initAudioPaths();
+
 function playSfx(id){
   const src = document.getElementById(id);
   if(!src) return;
@@ -531,13 +553,12 @@ function playSfx(id){
   const a = src.cloneNode(true);
   a.setAttribute('playsinline','');
   a.currentTime = 0;
-  a.volume = (src.volume ?? 1);
 
   document.body.appendChild(a);
-  a.play().catch(()=>{}).finally(()=>setTimeout(()=>a.remove(), 1800));
+  a.play().catch(()=>{}).finally(()=>setTimeout(()=>a.remove(), 2000));
 }
 
-/* ✅ END scorecard audio (longer, safer on iOS) */
+/* ✅ END scorecard audio (longer) */
 function playEndCard(el){
   if(!el) return;
 
@@ -547,7 +568,6 @@ function playEndCard(el){
 
   document.body.appendChild(a);
   a.play().catch(()=>{}).finally(()=>{
-    // result mp3s can be longer than ding/fart
     setTimeout(()=>a.remove(), 12000);
   });
 }
@@ -557,19 +577,12 @@ function centerOf(el){
   return { x: r.left + r.width/2, y: r.top + r.height/2 };
 }
 
-/* Shuffle helper */
 function shuffle(a){
   return a
     .map(v => [Math.random(), v])
     .sort((x,y) => x[0] - y[0])
     .map(x => x[1]);
 }
-
-
-function centerOf(el){const r=el.getBoundingClientRect();return{ x:r.left+r.width/2, y:r.top+r.height/2 };}
-
-/* Shuffle helper */
-function shuffle(a){return a.map(v=>[Math.random(),v]).sort((x,y)=>x[0]-y[0]).map(x=>x[1]);}
 
 /* Effects */
 function burstConfettiAt(el,count=44){
@@ -597,8 +610,9 @@ function safeWord(s){
 return (s||"").toLowerCase().trim().replace(/\s+/g,'_').replace(/[^a-z0-9_'-]/g,'');
 }
 function vocabSrc(id, en){
-return `audio/vocab/v${pad2(id)}_${safeWord(en)}.mp3`;
+  return `${WEEK_PREFIX}audio/vocab/v${pad2(id)}_${safeWord(en)}.mp3`;
 }
+
 function playVocabById(id, en){
 if(!id || !en) return;
 const p = $("#vocabPlayer");
