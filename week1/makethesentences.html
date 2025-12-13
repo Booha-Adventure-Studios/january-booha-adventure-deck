@@ -44,7 +44,7 @@ header{text-align:center;padding:26px 12px 12px}
   overflow:visible;
 }
 
-/* JP card (tap to hear Sage) */
+/* JP card */
 .jpCard{
   border-radius:var(--radius);
   border:1px solid var(--outline);
@@ -57,9 +57,15 @@ header{text-align:center;padding:26px 12px 12px}
   #8aff80 84px 112px,#c77dff 112px 140px,#fff680 140px 168px);
   background-size:100% 600px;
   animation:stripeSlide 18s linear infinite;
-  cursor:pointer;
   user-select:none;
   -webkit-tap-highlight-color:transparent;
+}
+.jpCard.replay{
+  cursor:pointer;
+}
+.jpCard.locked{
+  cursor:default;
+  filter:saturate(.92) brightness(.98);
 }
 @keyframes stripeSlide{from{background-position-y:0}to{background-position-y:-600px}}
 .jpText{
@@ -95,6 +101,33 @@ header{text-align:center;padding:26px 12px 12px}
   border-radius:14px;
   padding:16px 12px;
   position:relative;
+}
+
+/* gold play button (appears after 3 wrong in a row) */
+.playBtn{
+  position:absolute;
+  left:12px;
+  bottom:-64px;
+  width:54px;
+  height:54px;
+  border:none;
+  border-radius:50%;
+  background:linear-gradient(135deg,#c59b10 0%,#ffd95e 40%,#ffe898 60%,#b68006 100%);
+  box-shadow:var(--goldGlow);
+  color:#2a1b00;
+  font-weight:900;
+  font-size:26px;
+  opacity:0;
+  pointer-events:none;
+  transition:opacity .28s, transform .15s;
+  z-index:3;
+}
+.playBtn.show{opacity:1;pointer-events:auto;animation:twinkle 2.4s ease-in-out infinite;}
+.playBtn:active{transform:scale(.96)}
+.playBtn::before{content:"▶";display:block;text-align:center;line-height:54px;}
+@keyframes twinkle{
+  0%,100%{box-shadow:var(--goldGlow);}
+  50%{box-shadow:0 0 14px rgba(255,235,94,1),0 0 26px rgba(255,235,94,1);}
 }
 
 /* chips */
@@ -277,7 +310,7 @@ footer{text-align:center;color:#c9d4ec;font-family:'Cinzel',serif;font-weight:70
 
 <div class="wrap" id="page-round">
   <div class="panel" id="panel">
-    <div class="jpCard" id="jpCard" title="Tap to hear the correct sentence">
+    <div class="jpCard locked" id="jpCard">
       <div id="jp" class="jpText"></div>
     </div>
     <div id="hira" class="hira"></div>
@@ -285,7 +318,9 @@ footer{text-align:center;color:#c9d4ec;font-family:'Cinzel',serif;font-weight:70
     <div id="bank" class="wordbank"></div>
 
     <div style="position:relative;">
-      <div id="sentence" class="sentence"></div>
+      <div id="sentence" class="sentence">
+        <button id="playBtn" class="playBtn" type="button" aria-label="Play"></button>
+      </div>
     </div>
 
     <button id="checkBtn" class="btn green" disabled>Check</button>
@@ -314,9 +349,10 @@ footer{text-align:center;color:#c9d4ec;font-family:'Cinzel',serif;font-weight:70
         <li>グレーのエリアの単語をタップすると、単語バンクに戻ります。</li>
         <li><strong>並べ替え</strong>：グレーの中の単語をタップして選んでから、別の単語をタップすると、その前に入ります。</li>
         <li>できたら <strong>Check</strong> を押します。</li>
-        <li>正解：<strong>大きいハート</strong> → <strong>ding</strong> → Sage音声 → <strong>Next</strong></li>
+        <li>正解：<strong>大きいハート</strong> → <strong>ding</strong> → 音声 → <strong>Next</strong></li>
         <li>不正解：<strong>大きいおなら</strong> → <strong>fart</strong> → タイルが戻るので、もう一度ならべ直します（点数は増えません）。</li>
-        <li>もう一度聞きたいときは、上の<strong>カラフルな文</strong>をタップします。</li>
+        <li>正解したあと、もう一度聞きたいときは上の<strong>カラフルな文</strong>をタップします。</li>
+        <li>同じ文を<strong>3回連続でまちがえた</strong>ときは、金色の<strong>▶</strong>が出てヒントが聞けます。</li>
       </ul>
 
       <h3>English</h3>
@@ -326,9 +362,10 @@ footer{text-align:center;color:#c9d4ec;font-family:'Cinzel',serif;font-weight:70
         <li>Tap a word in the sentence area to send it back to the bank.</li>
         <li><strong>Reorder</strong>: tap a word in the sentence area to select it, then tap another word to insert it before that word.</li>
         <li>Tap <strong>Check</strong> when you finish.</li>
-        <li>Correct: <strong>big heart</strong> → <strong>ding</strong> → Sage → <strong>Next</strong></li>
+        <li>Correct: <strong>big heart</strong> → <strong>ding</strong> → voice → <strong>Next</strong></li>
         <li>Wrong: <strong>big fart</strong> → <strong>fart</strong> → tiles return, try again (no point).</li>
-        <li>To hear it again, tap the <strong>colorful sentence</strong> at the top.</li>
+        <li>After you get it correct, tap the <strong>colorful sentence</strong> to hear it again.</li>
+        <li>If you get the same sentence wrong <strong>3 times in a row</strong>, a gold <strong>▶</strong> button appears to help you.</li>
       </ul>
 
     </div>
@@ -409,6 +446,7 @@ const DATA = shuffle([...BASE_DATA]);
 const qs = s => document.querySelector(s);
 const jp=qs('#jp'), hira=qs('#hira'), bank=qs('#bank'), sent=qs('#sentence');
 const jpCard = qs('#jpCard');
+const playBtn = qs('#playBtn');
 const check=qs('#checkBtn'), nextWrap=qs('#nextWrap'), nextBtn=qs('#nextBtn');
 const progress=qs('#progress');
 
@@ -427,12 +465,14 @@ let sagePrimed = false;
 let i=0;
 let score=0;
 let wrongMode=false;
-let selectedWord = null; // reorder inside sentence
+let selectedWord = null;
 let locked=false;
 
+let wrongStreak=0;        // wrong answers in a row for the current sentence
+let replayUnlocked=false; // rainbow replay is only allowed after correct
+
 /* =========================
-   SAGE (week1/audio/sentences/)
-   format: s01_<slug>.mp3
+   SAGE
    ========================= */
 function slugFromSentence(en){
   return (en||'')
@@ -492,7 +532,6 @@ function playSageForIndex(idx, onEnd){
     finish();
   }
 
-  // hard stop fallback (still guarded so it only runs once)
   setTimeout(()=>finish(), 9000);
 }
 
@@ -537,7 +576,7 @@ function moveToSentence(word, beforeEl=null){
   if(beforeEl && beforeEl.parentElement === sent){
     sent.insertBefore(word, beforeEl);
   }else{
-    sent.appendChild(word);
+    sent.insertBefore(word, playBtn); // keep play button last
   }
   refreshCheckState();
 }
@@ -545,7 +584,24 @@ function moveToSentence(word, beforeEl=null){
 function lockUI(on){
   locked = !!on;
   [...document.querySelectorAll('.word')].forEach(w=>w.disabled = locked);
+  playBtn.disabled = locked;
   check.disabled = locked || (bank.querySelectorAll('.word').length !== 0);
+}
+
+function setReplayUnlocked(on){
+  replayUnlocked = !!on;
+  if(replayUnlocked){
+    jpCard.classList.remove('locked');
+    jpCard.classList.add('replay');
+  }else{
+    jpCard.classList.remove('replay');
+    jpCard.classList.add('locked');
+  }
+}
+
+function showPlayHint(on){
+  if(on) playBtn.classList.add('show');
+  else playBtn.classList.remove('show');
 }
 
 /* =========================
@@ -554,6 +610,7 @@ function lockUI(on){
 function mount(){
   bank.innerHTML='';
   sent.innerHTML='';
+  sent.appendChild(playBtn);
 
   nextWrap.style.display='none';
   check.style.display='block';
@@ -562,6 +619,10 @@ function mount(){
   wrongMode=false;
   clearSelected();
   locked=false;
+
+  wrongStreak=0;
+  showPlayHint(false);
+  setReplayUnlocked(false);
 
   const item = DATA[i];
   jp.textContent=item.jp;
@@ -578,7 +639,6 @@ function mount(){
     b.addEventListener('click',(e)=>{
       e.stopPropagation();
       if(locked) return;
-      primeSage();
 
       const parent = b.parentElement;
       if(parent === bank){
@@ -613,26 +673,38 @@ function mount(){
 }
 
 sent.addEventListener('click',(e)=>{
-  if(e.target === sent) clearSelected();
+  if(e.target === sent || e.target === playBtn) clearSelected();
 });
 bank.addEventListener('click',(e)=>{ if(e.target === bank) clearSelected(); });
 
-/* Tap rainbow card to hear it again */
+/* Rainbow replay (ONLY after correct) */
 if(jpCard){
   jpCard.addEventListener('click', (e)=>{
     e.preventDefault();
     e.stopPropagation();
     if(locked) return;
+    if(!replayUnlocked) return;
     primeSage();
     playSageForIndex(i);
   });
 }
 
+/* Gold hint (appears after 3 wrong in a row) */
+playBtn.addEventListener('click', (e)=>{
+  e.preventDefault();
+  e.stopPropagation();
+  if(locked) return;
+  primeSage();
+  playSageForIndex(i);
+});
+
 /* =========================
    Logic
    ========================= */
 function currentBuilt(){
-  return [...sent.querySelectorAll('.word')].map(e=>e.textContent).join(' ').trim();
+  return [...sent.querySelectorAll('.word')]
+    .filter(el => el !== playBtn)
+    .map(e=>e.textContent).join(' ').trim();
 }
 function currentCorrect(){
   return DATA[i].en.trim();
@@ -655,7 +727,8 @@ function checkLogic(){
     if(!wrongMode) score++;
     showBig(bigHeart);
 
-    nextWrap.style.display='none';
+    wrongStreak = 0;
+    showPlayHint(false);
 
     // Correct flow (ONCE): ding -> Sage -> Next
     let afterDone = false;
@@ -663,7 +736,9 @@ function checkLogic(){
       if(afterDone) return;
       afterDone = true;
       sfxDing.onended = null;
+
       playSageForIndex(i, ()=>{
+        setReplayUnlocked(true);     // replay unlocks AFTER they succeed
         nextWrap.style.display='block';
         lockUI(false);
       });
@@ -671,21 +746,23 @@ function checkLogic(){
 
     sfxDing.onended = afterDingOnce;
     const p = playOnce(sfxDing);
-
-    // Fallback if ended doesn't fire (still guarded, so runs once)
     setTimeout(afterDingOnce, 3500);
-
-    if(p && p.catch){
-      p.catch(()=>afterDingOnce());
-    }
+    if(p && p.catch) p.catch(()=>afterDingOnce());
 
   }else{
     wrongMode = true;
     showBig(bigFart);
     playOnce(sfxFart);
 
+    wrongStreak++;
+    if(wrongStreak >= 3){
+      showPlayHint(true);
+    }
+
     // return all tiles
-    [...sent.querySelectorAll('.word')].forEach(ch=>moveToBank(ch));
+    [...sent.querySelectorAll('.word')].forEach(ch=>{
+      if(ch !== playBtn) moveToBank(ch);
+    });
     clearSelected();
 
     refreshCheckState();
