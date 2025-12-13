@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
 <title>Booha Eigo Adventure – January Week 1</title>
 <meta name="theme-color" content="#0b1530" />
-<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Noto+Sans+JP:wght@500;700&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Noto+Sans+JP:wght@500;700;900&display=swap" rel="stylesheet" />
 
 <style>
 :root{
@@ -25,7 +25,7 @@ body{
 }
 header{text-align:center;padding:26px 12px 12px}
 .h1{font-family:'Cinzel',serif;font-weight:900;font-size:clamp(34px,6.2vw,56px);}
-.h2{font-family:'Cinzel',serif;font-weight:900;font-size:clamp(18px,4.2vw,34px);}
+.h2{font-family:'Cinzel',serif;font-weight:900;font-size:clamp(22px,4.5vw,36px);}
 .h3{font-family:'Cinzel',serif;font-weight:900;font-size:clamp(16px,3.6vw,22px);}
 .h4{font-weight:800;font-size:clamp(14px,3.4vw,20px);color:#cfe1ff;}
 
@@ -39,8 +39,6 @@ main{
   text-align:center;
   padding:0 1rem;
 }
-
-/* Sage question box */
 .sageWrapper{position:relative;width:100%;margin-top:1rem;}
 #sageBox,#studentBox{
   width:100%;
@@ -59,9 +57,12 @@ main{
 }
 #sageBox::before{
   content:'';
-  position:absolute; inset:0; z-index:0;
+  position:absolute;
+  inset:0;
+  z-index:0;
   animation:stripeSlide 18s linear infinite;
-  background:repeating-linear-gradient(to bottom,
+  background:repeating-linear-gradient(
+    to bottom,
     #ff6ec7 0 28px,
     #5ee6ff 28px 56px,
     #ffd166 56px 84px,
@@ -72,17 +73,18 @@ main{
   background-size:100% 600px;
 }
 @keyframes stripeSlide{from{background-position-y:0}to{background-position-y:-600px}}
+
 #sageText{
-  position:relative; z-index:1;
+  position:relative;
+  z-index:1;
   font-weight:900;
-  font-size:clamp(1.35rem,4.7vw,2rem);
+  font-size:clamp(1.35rem,5vw,2rem);
   color:#0b1530;
   text-shadow:0 1px 0 rgba(255,255,255,.6);
   padding:0 1rem;
 }
-.word{opacity:0;margin:0 .35rem;transition:opacity .25s ease;}
+.word{opacity:0;margin:0 .4rem;transition:opacity .25s ease;}
 
-/* Gold play circle */
 .playBtn{
   position:absolute;
   left:-18px;
@@ -106,31 +108,30 @@ main{
   50%{box-shadow:0 0 20px #ffe27a,0 0 40px #ffd700;}
 }
 
-.studentWrapper{position:relative;width:100%;}
-
-/* ✅ Student text: bolder on all devices */
-#studentBox{
-  color:#000;
-  font-weight:900; /* ✅ bold */
-  font-size:clamp(1.05rem,3.9vw,1.35rem);
-  background:#fff;
-  transition:box-shadow .3s,background .3s,transform .15s;
-  padding:0.85rem 1rem;
-  line-height:1.25;
-  word-break:break-word;
-}
-
-/* ✅ Mobile: smaller + extra left padding so gold circle never hides first word */
-@media (max-width:480px){
-  #studentBox{
-    font-size:1.05rem;          /* smaller */
-    font-weight:900;           /* bolder */
-    padding-left:2.3rem;       /* space for overlap area */
-    padding-right:1.2rem;
+/* ✅ Mobile: move play button UP so it doesn't cover the first word */
+@media (max-width:520px){
+  .playBtn{
+    left:12px;
+    top:12px;
+    transform:none;
+    width:56px;
+    height:56px;
+  }
+  #sageText{
+    font-weight:900;
+    font-size:1.25rem; /* slightly smaller but bolder */
   }
 }
 
-/* status effects */
+.studentWrapper{position:relative;width:100%;}
+#studentBox{
+  color:#000;
+  background:#fff;
+  transition:box-shadow .3s,background .3s,transform .15s;
+  padding:0.8rem 1rem;
+  font-weight:900;                /* ✅ bolder English */
+  font-size:clamp(1.05rem,4.2vw,1.3rem);
+}
 #studentBox.glow{box-shadow:var(--purpleGlow);}
 #studentBox.shake{animation:shake .3s;}
 @keyframes shake{
@@ -157,13 +158,22 @@ main{
 }
 .micBtn::after{content:"🎤";font-size:1.3rem;}
 @keyframes micPulse{
-  0%,100%{box-shadow:0 0 10px #b388ff,0 0 20px #b388ff;transform:scale(1);}
-  50%{box-shadow:0 0 20px #c084fc,0 0 40px #c084fc;transform:scale(1.1);}
+  0%,100%{box-shadow:0 0 10px #b388ff,0 0 20px #b388ff;transform:scale(1) translateY(-50%);}
+  50%{box-shadow:0 0 20px #c084fc,0 0 40px #c084fc;transform:scale(1.1) translateY(-45%);}
 }
-.micBtn.check-mode{background:linear-gradient(135deg,#22c55e,#16a34a);}
-.micBtn.check-mode::after{content:"✔";font-size:1.4rem;font-weight:900;color:#022c22;}
 
-/* options */
+/* When used as CHECK on iOS */
+.micBtn.check-mode{
+  background:linear-gradient(135deg,#22c55e,#16a34a);
+}
+.micBtn.check-mode::after{
+  content:"✔";
+  font-size:1.4rem;
+  font-weight:900;
+  color:#022c22;
+}
+
+/* answer options */
 #options{width:100%;margin-top:0.5rem;}
 #options .option{
   border:2px solid var(--outline);
@@ -184,24 +194,14 @@ main{
   border-color:#bfdbfe;
   box-shadow:0 0 12px rgba(59,130,246,.7);
 }
-#options .option.correctFlash{
-  background:#16a34a !important;
-  border-color:#bbf7d0 !important;
-  box-shadow:0 0 16px rgba(34,197,94,.9) !important;
-}
-#options .option.wrongFlash{
-  background:#b91c1c !important;
-  border-color:#fecaca !important;
-  box-shadow:0 0 16px rgba(239,68,68,.85) !important;
-}
 
+/* hint / mode text */
 #hintBox{
-  margin-top:.75rem;
+  margin-top:.8rem;
   font-size:1rem;
   color:#fdd86d;
   text-shadow:var(--goldGlow);
   line-height:1.4;
-  min-height:2.2em;
 }
 #hintBox small{display:block;color:#ffe27a;margin-top:4px;}
 
@@ -235,17 +235,22 @@ main{
   display:flex;
   flex-direction:column;
   align-items:center;
-  margin-top:0.5rem;
+  margin-top:0.8rem;
 }
 #pointsCircle{
-  width:90px;height:90px;border-radius:50%;
+  width:90px;
+  height:90px;
+  border-radius:50%;
   background:linear-gradient(135deg,var(--gold1),var(--gold2));
-  display:flex;align-items:center;justify-content:center;
+  display:flex;
+  align-items:center;
+  justify-content:center;
   font-family:'Cinzel',serif;
   font-size:2rem;
   font-weight:900;
   box-shadow:var(--goldGlow);
-  position:relative;overflow:hidden;
+  position:relative;
+  overflow:hidden;
   text-shadow:0 0 10px #fff,0 0 20px #fff;
   z-index:1;
 }
@@ -253,7 +258,8 @@ main{
 #pointsCircle::after{
   content:'';
   position:absolute;
-  width:140%;height:140%;
+  width:140%;
+  height:140%;
   background:radial-gradient(circle at 50% 50%,rgba(255,255,255,0.6) 0%,rgba(255,255,255,0) 70%);
   animation:pulse 2.5s infinite ease-in-out;
   z-index:0;
@@ -278,7 +284,6 @@ main{
   font-size:1rem;
   text-shadow:0 0 6px rgba(255,255,255,.4);
 }
-
 footer{
   text-align:center;
   color:#fff;
@@ -288,57 +293,128 @@ footer{
   font-size:clamp(14px,2.8vw,20px);
 }
 
-/* 🔘 Quit + ❓ help match other games */
+/* 🔘 Standard Booha QUIT button (small version) */
 .top-nav-btn{
-  position:fixed; top:10px; left:10px; z-index:12001;
-  border-radius:999px; padding:6px 14px;
+  position:fixed;
+  top:10px;
+  left:10px;
+  z-index:12001;
+  border-radius:999px;
+  padding:6px 14px;
   border:1px solid #ffffff66;
   background:rgba(15,23,42,.95);
-  color:#fff; font-size:.78rem; font-weight:700; letter-spacing:.04em;
-  cursor:pointer; display:flex; align-items:center; gap:4px;
+  color:#fff;
+  font-size:.78rem;
+  font-weight:700;
+  letter-spacing:.04em;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  gap:4px;
   box-shadow:0 0 12px rgba(0,0,0,.6);
   backdrop-filter:blur(4px);
 }
 .top-nav-btn .jp{font-size:.72em;}
 .top-nav-btn .en{font-size:.8em;}
 
+/* ❓ Glowing help button */
 .help-btn{
-  position:fixed; top:10px; right:10px; z-index:12001;
-  width:40px;height:40px;border-radius:999px;border:1px solid #ffffff88;
+  position:fixed;
+  top:10px;
+  right:10px;
+  z-index:12001;
+  width:40px;
+  height:40px;
+  border-radius:999px;
+  border:1px solid #ffffff88;
   background:radial-gradient(circle at 30% 30%,#7dd3fc,#1e3a8a 65%,#020617 100%);
-  color:#fff;font-weight:900;font-size:20px;
-  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  color:#fff;
+  font-weight:900;
+  font-size:20px;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  justify-content:center;
   box-shadow:0 0 12px rgba(125,211,252,.9),0 0 28px rgba(59,130,246,.9),0 0 52px rgba(56,189,248,.9);
   backdrop-filter:blur(4px);
 }
-.help-modal{position:fixed;inset:0;z-index:12000;display:none;align-items:center;justify-content:center;}
+
+/* 🪟 Help modal */
+.help-modal{
+  position:fixed;
+  inset:0;
+  z-index:12000;
+  display:none;
+  align-items:center;
+  justify-content:center;
+}
 .help-modal.show{display:flex;}
-.help-backdrop{position:absolute;inset:0;background:rgba(15,23,42,.8);backdrop-filter:blur(6px);}
+.help-backdrop{
+  position:absolute;
+  inset:0;
+  background:rgba(15,23,42,.8);
+  backdrop-filter:blur(6px);
+}
 .help-dialog{
-  position:relative;z-index:1;
-  max-width:720px;width:calc(100% - 32px);max-height:80vh;
-  border-radius:20px;border:1px solid #ffffff33;
+  position:relative;
+  z-index:1;
+  max-width:720px;
+  width:calc(100% - 32px);
+  max-height:80vh;
+  border-radius:20px;
+  border:1px solid #ffffff33;
   background:radial-gradient(circle at top,#111827,#020617 55%);
   box-shadow:0 22px 70px rgba(0,0,0,.9);
   padding:18px 18px 20px;
-  display:flex;flex-direction:column;
+  display:flex;
+  flex-direction:column;
 }
-.help-dialog h2{font-family:'Cinzel',serif;font-size:1.2rem;text-align:center;margin-bottom:6px;}
-.help-sub{font-size:.85rem;text-align:center;color:#c7d2fe;margin-bottom:10px;}
-.help-body{margin-top:6px;padding-right:4px;font-size:.9rem;line-height:1.6;color:#e5e7f5;overflow-y:auto;}
-.help-body h3{font-size:.9rem;margin:10px 0 4px;color:#bfdbfe;}
+.help-dialog h2{
+  font-family:'Cinzel',serif;
+  font-size:1.2rem;
+  text-align:center;
+  margin-bottom:6px;
+}
+.help-sub{
+  font-size:.85rem;
+  text-align:center;
+  color:#c7d2fe;
+  margin-bottom:10px;
+}
+.help-body{
+  margin-top:6px;
+  padding-right:4px;
+  font-size:.9rem;
+  line-height:1.6;
+  color:#e5e7f5;
+  overflow-y:auto;
+}
+.help-body h3{
+  font-size:.9rem;
+  margin:10px 0 4px;
+  color:#bfdbfe;
+}
 .help-body ul{padding-left:1.1rem;margin:4px 0 10px;}
 .help-body li{margin-bottom:4px;}
-.help-close{position:absolute;top:8px;right:10px;border:none;background:transparent;color:#e5e7f5;font-size:22px;cursor:pointer;}
-
-@media (max-width:480px){
-  .help-dialog{max-height:82vh;padding:16px 14px 18px;}
+.help-close{
+  position:absolute;
+  top:8px;
+  right:10px;
+  border:none;
+  background:transparent;
+  color:#e5e7f5;
+  font-size:22px;
+  cursor:pointer;
 }
 
-/* iOS overlay */
+/* 📱 iOS overlay */
 .ios-overlay{
-  position:fixed; inset:0; z-index:13000;
-  display:none; align-items:center; justify-content:center;
+  position:fixed;
+  inset:0;
+  z-index:13000;
+  display:none;
+  align-items:center;
+  justify-content:center;
 }
 .ios-overlay-inner{
   max-width:420px;
@@ -371,11 +447,61 @@ footer{
   color:#022c22;
   cursor:pointer;
 }
+
+/* ✅ Results overlay (same style family) */
+.resultsOverlay{
+  position:fixed; inset:0;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  z-index:14000;
+  text-align:center;
+  padding:20px;
+}
+.resultsInner{
+  width:min(720px, calc(100% - 28px));
+  border-radius:26px;
+  border:1px solid #ffffff33;
+  background:radial-gradient(circle at top,#111827,#020617 58%);
+  box-shadow:0 26px 80px rgba(0,0,0,.9);
+  padding:22px 18px 18px;
+  color:#fff;
+}
+.resultsTitle{
+  font-family:'Cinzel',serif;
+  font-weight:900;
+  font-size:clamp(26px,6vw,42px);
+  margin-bottom:10px;
+}
+.resultsScore{
+  font-weight:900;
+  font-size:clamp(24px,5.8vw,44px);
+  margin:10px 0 14px;
+}
+.resultsMsg{
+  font-weight:900;
+  font-size:clamp(18px,4vw,26px);
+  margin:8px 0 16px;
+}
+.resultsBtns{
+  display:flex;
+  gap:10px;
+  justify-content:center;
+  flex-wrap:wrap;
+}
+.rb{
+  border:none;
+  border-radius:999px;
+  padding:12px 18px;
+  font-weight:900;
+  cursor:pointer;
+}
+.rb.green{background:linear-gradient(135deg,#4ade80,#22c55e);color:#022c22;}
+.rb.blue{background:linear-gradient(135deg,#93c5fd,#3b82f6);color:#00163a;}
 </style>
 </head>
 
 <body>
-
 <!-- 🔘 Quit + ❓ Help -->
 <button type="button" class="top-nav-btn" onclick="window.location.href='index.html'">
   <span class="jp">やめる</span>
@@ -415,62 +541,82 @@ footer{
 
 <footer>Bryan’s English School</footer>
 
-<!-- ❓ Help popup (JP first) -->
+<!-- ❓ Help popup -->
 <div id="helpModal" class="help-modal" aria-hidden="true">
   <div class="help-backdrop" data-close-help></div>
   <div class="help-dialog">
     <button class="help-close" type="button" data-close-help>×</button>
-    <h2>遊び方 ／ HOW TO PLAY</h2>
-    <div class="help-sub">Booha Eigo Adventure</div>
+    <h2>遊び方 ／ How to Play</h2>
+    <div class="help-sub">Booha Eigo Adventure Game</div>
     <div class="help-body">
-
-      <h3>日本語（先にこちら）</h3>
+      <h3>日本語</h3>
       <ul>
-        <li>金色の <strong>▶</strong> を押して、Sage のしつもんを聞きます。</li>
-        <li>４つの文から、正しいと思う文をえらびます。</li>
-        <li><strong>パソコン / Android：</strong>🎤 を押して、正しい文を<strong>声に出して</strong>言います。白いボックスに聞き取った文が表示されます。</li>
-        <li><strong>iPad / iPhone：</strong>文をタップして白いボックスに出してから、みどりの <strong>CHECK</strong> を押します。</li>
-        <li>正解：<strong>ding</strong> ＋ 点数アップ ＋ キラキラ</li>
-        <li>不正解：<strong>fart</strong>（ちょっとくやしい）＋ もう一度</li>
-        <li>正解したら <strong>Next ▶</strong> で次へ。</li>
+        <li><strong>金色の ▶ ボタン</strong>を押して、Sage のしつもん（英語）を聞きます。</li>
+        <li>下にある４つの文から、正しいと思う文をえらびます。</li>
+        <li><strong>パソコン・Android：</strong>🎤 を押して、えらんだ文を声に出して言います。白いボックスに、聞き取った英語が出ます。</li>
+        <li><strong>iPad / iPhone：</strong>文をタップして白いボックスに出し、✔ を押してチェックします。</li>
+        <li>正解なら <strong>ding</strong>、不正解なら <strong>fart</strong> です。</li>
+        <li>まちがえたときは、白いボックスの文字が少し長く残るので「どこがちがうか」見て直せます。</li>
+        <li>ぜんぶで<strong>15問</strong>。最後に結果画面と音が出ます。</li>
       </ul>
 
       <h3>English</h3>
       <ul>
-        <li>Tap the gold <strong>▶</strong> to hear Sage’s question.</li>
-        <li>Choose the correct sentence from 4 options.</li>
-        <li><strong>Desktop / Android:</strong> tap 🎤 and <strong>say</strong> the sentence. The white box shows what it heard.</li>
-        <li><strong>iPad / iPhone:</strong> tap an answer, then tap the green <strong>CHECK</strong>.</li>
-        <li>Correct: <strong>ding</strong> + points + sparkle</li>
-        <li>Wrong: <strong>fart</strong> + try again</li>
-        <li>After you get it correct, tap <strong>Next ▶</strong>.</li>
+        <li>Tap the <strong>gold ▶ button</strong> to hear Sage ask the question.</li>
+        <li>Choose the correct sentence from the 4 options.</li>
+        <li><strong>Computers & Android:</strong> tap 🎤 and say your sentence. The white box shows what the device heard.</li>
+        <li><strong>iPad / iPhone:</strong> tap an option, then tap ✔ to check.</li>
+        <li>Correct = <strong>ding</strong>. Wrong = <strong>fart</strong>.</li>
+        <li>When you’re wrong, your spoken text stays visible longer so you can see what was wrong.</li>
+        <li>There are <strong>15 questions</strong>. At the end, you get a result screen + sound.</li>
       </ul>
-
     </div>
   </div>
 </div>
 
-<!-- 📱 iOS overlay -->
+<!-- 📱 iOS click & listen overlay -->
 <div id="iosOverlay" class="ios-overlay" aria-hidden="true">
   <div class="ios-overlay-inner">
     <h2>iPad / iPhone モード</h2>
-    <p><strong>iPad / iPhone は「タップしてチェック」モードです。</strong></p>
-    <p>▶でしつもんを聞く → 文をタップ → CHECK</p>
-    <p><strong>On iPad/iPhone:</strong> ▶ to hear → tap an answer → CHECK</p>
+    <p><strong>iPad / iPhone では「タップしてチェック」モードです。</strong></p>
+    <p>① ▶でしつもんを聞く → ② 答えをタップ → ③ ✔でチェック</p>
+    <p><strong>On iPad/iPhone:</strong> ▶ to listen → tap an answer → ✔ to check.</p>
     <button id="iosOverlayOk" class="ios-ok">OK ／ はじめる</button>
   </div>
 </div>
 
-<script>
-/* =========================
-   SETTINGS (your request)
-   ========================= */
-const DING = "assets/audio/ding.mp3";
-const FART = "assets/audio/fart.mp3";
+<!-- ✅ Results overlay -->
+<div id="resultsOverlay" class="resultsOverlay" aria-hidden="true">
+  <div class="resultsInner">
+    <div class="resultsTitle">RESULT</div>
+    <div id="resultsScore" class="resultsScore">0/15（0%）</div>
+    <div id="resultsMsg" class="resultsMsg">おつかれさま！</div>
+    <div class="resultsBtns">
+      <button id="restartBtn" class="rb green">もう一度 / Restart</button>
+      <button class="rb blue" onclick="window.location.href='index.html'">メニュー / Menu</button>
+    </div>
+  </div>
+</div>
 
-/* ✅ Keep wrong speech visible longer */
-const WRONG_STAY_MS = 2600;   // shows what they said
-const CLEAR_AFTER_MS = 4200;  // total time before clearing (longer than before)
+<!-- ✅ Results audio (local) -->
+<audio id="r05"  src="assets/audio/result_0-5.mp3"  preload="auto"></audio>
+<audio id="r610" src="assets/audio/result_6-10.mp3" preload="auto"></audio>
+<audio id="r1114" src="assets/audio/result_11-14.mp3" preload="auto"></audio>
+<audio id="r15"  src="assets/audio/result_15.mp3"  preload="auto"></audio>
+
+<script>
+/* ✅ Paths (remember: week1/assets/audio + week1/audio/questions) */
+const SFX = {
+  ding: "assets/audio/ding.mp3",
+  fart: "assets/audio/fart.mp3",
+};
+
+const RES = {
+  r05:  document.getElementById('r05'),
+  r610: document.getElementById('r610'),
+  r1114:document.getElementById('r1114'),
+  r15:  document.getElementById('r15')
+};
 
 /* iOS detection */
 const isIOS = /iP(hone|od|ad)/.test(navigator.userAgent) ||
@@ -509,38 +655,67 @@ let questions=[
     "I eat dinner with my family.","I eat dinner with my pet rock.","I eat dinner with my teacher’s ghost.","I eat dinner with my shadow."]}
 ];
 
+/* --- shuffle and assign correct answer text --- */
 function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
-questions = shuffle(questions.map(q=>{
-  const correct = q.answers[q.a];
-  const mixed = shuffle([...q.answers]);
-  return {...q, answers:mixed, correct};
+questions=shuffle(questions.map(q=>{
+  const correct=q.answers[q.a];
+  const mixed=shuffle([...q.answers]);
+  return {...q,answers:mixed,correct};
 }));
 
-let current=0, points=0, listening=false;
-let recog=null;
+let current=0, points=0;
+let gotCorrect=false, firstAttempt=true;
+let recog, listening=false;
+let iosSelectedIndex=null, iosFirstAttempt=true;
 
-/* iOS state */
-let iosSelectedIndex=null;
-
-const $ = s => document.querySelector(s);
+const $=s=>document.querySelector(s);
 const sageText=$('#sageText'), studentBox=$('#studentBox'), playBtn=$('#playBtn'),
-      micBtn=$('#micBtn'), optionsBox=$('#options'), hintBox=$('#hintBox'),
-      nextBtn=$('#nextBtn'), pointsValue=$('#pointsValue'), counter=$('#counter'),
-      pointsCircle=$('#pointsCircle');
+micBtn=$('#micBtn'), optionsBox=$('#options'), hintBox=$('#hintBox'),
+nextBtn=$('#nextBtn'), pointsValue=$('#pointsValue'), counter=$('#counter');
 
-const iosOverlay=$('#iosOverlay');
-const iosOverlayOk=$('#iosOverlayOk');
+const iosOverlay=document.getElementById('iosOverlay');
+const iosOverlayOk=document.getElementById('iosOverlayOk');
 
-function playAudio(src){
-  return new Promise(res=>{
-    const a=new Audio(src);
-    a.onended=res; a.onerror=res;
-    a.play().catch(()=>res());
+const resultsOverlay = document.getElementById('resultsOverlay');
+const resultsScore = document.getElementById('resultsScore');
+const resultsMsg = document.getElementById('resultsMsg');
+const restartBtn = document.getElementById('restartBtn');
+
+/* --- audio helpers --- */
+function playSfx(path){
+  const a=new Audio(path);
+  a.preload='auto';
+  a.play().catch(()=>{});
+}
+function playAudioFile(path){
+  return new Promise(resolve=>{
+    const a=new Audio(path);
+    a.onended=resolve; a.onerror=resolve;
+    a.play().catch(()=>resolve());
+    setTimeout(resolve, 9000);
   });
 }
+
+/* ✅ Sage question audio: week1/audio/questions/... */
+function playQuestionAudio(file){
+  return playAudioFile('audio/questions/' + file);
+}
+
+/* ✅ Sage read-back for selected sentence (optional): use same folder name pattern if you have it later */
+function filenameFromSentence(en){
+  return en.toLowerCase().replace(/[^a-z]/g,'') + '.mp3';
+}
+/* If you ever add sentence Sage mp3s for these answers, switch to audio/sentences/ */
+function playSageSentence(en){
+  const f = filenameFromSentence(en);
+  const a = new Audio('audio/sentences/' + f);
+  a.play().catch(()=>{});
+}
+
 function pulsePoints(){
-  pointsCircle.style.transform='scale(1.25)';
-  setTimeout(()=>pointsCircle.style.transform='scale(1)',240);
+  const circle=document.getElementById('pointsCircle');
+  circle.style.transform='scale(1.3)';
+  setTimeout(()=>circle.style.transform='scale(1)',300);
 }
 function updateUI(){
   pointsValue.textContent=points;
@@ -557,7 +732,6 @@ function animateWords(t){
   });
 }
 
-/* more forgiving normalization */
 function normalize(s){
   return s
     .toLowerCase()
@@ -572,11 +746,12 @@ function isTimeLike(str){
   return /\b\d+\b/.test(str) && (str.includes("oclock") || /\bclock\b/.test(str));
 }
 function timeMatch(ns,na){
-  let sa=ns.split(' '), aa=na.split(' ');
+  let sa=ns.split(' ');
+  let aa=na.split(' ');
   if(aa.includes('oclock') && sa.includes('00') && !sa.includes('oclock')){
-    sa=sa.map(w=>w==='00'?'oclock':w);
+    sa = sa.map(w=>w==='00'?'oclock':w);
   } else if(sa.includes('oclock') && aa.includes('00') && !aa.includes('oclock')){
-    aa=aa.map(w=>w==='00'?'oclock':w);
+    aa = aa.map(w=>w==='00'?'oclock':w);
   }
   const overlap=aa.filter(w=>sa.includes(w)).length;
   const extra=sa.filter(w=>!aa.includes(w));
@@ -603,79 +778,57 @@ function confetti(n=80){
   }
 }
 
-function flashOption(idx, ok){
-  const el = document.querySelector(`.option[data-index="${idx}"]`);
-  if(!el) return;
-  el.classList.add(ok ? 'correctFlash' : 'wrongFlash');
-  setTimeout(()=>el.classList.remove('correctFlash','wrongFlash'), 650);
-}
-
-async function showWrongFeedback(){
+/* ✅ Keep wrong speech visible longer */
+async function showWrongAndReset(){
   studentBox.classList.add('shake');
   studentBox.style.background='#fee2e2';
-  hintBox.innerHTML = 'ちがう！<small>Wrong! Try again.</small>';
-  await playAudio(FART);
+  playSfx(SFX.fart);
 
-  // keep the spoken text visible longer
-  await new Promise(r=>setTimeout(r, WRONG_STAY_MS));
+  // ✅ let kids SEE the wrong recognition
+  await new Promise(r=>setTimeout(r, 1600));
 
   studentBox.classList.remove('shake');
   studentBox.style.background='#fff';
-
-  // clear after longer delay (students can read their mistake)
-  setTimeout(()=>{
-    studentBox.textContent='';
-    hintBox.textContent='';
-  }, Math.max(0, CLEAR_AFTER_MS - WRONG_STAY_MS));
+  studentBox.textContent='';
 }
 
+/* Speech recognition */
 function initRecog(){
   const R=window.SpeechRecognition||window.webkitSpeechRecognition;
-  if(!R){ alert('Speech Recognition not supported. Use Chrome.'); return; }
+  if(!R){alert('Speech Recognition not supported');return;}
   recog=new R();
   recog.lang='en-US';
   recog.interimResults=true;
-
-  recog.onstart=()=>{ studentBox.classList.add('glow'); listening=true; };
-  recog.onend=()=>{ studentBox.classList.remove('glow'); listening=false; };
-
+  recog.onstart=()=>{studentBox.classList.add('glow');listening=true;};
+  recog.onend=()=>{studentBox.classList.remove('glow');listening=false;};
   recog.onresult=e=>{
     let t='';
     for(const r of e.results){
       t += r[0].transcript + ' ';
-      studentBox.textContent = t.trim(); // show what it hears
-      if(r.isFinal){
-        checkSpeech(t.trim());
-      }
+      if(r.isFinal) checkSpeech(t.trim());
     }
+    studentBox.textContent=t.trim();
   };
 }
-
 function startMic(){
   if(!recog) initRecog();
-  if(!recog) return;
-  if(!listening) try{ recog.start(); }catch(_){}
+  if(!listening) try{recog.start();}catch{}
 }
 
-function stopMic(){
-  if(recog && listening) try{ recog.stop(); }catch(_){}
-}
+function currentQuestion(){return questions[current];}
 
 async function playQuestion(){
-  const q = questions[current];
+  const q=currentQuestion();
   animateWords(q.q);
-  hintBox.textContent='';
-  studentBox.textContent='';
-  await playAudio('audio/'+q.audio);
-
-  if(!isIOS){
-    startMic();
-  }
+  await playQuestionAudio(q.audio);
+  firstAttempt=true;
+  if(!isIOS) startMic();
 }
 
+/* answers */
 function renderAnswers(){
   optionsBox.innerHTML='';
-  const q = questions[current];
+  const q=currentQuestion();
   q.answers.forEach((a,i)=>{
     const d=document.createElement('div');
     d.className='option';
@@ -691,92 +844,139 @@ function renderAnswers(){
   });
 }
 
+/* Android/Desktop speech check */
+async function checkSpeech(spoken){
+  const q=currentQuestion();
+  const matchIndex=q.answers.findIndex(ans=>strictMatch(spoken,ans));
+
+  if(matchIndex===-1){
+    firstAttempt=false;
+    await showWrongAndReset();
+    return;
+  }
+
+  const matchedText=q.answers[matchIndex];
+  const isCorrect = strictMatch(spoken, q.correct);
+
+  if(!gotCorrect && isCorrect){
+    gotCorrect=true;
+    playSfx(SFX.ding);
+    confetti(70);
+    points += firstAttempt ? 1 : 0; // ✅ keep “first attempt matters”
+    pulsePoints();
+    updateUI();
+    hintBox.innerHTML='正解！つぎへ進もう。<small>Correct! Tap Next.</small>';
+    nextBtn.style.display='inline-block';
+    studentBox.textContent='';
+    return;
+  }
+
+  // Spoken sentence that matches an option but isn't the correct one
+  firstAttempt=false;
+  await showWrongAndReset();
+}
+
+/* iOS click + CHECK mode */
+async function checkIOSAnswer(){
+  const q=currentQuestion();
+  if(iosSelectedIndex===null){
+    hintBox.innerHTML='まず答えをタップしてね。<small>First tap an answer.</small>';
+    return;
+  }
+  const answer=q.answers[iosSelectedIndex];
+
+  if(!gotCorrect){
+    if(answer===q.correct){
+      gotCorrect=true;
+      if(iosFirstAttempt){ points += 1; }
+      pulsePoints(); updateUI();
+      confetti(70);
+      playSfx(SFX.ding);
+      hintBox.innerHTML='正解！つぎへ進もう。<small>Correct! Tap Next.</small>';
+      nextBtn.style.display='inline-block';
+    } else {
+      iosFirstAttempt=false;
+      playSfx(SFX.fart);
+      studentBox.classList.add('shake');
+      studentBox.style.background='#fee2e2';
+      await new Promise(r=>setTimeout(r, 1600));
+      studentBox.classList.remove('shake');
+      studentBox.style.background='#fff';
+      studentBox.textContent='';
+    }
+  } else {
+    // Practice after correct: (optional) read tapped sentence
+    // playSageSentence(answer);
+  }
+}
+
 function loadQuestion(){
+  gotCorrect=false;
+  firstAttempt=true;
+  iosSelectedIndex=null;
+  iosFirstAttempt=true;
   hintBox.textContent='';
   sageText.textContent='';
   studentBox.textContent='';
   nextBtn.style.display='none';
-  iosSelectedIndex=null;
   renderAnswers();
   updateUI();
 }
 
-/* Speech mode (Android/Desktop) */
-async function checkSpeech(spoken){
-  const q = questions[current];
-  const matchIndex = q.answers.findIndex(ans => strictMatch(spoken, ans));
+/* ✅ Results */
+function showResults(){
+  const total=questions.length;
+  const pct=Math.round((points/total)*100);
+  resultsScore.textContent = `${points}/${total}（${pct}%）`;
 
-  if(matchIndex === -1){
-    // didn't match any option
-    await showWrongFeedback();
-    return;
-  }
+  let msg = "いいね！あと少しでパーフェクト！";
+  let snd = RES.r1114;
 
-  flashOption(matchIndex, (q.answers[matchIndex]===q.correct));
+  if(points<=5){ msg="ブーリキュラム見てないでしょ！"; snd=RES.r05; }
+  else if(points<=10){ msg="YouTube見すぎ！ブーリキュラムもやろう！"; snd=RES.r610; }
+  else if(points===15){ msg="すごい！あなたは地球で一番頭がいい！"; snd=RES.r15; }
 
-  if(strictMatch(spoken, q.correct)){
-    // ✅ correct
-    points += 1;
-    pulsePoints();
-    updateUI();
-    confetti(60);
-    await playAudio(DING);
+  resultsMsg.textContent = msg;
 
-    // stop mic so it doesn't auto-fire during Next
-    stopMic();
+  resultsOverlay.style.display='flex';
+  resultsOverlay.setAttribute('aria-hidden','false');
 
-    hintBox.innerHTML='正解！<small>Correct! Tap Next.</small>';
-    nextBtn.style.display='inline-block';
-  }else{
-    // ❌ wrong (matched a wrong option)
-    await showWrongFeedback();
-  }
-}
+  try{ snd.currentTime=0; snd.play(); }catch(e){}
 
-/* iOS click+check mode */
-async function checkIOSAnswer(){
-  const q = questions[current];
-  if(iosSelectedIndex === null){
-    hintBox.innerHTML='まず答えをタップしてね。<small>Tap an answer first.</small>';
-    return;
-  }
-  const chosen = q.answers[iosSelectedIndex];
-  flashOption(iosSelectedIndex, chosen===q.correct);
-
-  if(chosen === q.correct){
-    points += 1;
-    pulsePoints();
-    updateUI();
-    confetti(60);
-    await playAudio(DING);
-    hintBox.innerHTML='正解！<small>Correct! Tap Next.</small>';
-    nextBtn.style.display='inline-block';
-  }else{
-    await showWrongFeedback();
+  if(points===15){
+    confetti(140);
   }
 }
 
 /* Buttons */
-playBtn.onclick = ()=>playQuestion();
-
-micBtn.onclick = ()=>{
+playBtn.onclick=()=>playQuestion();
+micBtn.onclick=()=>{
   if(isIOS){
     micBtn.classList.add('check-mode');
     checkIOSAnswer();
   }else{
     if(!recog) initRecog();
-    if(listening) stopMic();
+    if(listening) recog.stop();
     else startMic();
   }
 };
 
-nextBtn.onclick = ()=>{
+nextBtn.onclick=()=>{
   current++;
-  if(current >= questions.length) current = 0;
+  if(current>=questions.length){
+    showResults();
+    return;
+  }
   loadQuestion();
 };
 
-/* iOS overlay */
+restartBtn.onclick=()=>{
+  resultsOverlay.style.display='none';
+  resultsOverlay.setAttribute('aria-hidden','true');
+  current=0; points=0;
+  loadQuestion();
+};
+
 if(isIOS && iosOverlay){
   iosOverlay.style.display='flex';
   iosOverlay.setAttribute('aria-hidden','false');
@@ -788,19 +988,19 @@ if(isIOS && iosOverlay){
 }
 
 /* INIT */
-window.onload = loadQuestion;
+window.onload=loadQuestion;
 
-/* HELP MODAL */
-const helpBtnEl = $('#helpBtn');
-const helpModal = $('#helpModal');
-if(helpBtnEl && helpModal){
-  const closeEls = helpModal.querySelectorAll('[data-close-help]');
-  const openHelp = ()=>{ helpModal.classList.add('show'); helpModal.setAttribute('aria-hidden','false'); };
-  const closeHelp= ()=>{ helpModal.classList.remove('show'); helpModal.setAttribute('aria-hidden','true'); };
-  helpBtnEl.addEventListener('click', openHelp);
-  closeEls.forEach(el=>el.addEventListener('click', closeHelp));
-  helpModal.addEventListener('click', e=>{ if(e.target===helpModal) closeHelp(); });
-  document.addEventListener('keydown', e=>{ if(e.key==='Escape') closeHelp(); });
+/* ---------- HELP MODAL ---------- */
+const helpBtn=$('#helpBtn');
+const helpModal=$('#helpModal');
+if(helpBtn && helpModal){
+  const closeEls=helpModal.querySelectorAll('[data-close-help]');
+  const openHelp=()=>{helpModal.classList.add('show');helpModal.setAttribute('aria-hidden','false');};
+  const closeHelp=()=>{helpModal.classList.remove('show');helpModal.setAttribute('aria-hidden','true');};
+  helpBtn.addEventListener('click',openHelp);
+  closeEls.forEach(el=>el.addEventListener('click',closeHelp));
+  helpModal.addEventListener('click',e=>{if(e.target===helpModal)closeHelp();});
+  document.addEventListener('keydown',e=>{if(e.key==='Escape')closeHelp();});
 }
 </script>
 </body>
