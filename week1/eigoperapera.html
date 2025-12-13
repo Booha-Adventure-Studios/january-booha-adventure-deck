@@ -524,11 +524,21 @@ function keywordScore(t, sp){
   return total ? Math.round((hit/total)*100) : 0;
 }
 
-function setReady(){ meterText.innerHTML='Ready<br><small>スタンバイ</small>'; }
-function setListening(){
-  // ✅ Android/Desktop: Listening is Japanese; iOS: 大きい声で！
-  meterText.textContent = isIOS ? '大きい声で！' : '聞き取り中';
+function setReady(){
+  meterText.innerHTML = 'Ready<br><small>スタンバイ</small>';
 }
+
+function setListening(){
+  // Android / Desktop
+  if(!isIOS){
+    meterText.textContent = '聞き取り中';
+    return;
+  }
+
+  // iPad / iPhone (smaller text)
+  meterText.innerHTML = '<small>大きい声で！</small>';
+}
+
 function setFinished(){ meterText.innerHTML='Finished<br><small>おわり！</small>'; }
 
 function startSweep(){
