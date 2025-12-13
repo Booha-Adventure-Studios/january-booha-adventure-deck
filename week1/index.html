@@ -75,6 +75,9 @@ a.deck.active{
   box-shadow:0 0 14px rgba(255,215,0,0.9),0 0 36px rgba(255,215,0,0.6);
 }
 
+/* Hide original tile when animating a clone */
+a.deck.is-hidden{ visibility:hidden; }
+
 /* Base colors */
 a.deck:nth-child(1){background:var(--pink);}
 a.deck:nth-child(2){background:var(--blue);}
@@ -175,8 +178,8 @@ footer{
   transform:translateY(100%);
   opacity:1;
   pointer-events:none;
-  transition:transform 0.07s ease-in-out; /* fast swipe to match ~0.07s */
-  z-index:9000; /* deck is set to 9999 so it stays above */
+  transition:transform 0.085s ease-in-out;
+  z-index:9000;
 }
 #fadeScreen.show{
   transform:translateY(0%);
@@ -266,7 +269,7 @@ function safePlay(aud, vol = 1){
 }
 
 if (deckContainer) {
-  deckContainer.addEventListener('click', e => {
+  deckContainer.addEventListener('click', (e) => {
     const deck = e.target.closest('.deck');
     if (!deck) return;
 
@@ -275,22 +278,39 @@ if (deckContainer) {
     isTransitioning = true;
 
     const target = deck.getAttribute('href');
+    const fadeScreen = document.getElementById('fadeScreen');
 
-    // optional: stop intro so it doesn't overlap
-    if (intro) { try { intro.pause(); } catch(e){} }
+    // stop intro (optional)
+    if (intro) { try { intro.pause(); } catch(_){} }
 
-    // Play the tiny "opening" sound immediately on click
+    // play opening sound immediately
     safePlay(openSound, 1);
 
-    // Glow + faster spiral to show it's "alive"
+    // make it "alive"
     deck.classList.add('active');
     deck.style.setProperty('--spinDur','1.2s');
 
-    // Move-to-front animation tuned to match ~0.05s audio
-    const MOVE_MS = 55;   // about the length of your 0.05s sound
-    const OPEN_MS = 75;   // open at about 0.07–0.08s
-
+    // ---- SMOOTH CLONE ANIMATION (no grid jitter) ----
     const r = deck.getBoundingClientRect();
+
+    const clone = deck.cloneNode(true);
+    clone.classList.add('active');
+    clone.style.setProperty('--spinDur','1.2s');
+
+    clone.style.position = 'fixed';
+    clone.style.left = r.left + 'px';
+    clone.style.top = r.top + 'px';
+    clone.style.width = r.width + 'px';
+    clone.style.height = r.height + 'px';
+    clone.style.margin = '0';
+    clone.style.transform = 'translate(0px,0px) scale(1)';
+    clone.style.zIndex = '9999';
+    clone.style.pointerEvents = 'none';
+    clone.style.willChange = 'transform';
+
+    document.body.appendChild(clone);
+    deck.classList.add('is-hidden');
+
     const cx = window.innerWidth / 2 - (r.left + r.width / 2);
     const cy = window.innerHeight / 2 - (r.top + r.height / 2);
 
@@ -298,20 +318,31 @@ if (deckContainer) {
     const maxHeightScale = (window.innerHeight * 0.9) / r.height;
     const safeScale = Math.min(3, maxWidthScale, maxHeightScale);
 
-    deck.style.transition = `transform ${MOVE_MS}ms ease-in-out`;
-    deck.style.transform = `translate(${cx}px,${cy}px) scale(${safeScale})`;
-    deck.style.zIndex = "9999";
+    // ===== 5s AUDIO: slightly longer so it never cuts out =====
+    const MOVE_MS = 5500;  // finishes after the music
+    const OPEN_MS = 5800;  // open after audio fully ends
 
-    // quick sparkle pop while moving
+    // sparkle pop on click
     sparkleBurst(r, 35);
 
-    // Start the black swipe slightly after movement starts so it feels "behind" the block
-    const fadeScreen = document.getElementById('fadeScreen');
+    // swipe near the end of the music
     if (fadeScreen) {
-      setTimeout(() => fadeScreen.classList.add('show'), 12);
+      setTimeout(() => {
+        fadeScreen.classList.remove('show');
+        requestAnimationFrame(() => fadeScreen.classList.add('show'));
+      }, 4700);
     }
 
-    // Navigate around ~0.07s
+    // animate clone to center
+    clone.animate(
+      [
+        { transform: 'translate(0px,0px) scale(1)' },
+        { transform: `translate(${cx}px,${cy}px) scale(${safeScale})` }
+      ],
+      { duration: MOVE_MS, easing: 'ease-in-out', fill: 'forwards' }
+    );
+
+    // navigate after sound + swipe finish
     setTimeout(() => {
       window.location.href = target;
     }, OPEN_MS);
