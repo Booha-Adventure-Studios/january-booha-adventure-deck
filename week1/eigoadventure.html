@@ -378,27 +378,32 @@ footer{text-align:center;color:#fff;padding:16px 0 22px;font-family:'Cinzel',ser
   border:1px solid #ffffff22;
   background:rgba(255,255,255,.06);
 }
-.ans-en{font-weight:900;font-size:clamp(18px,4.8vw,26px);color:#fff;line-height:1.22;}
-.ans-jp{font-weight:900;font-size:clamp(16px,4.3vw,22px);color:#e5e7ff;line-height:1.25;margin-top:8px;}
-.ans-hi{font-weight:900;font-size:clamp(14px,4vw,20px);color:#c7d2fe;line-height:1.25;margin-top:6px;}
-.chunk{
-  display:inline-block;
-  padding:2px 6px;
-  margin:2px 3px;
-  border-radius:999px;
-  background:rgba(255,255,255,.08);
-  border:1px solid rgba(255,255,255,.12);
-  box-shadow:0 0 0 rgba(0,0,0,0);
-  white-space:nowrap;
+.ans-en{
+  font-weight:900;
+  font-size:clamp(18px,4.8vw,26px);
+  line-height:1.22;
+  color:#facc15; /* gold */
+  text-shadow:0 0 10px rgba(250,204,21,.6);
 }
-.chunk small{opacity:.9;font-weight:900;}
-.ans-tip{
-  margin-top:10px;
-  color:#cbd5e1;
-  font-weight:800;
-  font-size:.88rem;
-  line-height:1.35;
+
+.ans-jp{
+  font-weight:900;
+  font-size:clamp(16px,4.3vw,22px);
+  line-height:1.25;
+  margin-top:8px;
+  color:#22c55e; /* green */
+  text-shadow:0 0 10px rgba(34,197,94,.5);
 }
+
+.ans-hi{
+  font-weight:900;
+  font-size:clamp(14px,4vw,20px);
+  line-height:1.25;
+  margin-top:6px;
+  color:#ef4444; /* red */
+  text-shadow:0 0 10px rgba(239,68,68,.45);
+}
+
 .ans-tip small{display:block;color:#94a3b8;margin-top:4px;font-weight:800;}
 </style>
 </head>
@@ -934,44 +939,20 @@ async function wrongIOS(){
 /* ==============================
    Answer popup rendering
    ============================== */
-function colorForChunk(i){
-  const hue = (i * 57) % 360;
-  return 'hsl(' + hue + ', 92%, 62%)';
-}
-
-function clearNode(el){
-  while(el && el.firstChild) el.removeChild(el.firstChild);
-}
-
-function makeChunkSpan(text, i){
-  const span=document.createElement('span');
-  span.className='chunk';
-  span.style.borderColor = 'rgba(255,255,255,.16)';
-  span.style.background = 'rgba(255,255,255,.06)';
-  span.style.color = colorForChunk(i);
-  span.textContent = text;
-  return span;
-}
-
-function renderChunkLine(el, chunks){
-  clearNode(el);
-  for(let i=0;i<chunks.length;i++){
-    el.appendChild(makeChunkSpan(chunks[i], i));
-  }
-}
 
 function openAnswerModalFor(index1){
   const t = ANSWER_TRANSLATIONS[index1];
   if(!t) return;
 
-  renderChunkLine(ansEn, t.en);
-  renderChunkLine(ansJp, t.jp);
-  renderChunkLine(ansHi, t.hi);
+  ansEn.textContent = t.en;
+  ansJp.textContent = t.jp;
+  ansHi.textContent = t.hi;
 
   ansModal.classList.add('show');
-  ansModal.style.display='flex';
+  ansModal.style.display = 'flex';
   ansModal.setAttribute('aria-hidden','false');
 }
+
 
 function closeAnswerModal(){
   ansModal.classList.remove('show');
