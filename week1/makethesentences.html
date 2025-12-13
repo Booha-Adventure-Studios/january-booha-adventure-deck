@@ -44,7 +44,7 @@ header{text-align:center;padding:26px 12px 12px}
   overflow:visible;
 }
 
-/* JP card */
+/* JP card (tap to hear Sage) */
 .jpCard{
   border-radius:var(--radius);
   border:1px solid var(--outline);
@@ -57,6 +57,9 @@ header{text-align:center;padding:26px 12px 12px}
   #8aff80 84px 112px,#c77dff 112px 140px,#fff680 140px 168px);
   background-size:100% 600px;
   animation:stripeSlide 18s linear infinite;
+  cursor:pointer;
+  user-select:none;
+  -webkit-tap-highlight-color:transparent;
 }
 @keyframes stripeSlide{from{background-position-y:0}to{background-position-y:-600px}}
 .jpText{
@@ -92,33 +95,6 @@ header{text-align:center;padding:26px 12px 12px}
   border-radius:14px;
   padding:16px 12px;
   position:relative;
-}
-
-/* play button */
-.playBtn{
-  position:absolute;
-  left:12px;
-  bottom:-60px;
-  width:54px;
-  height:54px;
-  border:none;
-  border-radius:50%;
-  background:linear-gradient(135deg,#c59b10 0%,#ffd95e 40%,#ffe898 60%,#b68006 100%);
-  box-shadow:var(--goldGlow);
-  color:#2a1b00;
-  font-weight:900;
-  font-size:26px;
-  opacity:0;
-  pointer-events:none;
-  transition:opacity .3s, transform .15s;
-  z-index:3;
-}
-.playBtn.show{opacity:1;pointer-events:auto;animation:twinkle 2.4s ease-in-out infinite;}
-.playBtn:active{transform:scale(.96)}
-.playBtn::before{content:"▶";display:block;text-align:center;line-height:54px;}
-@keyframes twinkle{
-  0%,100%{box-shadow:var(--goldGlow);}
-  50%{box-shadow:0 0 14px rgba(255,235,94,1),0 0 26px rgba(255,235,94,1);}
 }
 
 /* chips */
@@ -301,15 +277,15 @@ footer{text-align:center;color:#c9d4ec;font-family:'Cinzel',serif;font-weight:70
 
 <div class="wrap" id="page-round">
   <div class="panel" id="panel">
-    <div class="jpCard"><div id="jp" class="jpText"></div></div>
+    <div class="jpCard" id="jpCard" title="Tap to hear the correct sentence">
+      <div id="jp" class="jpText"></div>
+    </div>
     <div id="hira" class="hira"></div>
 
     <div id="bank" class="wordbank"></div>
 
     <div style="position:relative;">
-      <div id="sentence" class="sentence">
-        <button id="playBtn" class="playBtn" title="Play"></button>
-      </div>
+      <div id="sentence" class="sentence"></div>
     </div>
 
     <button id="checkBtn" class="btn green" disabled>Check</button>
@@ -340,7 +316,7 @@ footer{text-align:center;color:#c9d4ec;font-family:'Cinzel',serif;font-weight:70
         <li>できたら <strong>Check</strong> を押します。</li>
         <li>正解：<strong>大きいハート</strong> → <strong>ding</strong> → Sage音声 → <strong>Next</strong></li>
         <li>不正解：<strong>大きいおなら</strong> → <strong>fart</strong> → タイルが戻るので、もう一度ならべ直します（点数は増えません）。</li>
-        <li>金色の<strong>▶</strong>で Sage が正しい英文を読んでくれます。</li>
+        <li>もう一度聞きたいときは、上の<strong>カラフルな文</strong>をタップします。</li>
       </ul>
 
       <h3>English</h3>
@@ -352,7 +328,7 @@ footer{text-align:center;color:#c9d4ec;font-family:'Cinzel',serif;font-weight:70
         <li>Tap <strong>Check</strong> when you finish.</li>
         <li>Correct: <strong>big heart</strong> → <strong>ding</strong> → Sage → <strong>Next</strong></li>
         <li>Wrong: <strong>big fart</strong> → <strong>fart</strong> → tiles return, try again (no point).</li>
-        <li>Tap the gold <strong>▶</strong> to hear Sage read the correct sentence.</li>
+        <li>To hear it again, tap the <strong>colorful sentence</strong> at the top.</li>
       </ul>
 
     </div>
@@ -432,8 +408,9 @@ const DATA = shuffle([...BASE_DATA]);
    ========================= */
 const qs = s => document.querySelector(s);
 const jp=qs('#jp'), hira=qs('#hira'), bank=qs('#bank'), sent=qs('#sentence');
+const jpCard = qs('#jpCard');
 const check=qs('#checkBtn'), nextWrap=qs('#nextWrap'), nextBtn=qs('#nextBtn');
-const playBtn=qs('#playBtn'), progress=qs('#progress');
+const progress=qs('#progress');
 
 const bigHeart = qs('#bigHeart');
 const bigFart  = qs('#bigFart');
@@ -474,7 +451,6 @@ function sagePathForIndex(idx){
   const id = item?.id ?? (idx+1);
   const slug = slugFromSentence(item?.en || '');
   return `audio/sentences/s${sNum(id)}_${slug}.mp3`;
-}_${slug}.mp3`;
 }
 
 async function primeSage(){
@@ -494,8 +470,6 @@ async function primeSage(){
 }
 
 function playSageForIndex(idx, onEnd){
-  // idx is current round index; filename is based on the original BASE id
-
   const src = sagePathForIndex(idx);
   let done=false;
 
@@ -518,6 +492,7 @@ function playSageForIndex(idx, onEnd){
     finish();
   }
 
+  // hard stop fallback (still guarded so it only runs once)
   setTimeout(()=>finish(), 9000);
 }
 
@@ -570,7 +545,6 @@ function moveToSentence(word, beforeEl=null){
 function lockUI(on){
   locked = !!on;
   [...document.querySelectorAll('.word')].forEach(w=>w.disabled = locked);
-  playBtn.disabled = locked;
   check.disabled = locked || (bank.querySelectorAll('.word').length !== 0);
 }
 
@@ -580,9 +554,7 @@ function lockUI(on){
 function mount(){
   bank.innerHTML='';
   sent.innerHTML='';
-  sent.appendChild(playBtn);
 
-  playBtn.classList.remove('show');
   nextWrap.style.display='none';
   check.style.display='block';
   check.disabled=true;
@@ -641,9 +613,20 @@ function mount(){
 }
 
 sent.addEventListener('click',(e)=>{
-  if(e.target === sent || e.target === playBtn) clearSelected();
+  if(e.target === sent) clearSelected();
 });
 bank.addEventListener('click',(e)=>{ if(e.target === bank) clearSelected(); });
+
+/* Tap rainbow card to hear it again */
+if(jpCard){
+  jpCard.addEventListener('click', (e)=>{
+    e.preventDefault();
+    e.stopPropagation();
+    if(locked) return;
+    primeSage();
+    playSageForIndex(i);
+  });
+}
 
 /* =========================
    Logic
@@ -673,9 +656,8 @@ function checkLogic(){
     showBig(bigHeart);
 
     nextWrap.style.display='none';
-    playBtn.classList.remove('show');
 
-    // Correct flow (ONCE): ding.mp3 -> Sage -> Next
+    // Correct flow (ONCE): ding -> Sage -> Next
     let afterDone = false;
     const afterDingOnce = ()=>{
       if(afterDone) return;
@@ -690,7 +672,7 @@ function checkLogic(){
     sfxDing.onended = afterDingOnce;
     const p = playOnce(sfxDing);
 
-    // Fallback: if "ended" doesn't fire, run once
+    // Fallback if ended doesn't fire (still guarded, so runs once)
     setTimeout(afterDingOnce, 3500);
 
     if(p && p.catch){
@@ -706,7 +688,6 @@ function checkLogic(){
     [...sent.querySelectorAll('.word')].forEach(ch=>moveToBank(ch));
     clearSelected();
 
-    playBtn.classList.add('show');
     refreshCheckState();
   }
 }
@@ -715,13 +696,6 @@ nextBtn.onclick = () => {
   i++;
   if(i >= DATA.length) return finish();
   mount();
-};
-
-playBtn.onclick = (e) => {
-  e.stopPropagation();
-  if(locked) return;
-  primeSage();
-  playSageForIndex(i);
 };
 
 /* =========================
