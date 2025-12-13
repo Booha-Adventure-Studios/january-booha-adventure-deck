@@ -722,19 +722,6 @@ if(jpCard){
   });
 }
 
-// ✅ Gold hint (after 3 wrong, for every question)
-playBtn.addEventListener('click', (e)=>{
-  e.preventDefault();
-  e.stopPropagation();
-  if(locked) return;
-  if(!helpReady) return;
-  if(solved) return;
-
-  // IMPORTANT: do NOT cancel after this point; just stop current audio and play Sage
-  cancelAudioFlow();
-  primeSage();
-  playSageForIndex(i);
-});
 
 /* =========================
    Logic
@@ -899,11 +886,46 @@ if(helpBtnEl && helpModal){
 }
 
 /* =========================
-   Init
+   Init (SAFE AUDIO + GOLD HELP FIX)
    ========================= */
 mount();
-</script>
 
+/* 
+  🔒 HARD BIND GOLD HELP
+  This guarantees:
+  - Gold button always works (Q1–Q15)
+  - No duplicate listeners
+  - No accidental Sage after wrong
+*/
+(function bindGoldHelpSafely(){
+  if(!playBtn) return;
+
+  playBtn.onclick = (e)=>{
+    e.preventDefault();
+    e.stopPropagation();
+
+    // Guard rails
+    if(locked) return;
+    if(!helpReady) return;
+    if(solved) return;
+
+    // Kill anything pending (ding timers, old Sage, etc.)
+    cancelAudioFlow();
+
+    primeSage();
+
+    console.log(
+      '[Gold ▶]',
+      'question=', i+1,
+      'id=', DATA[i]?.id,
+      'src=', sagePathForIndex(i)
+    );
+
+    playSageForIndex(i);
+  };
+})();
+</script>
 
 </body>
 </html>
+
