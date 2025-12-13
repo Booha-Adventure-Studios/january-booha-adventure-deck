@@ -403,25 +403,28 @@ function playSfx(audio){
 }
 
 /* ====== Sage voice (LOCAL) ======
-   Your Sage files are inside:
-   week1/audio/vocab/v01_goal.mp3 ... v15_motivation.mp3
-
-   ✅ If this HTML is in week1/, use: "audio/vocab/..."
-   ✅ If this HTML is in repo root, use: "week1/audio/vocab/..."
+   Always point to: .../week1/audio/vocab/
+   even if this HTML is inside week1/games/ or deeper.
 */
-const SAGE_PREFIX = location.pathname.includes('/week1/') ? 'audio/vocab/' : 'week1/audio/vocab/';
+const WEEK1_BASE =
+  location.pathname.includes('/week1/')
+    ? location.pathname.split('/week1/')[0] + '/week1/'
+    : '/week1/';
+
+const SAGE_BASE_URL = location.origin + WEEK1_BASE + 'audio/vocab/';
 
 const sage = new Map();
 MASTER_BASE.forEach((word, i) => {
   const num = String(i + 1).padStart(2, '0');
-  const src = `${SAGE_PREFIX}v${num}_${word}.mp3`;
+  const src = `${SAGE_BASE_URL}v${num}_${word}.mp3`;
   const a = new Audio(src);
   a.preload = 'auto';
   a.playsInline = true;
   a.loop = false;
-  try{ a.load(); }catch{}
+  try { a.load(); } catch {}
   sage.set(word, a);
 });
+
 
 function stopAllSage(){
   sage.forEach(a=>{ try{ a.pause(); a.currentTime = 0; }catch{} });
@@ -446,35 +449,26 @@ async function unlockAudioOnce(){
   }
 }
 
-async function speak(){
-  await unlockAudioOnce();
-
+function speak(){
   const word = WORDS[index];
   const a = sage.get(word);
+  if(!a){ console.warn('[Sage] missing audio for:', word); return; }
 
-  if(!a){
-    console.warn('[Sage] missing audio object for:', word);
-    return;
-  }
+  console.log('[Sage src]', a.src); // 👈 ADD THIS LINE
 
   stopAllSage();
   play.classList.add('fizzy');
 
   try{ a.currentTime = 0; }catch{}
-
   const clear = ()=>play.classList.remove('fizzy');
   a.onended = clear;
 
-  try{
-    await a.play();
-  }catch(err){
-    clear();
-    console.warn('[Sage] play blocked or file missing:', err, 'src=', a.src);
-
-    // quick visible hint if you want (optional):
-    // alert('Sage audio failed: ' + a.src);
+  const p = a.play();
+  if(p && typeof p.catch === 'function'){
+    p.catch(err=>{ console.warn('[Sage] play blocked or missing:', err); clear(); });
   }
 }
+
 
 play.addEventListener('click', speak);
 
