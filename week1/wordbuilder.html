@@ -338,17 +338,19 @@ footer{text-align:center;padding:16px;font-family:'Cinzel',serif;font-size:.95re
 /* ====== Helpers ====== */
 const $=s=>document.querySelector(s);
 
+/* ====== Path helper (MUST be before SAGE_INDEX) ====== */
+const WEEK_PREFIX = location.pathname.includes('/week1/') ? '' : 'week1/';
+
 /* ====== Data ====== */
 const MASTER_BASE=["goal","plan","future","dream","challenge","try","change","habit","exercise","study","learn","practice","success","focus","motivation"];
 
 // Sage vocab files are numbered: v01_goal.mp3, v02_plan.mp3, ...
-// Build a lookup so WORD index → correct file
 const SAGE_INDEX = MASTER_BASE.reduce((acc, word, i) => {
   const num = String(i + 1).padStart(2, '0');
- acc[word] = `${WEEK_PREFIX}audio/vocab/v${num}_${word}.mp3`;
-
+  acc[word] = `${WEEK_PREFIX}audio/vocab/v${num}_${word}.mp3`;
   return acc;
 }, {});
+
 let WORDS=[]; // shuffled on load
 let index=0,totalScore=0,firstTry=true;
 
@@ -437,7 +439,8 @@ function speak(){
     p.catch(err=>{ console.warn('[Sage] play blocked or missing:', err); clear(); });
   }
 }
-play.addEventListener('click', speak);("click", speak);
+play.addEventListener('click', speak);
+
 
 /* ====== Visual FX ====== */
 function flashRedScreen(){
@@ -684,9 +687,29 @@ initGame();
 
 /* Pre-warm audio (best-effort) */
 setTimeout(()=>{
-  Object.values(sfx).forEach(a=>{ try{ a.play().then(()=>{a.pause();a.currentTime=0;}).catch(()=>{});}catch{} });
-  sage.forEach(a=>{ try{ a.play().then(()=>{a.pause();a.currentTime=0;}).catch(()=>{});}catch{} });
+  Object.values(sfx).forEach(a=>{
+    try{
+      a.muted = true;
+      a.play().then(()=>{
+        a.pause();
+        a.currentTime = 0;
+        a.muted = false;
+      }).catch(()=>{});
+    }catch{}
+  });
+
+  sage.forEach(a=>{
+    try{
+      a.muted = true;
+      a.play().then(()=>{
+        a.pause();
+        a.currentTime = 0;
+        a.muted = false;
+      }).catch(()=>{});
+    }catch{}
+  });
 }, 300);
+
 </script>
 </body>
 </html>
