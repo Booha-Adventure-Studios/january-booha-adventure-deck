@@ -480,13 +480,15 @@ text-align:center;
 </div>
 </div>
 
-<!-- SFX + results -->
-<audio id="s_ding" src="assets/audio/ding.mp3" preload="auto"></audio>
-<audio id="s_fart" src="assets/audio/fart.mp3" preload="auto"></audio>
-<audio id="s_r05" src="assets/audio/result_0-5.mp3" preload="auto"></audio>
-<audio id="s_r610" src="assets/audio/result_6-10.mp3" preload="auto"></audio>
-<audio id="s_r1114" src="assets/audio/result_11-14.mp3" preload="auto"></audio>
-<audio id="s_r15" src="assets/audio/result_15.mp3" preload="auto"></audio>
+<!-- SFX + results (✅ week1 paths) -->
+<audio id="s_ding"   src="week1/assets/audio/ding.mp3" preload="auto"></audio>
+<audio id="s_fart"   src="week1/assets/audio/fart.mp3" preload="auto"></audio>
+
+<audio id="s_r05"    src="week1/assets/audio/result_0-5.mp3" preload="auto"></audio>
+<audio id="s_r610"   src="week1/assets/audio/result_6-10.mp3" preload="auto"></audio>
+<audio id="s_r1114"  src="week1/assets/audio/result_11-14.mp3" preload="auto"></audio>
+<audio id="s_r15"    src="week1/assets/audio/result_15.mp3" preload="auto"></audio>
+
 
 <!-- ✅ One reusable vocab player -->
 <audio id="vocabPlayer" preload="auto" playsinline></audio>
@@ -520,15 +522,49 @@ let selectedEnEl = null;
 let isGrading = false;
 
 /* Helpers */
-const $ = s=>document.querySelector(s);
+const $ = s => document.querySelector(s);
 
 function playSfx(id){
-const src=document.getElementById(id); if(!src) return;
-const a=src.cloneNode(true); a.setAttribute('playsinline','');
-a.currentTime=0; a.volume=src.volume??1;
-document.body.appendChild(a);
-a.play().catch(()=>{}).finally(()=>setTimeout(()=>a.remove(),1800));
+  const src = document.getElementById(id);
+  if(!src) return;
+
+  const a = src.cloneNode(true);
+  a.setAttribute('playsinline','');
+  a.currentTime = 0;
+  a.volume = (src.volume ?? 1);
+
+  document.body.appendChild(a);
+  a.play().catch(()=>{}).finally(()=>setTimeout(()=>a.remove(), 1800));
 }
+
+/* ✅ END scorecard audio (longer, safer on iOS) */
+function playEndCard(el){
+  if(!el) return;
+
+  const a = el.cloneNode(true);
+  a.setAttribute('playsinline','');
+  a.currentTime = 0;
+
+  document.body.appendChild(a);
+  a.play().catch(()=>{}).finally(()=>{
+    // result mp3s can be longer than ding/fart
+    setTimeout(()=>a.remove(), 12000);
+  });
+}
+
+function centerOf(el){
+  const r = el.getBoundingClientRect();
+  return { x: r.left + r.width/2, y: r.top + r.height/2 };
+}
+
+/* Shuffle helper */
+function shuffle(a){
+  return a
+    .map(v => [Math.random(), v])
+    .sort((x,y) => x[0] - y[0])
+    .map(x => x[1]);
+}
+
 
 function centerOf(el){const r=el.getBoundingClientRect();return{ x:r.left+r.width/2, y:r.top+r.height/2 };}
 
@@ -799,37 +835,52 @@ i++;
 
 /* Results */
 function showResults(){
-$("#page-round").classList.remove('active');
-$("#page-results").classList.add('active');
+  $("#page-round").classList.remove('active');
+  $("#page-results").classList.add('active');
 
-const pct=Math.round((totalScore/15)*100);
-const msgEl=$("#resultMsg"), scoreEl=$("#resultScore");
+  const pct = Math.round((totalScore / 15) * 100);
+  const msgEl = $("#resultMsg");
+  const scoreEl = $("#resultScore");
 
-let bg='blueGlow', msg='いいね！あと少しでパーフェクト！', snd=$("#s_r1114");
-if(totalScore<=5){ bg='redGlow'; msg='ブーリキュラム見てないでしょ！'; snd=$("#s_r05"); }
-else if(totalScore<=10){ bg='orangeGlow'; msg='YouTube見すぎ！ブーリキュラムもやろう！'; snd=$("#s_r610"); }
-else if(totalScore===15){ bg='goldGlow'; msg='すごい！あなたは地球で一番頭がいい！'; snd=$("#s_r15"); }
+  let bg = 'blueGlow';
+  let msg = 'いいね！あと少しでパーフェクト！';
+  let snd = $("#s_r1114");
 
-document.body.className=bg;
-msgEl.textContent=msg;
-scoreEl.textContent=`${totalScore}/15（${pct}%）`;
+  if (totalScore <= 5) {
+    bg = 'redGlow';
+    msg = 'ブーリキュラム見てないでしょ！';
+    snd = $("#s_r05");
+  } else if (totalScore <= 10) {
+    bg = 'orangeGlow';
+    msg = 'YouTube見すぎ！ブーリキュラムもやろう！';
+    snd = $("#s_r610");
+  } else if (totalScore === 15) {
+    bg = 'goldGlow';
+    msg = 'すごい！あなたは地球で一番頭がいい！';
+    snd = $("#s_r15");
+  }
 
-try{ snd.currentTime=0; snd.play(); }catch(e){}
+  document.body.className = bg;
+  msgEl.textContent = msg;
+  scoreEl.textContent = `${totalScore}/15（${pct}%）`;
 
-if(totalScore===15){
-for(let i=0;i<160;i++){
-setTimeout(()=>{
-const c=document.createElement('div');
-c.className='confetti';
-c.style.left=(Math.random()*100)+'vw';
-c.style.background=`hsl(${Math.random()*360},100%,60%)`;
-c.style.animationDuration=(0.9+Math.random()*0.9)+'s';
-document.body.appendChild(c);
-setTimeout(()=>c.remove(),1900);
-}, i*10);
+  playEndCard(snd);
+
+  if (totalScore === 15) {
+    for (let i = 0; i < 160; i++) {
+      setTimeout(() => {
+        const c = document.createElement('div');
+        c.className = 'confetti';
+        c.style.left = (Math.random() * 100) + 'vw';
+        c.style.background = `hsl(${Math.random() * 360},100%,60%)`;
+        c.style.animationDuration = (0.9 + Math.random() * 0.9) + 's';
+        document.body.appendChild(c);
+        setTimeout(() => c.remove(), 1900);
+      }, i * 10);
+    }
+  }
 }
-}
-}
+
 
 /* Buttons */
 $("#playAgain").addEventListener('click', initGame);
