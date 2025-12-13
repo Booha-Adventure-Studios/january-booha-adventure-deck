@@ -10,7 +10,6 @@
 <style>
 :root{
   --bg:#0b1530; --ink:#fff; --outline:#ffffff26; --radius:26px;
-  --goldGlow:0 0 10px rgba(255,214,120,.55),0 0 22px rgba(255,214,120,.45);
   --slotGlow:0 0 0 4px rgba(255,214,120,.28), 0 0 18px rgba(255,214,120,.55), 0 12px 22px rgba(0,0,0,.35);
 }
 
@@ -99,33 +98,6 @@ header{text-align:center;padding:26px 12px 12px}
   border-radius:14px;
   padding:16px 12px;
   position:relative;
-}
-
-/* ✅ GOLD PLAY BUTTON (FLOATING, NEVER COVERS TILES) */
-.playBtn{
-  position:fixed;
-  left:14px;
-  bottom:calc(14px + env(safe-area-inset-bottom));
-  width:56px;
-  height:56px;
-  border:none;
-  border-radius:50%;
-  background:linear-gradient(135deg,#c59b10 0%,#ffd95e 40%,#ffe898 60%,#b68006 100%);
-  box-shadow:var(--goldGlow);
-  color:#2a1b00;
-  font-weight:900;
-  font-size:26px;
-  opacity:0;
-  pointer-events:none;
-  transition:opacity .28s, transform .15s;
-  z-index:12050;
-}
-.playBtn.show{opacity:1;pointer-events:auto;animation:twinkle 2.4s ease-in-out infinite;}
-.playBtn:active{transform:scale(.96)}
-.playBtn::before{content:"▶";display:block;text-align:center;line-height:56px;}
-@keyframes twinkle{
-  0%,100%{box-shadow:var(--goldGlow);}
-  50%{box-shadow:0 0 14px rgba(255,235,94,1),0 0 26px rgba(255,235,94,1);}
 }
 
 /* chips */
@@ -283,6 +255,71 @@ footer{text-align:center;color:#c9d4ec;font-family:'Cinzel',serif;font-weight:70
 .help-body ul{padding-left:1.1rem;margin:4px 0 10px}
 .help-body li{margin-bottom:4px}
 .help-close{position:absolute;top:8px;right:10px;border:none;background:transparent;color:#e5e7f5;font-size:22px;cursor:pointer}
+
+/* New: Answer Help Popup */
+.ans-modal{position:fixed; inset:0; z-index:12010; display:none; align-items:center; justify-content:center;}
+.ans-modal.show{display:flex;}
+.ans-dialog{
+  position:relative; z-index:1;
+  max-width:760px; width:calc(100% - 32px);
+  border-radius:22px; border:1px solid #ffffff33;
+  background:radial-gradient(circle at top,#111827,#020617 62%);
+  box-shadow:0 22px 70px rgba(0,0,0,.92);
+  padding:18px 18px 20px;
+}
+.ans-title{
+  font-family:'Cinzel',serif;
+  font-weight:900;
+  text-align:center;
+  font-size:1.1rem;
+  margin:2px 0 10px;
+}
+.ans-en{
+  text-align:center;
+  font-weight:900;
+  font-size:clamp(22px,5.2vw,34px);
+  line-height:1.25;
+  color:#ffffff;
+  text-shadow:0 2px 14px rgba(255,255,255,.14);
+  margin:6px 0 10px;
+}
+.ans-jp{
+  text-align:center;
+  font-weight:800;
+  font-size:clamp(16px,4.4vw,22px);
+  color:#cfe1ff;
+  margin:0 0 4px;
+}
+.ans-hi{
+  text-align:center;
+  font-weight:700;
+  font-size:clamp(14px,3.8vw,18px);
+  color:#a9c3ff;
+  opacity:.95;
+  margin:0 0 14px;
+}
+.ans-actions{
+  display:flex;
+  gap:12px;
+  justify-content:center;
+  flex-wrap:wrap;
+}
+.btn.small{
+  margin:0;
+  padding:12px 20px;
+  font-size:clamp(16px,3.6vw,18px);
+}
+.btn.gold{
+  background:linear-gradient(135deg,#c59b10 0%,#ffd95e 40%,#ffe898 60%,#b68006 100%);
+  color:#2a1b00;
+  box-shadow:0 0 0 5px rgba(255,214,120,.18), 0 0 18px rgba(255,214,120,.55);
+}
+.ans-close{
+  position:absolute; top:8px; right:10px;
+  border:none; background:transparent; color:#e5e7f5;
+  font-size:22px; cursor:pointer;
+}
+
 @media (max-width:480px){
   .help-dialog{max-height:82vh;padding:16px 14px 18px;}
   .jpText{font-size:38px;}
@@ -292,7 +329,6 @@ footer{text-align:center;color:#c9d4ec;font-family:'Cinzel',serif;font-weight:70
 
 <body>
 
-<!-- Quit + Help -->
 <button type="button" class="top-nav-btn" onclick="window.location.href='index.html'">
   <span class="jp">やめる</span>
   <span class="en">QUIT</span>
@@ -327,9 +363,6 @@ footer{text-align:center;color:#c9d4ec;font-family:'Cinzel',serif;font-weight:70
   </div>
 </div>
 
-<!-- ✅ Floating Gold Help Button (not inside tiles) -->
-<button id="playBtn" class="playBtn" type="button" aria-label="Play"></button>
-
 <!-- Help popup (JP -> EN) -->
 <div id="helpModal" class="help-modal" aria-hidden="true">
   <div class="help-backdrop" data-close-help></div>
@@ -338,7 +371,6 @@ footer{text-align:center;color:#c9d4ec;font-family:'Cinzel',serif;font-weight:70
     <h2>遊び方 ／ HOW TO PLAY</h2>
     <div class="help-sub">Booha Make the Sentences</div>
     <div class="help-body">
-
       <h3>日本語（先にこちら）</h3>
       <ul>
         <li>上の<strong>日本語の文</strong>（＋ひらがなヒント）を見ます。</li>
@@ -348,7 +380,7 @@ footer{text-align:center;color:#c9d4ec;font-family:'Cinzel',serif;font-weight:70
         <li>できたら <strong>Check</strong> を押します。</li>
         <li>正解：<strong>大きいハート</strong> → <strong>ding</strong> → 音声 → <strong>Next</strong></li>
         <li>不正解：<strong>大きいおなら</strong> → <strong>fart</strong> → タイルが戻るので、もう一度ならべ直します（点数は増えません）。</li>
-        <li>同じ文を<strong>3回連続でまちがえた</strong>ときは、金色の<strong>▶</strong>が出てヒントが聞けます。</li>
+        <li>同じ文を<strong>3回連続でまちがえた</strong>ときは、答えのヒント画面が出ます。</li>
       </ul>
 
       <h3>English</h3>
@@ -360,9 +392,25 @@ footer{text-align:center;color:#c9d4ec;font-family:'Cinzel',serif;font-weight:70
         <li>Tap <strong>Check</strong> when you finish.</li>
         <li>Correct: <strong>big heart</strong> → <strong>ding</strong> → voice → <strong>Next</strong></li>
         <li>Wrong: <strong>big fart</strong> → <strong>fart</strong> → tiles return, try again (no point).</li>
-        <li>If you get the same sentence wrong <strong>3 times in a row</strong>, a gold <strong>▶</strong> button appears to help you.</li>
+        <li>If you get the same sentence wrong <strong>3 times in a row</strong>, an answer help screen appears.</li>
       </ul>
+    </div>
+  </div>
+</div>
 
+<!-- New: Answer Help Popup -->
+<div id="ansModal" class="ans-modal" aria-hidden="true">
+  <div class="help-backdrop" data-close-ans></div>
+  <div class="ans-dialog">
+    <button class="ans-close" type="button" data-close-ans>×</button>
+    <div class="ans-title">ANSWER HELP</div>
+    <div id="ansEn" class="ans-en"></div>
+    <div id="ansJp" class="ans-jp"></div>
+    <div id="ansHi" class="ans-hi"></div>
+
+    <div class="ans-actions">
+      <button id="ansSpeakBtn" class="btn small gold" type="button">Hear it</button>
+      <button id="ansCloseBtn" class="btn small blue" type="button">Close / Try again</button>
     </div>
   </div>
 </div>
@@ -413,7 +461,7 @@ footer{text-align:center;color:#c9d4ec;font-family:'Cinzel',serif;font-weight:70
 
 <script>
 /* =========================
-   DATA (KEEP ORDER for s01...s15)
+   DATA
    ========================= */
 const BASE_DATA=[
   {id:1, en:"I will study every day.", jp:"毎日勉強します。", hira:"まいにち べんきょう します"},
@@ -432,7 +480,6 @@ const BASE_DATA=[
   {id:14, en:"I will smile more.", jp:"もっと笑います。", hira:"もっと わらい ます"},
   {id:15, en:"I will enjoy learning.", jp:"学ぶことを楽しみます。", hira:"まなぶ こと を たのしみ ます"}
 ];
-
 const DATA = shuffle([...BASE_DATA]);
 
 /* =========================
@@ -441,7 +488,6 @@ const DATA = shuffle([...BASE_DATA]);
 const qs = s => document.querySelector(s);
 const jp=qs('#jp'), hira=qs('#hira'), bank=qs('#bank'), sent=qs('#sentence');
 const jpCard = qs('#jpCard');
-const playBtn = qs('#playBtn');
 const check=qs('#checkBtn'), nextWrap=qs('#nextWrap'), nextBtn=qs('#nextBtn');
 const progress=qs('#progress');
 
@@ -452,7 +498,13 @@ const sfxDing = qs('#s_ding');
 const sfxFart = qs('#s_fart');
 
 const sageVoice = qs('#sageVoice');
-let sagePrimed = false;
+
+const ansModal = qs('#ansModal');
+const ansEn = qs('#ansEn');
+const ansJp = qs('#ansJp');
+const ansHi = qs('#ansHi');
+const ansSpeakBtn = qs('#ansSpeakBtn');
+const ansCloseBtn = qs('#ansCloseBtn');
 
 /* =========================
    STATE
@@ -465,10 +517,11 @@ let locked=false;
 
 let wrongStreak=0;
 let solved=false;
-let helpReady=false;
 
 let flowToken = 0;
 let dingTimer = null;
+let sagePrimed = false;
+let ansOpen = false;
 
 /* =========================
    AUDIO CANCEL / GUARD
@@ -520,7 +573,7 @@ async function primeSage(){
     sageVoice.pause();
     sageVoice.currentTime = 0;
     sageVoice.muted = false;
-  }catch(e){
+  }catch(_){
     sageVoice.muted = false;
   }
 }
@@ -537,29 +590,15 @@ function playSageForIndex(idx, onEnd){
     if(onEnd) onEnd();
   };
 
-  console.log('[Sage src]', src);
-
   sageVoice.onended = ()=>{ if(myToken!==flowToken) return; finish(); };
-  sageVoice.onerror = ()=>{ 
-    if(myToken!==flowToken) return;
-    console.warn('[Sage missing or blocked]', src);
-    alert('Sage audio failed:\n' + src + '\n\n(ファイル名/パスを確認してください)');
-    finish();
-  };
+  sageVoice.onerror = ()=>{ if(myToken!==flowToken) return; finish(); };
 
   try{
     sageVoice.src = src;
     sageVoice.currentTime = 0;
     const p = sageVoice.play();
-    if(p && p.catch) p.catch((err)=>{
-      if(myToken!==flowToken) return;
-      console.warn('[Sage play blocked]', err, 'src=', src);
-      alert('Sage playback blocked:\n' + src + '\n\nSafariの自動再生制限の可能性があります。');
-      finish();
-    });
-  }catch(err){
-    console.warn('[Sage play error]', err, 'src=', src);
-    alert('Sage play error:\n' + src);
+    if(p && p.catch) p.catch(()=>{ if(myToken!==flowToken) return; finish(); });
+  }catch(_){
     finish();
   }
 
@@ -594,7 +633,7 @@ function clearSelected(){
 
 function refreshCheckState(){
   if(solved) { check.disabled = true; return; }
-  check.disabled = (bank.querySelectorAll('.word').length !== 0) || locked;
+  check.disabled = (bank.querySelectorAll('.word').length !== 0) || locked || ansOpen;
 }
 
 function moveToBank(word){
@@ -618,39 +657,38 @@ function lockTiles(on){
 }
 function lockUI(on){
   locked = !!on;
-  lockTiles(locked);
-  playBtn.disabled = locked;
+  lockTiles(locked || ansOpen);
   refreshCheckState();
 }
 
-function showPlayHint(on){
-  helpReady = !!on;
-  if(on) playBtn.classList.add('show');
-  else playBtn.classList.remove('show');
-}
-
 /* =========================
-   GOLD: bind exactly once (reliable)
+   Answer Help Popup
    ========================= */
-let goldBound = false;
-function bindGoldOnce(){
-  if(!playBtn || goldBound) return;
-  goldBound = true;
+function openAnswerHelp(){
+  ansOpen = true;
+  cancelAudioFlow();
+  primeSage();
 
-  playBtn.addEventListener('click', (e)=>{
-    e.preventDefault();
-    e.stopPropagation();
+  const item = DATA[i];
+  ansEn.textContent = item.en;
+  ansJp.textContent = item.jp;
+  ansHi.textContent = item.hira;
 
-    if(locked) return;
-    if(solved) return;
-    if(!helpReady) return;
+  ansModal.classList.add('show');
+  ansModal.setAttribute('aria-hidden','false');
 
-    cancelAudioFlow();
-    primeSage();
+  lockTiles(true);
+  check.disabled = true;
+}
+function closeAnswerHelp(){
+  ansOpen = false;
+  cancelAudioFlow();
 
-    console.log('[Gold ▶]', 'question=', i+1, 'id=', DATA[i]?.id, 'src=', sagePathForIndex(i));
-    playSageForIndex(i);
-  }, {passive:false});
+  ansModal.classList.remove('show');
+  ansModal.setAttribute('aria-hidden','true');
+
+  lockTiles(false);
+  refreshCheckState();
 }
 
 /* =========================
@@ -672,8 +710,10 @@ function mount(){
   locked=false;
 
   wrongStreak=0;
-  showPlayHint(false);
   solved=false;
+  ansOpen=false;
+  ansModal.classList.remove('show');
+  ansModal.setAttribute('aria-hidden','true');
 
   jpCard.classList.remove('replay');
   jpCard.classList.add('locked');
@@ -692,7 +732,7 @@ function mount(){
 
     b.addEventListener('click',(e)=>{
       e.stopPropagation();
-      if(locked || solved) return;
+      if(locked || solved || ansOpen) return;
 
       const parent = b.parentElement;
       if(parent === bank){
@@ -726,9 +766,7 @@ function mount(){
   };
 }
 
-sent.addEventListener('click',(e)=>{
-  if(e.target === sent) clearSelected();
-});
+sent.addEventListener('click',(e)=>{ if(e.target === sent) clearSelected(); });
 bank.addEventListener('click',(e)=>{ if(e.target === bank) clearSelected(); });
 
 /* =========================
@@ -745,9 +783,15 @@ function playOnce(el){
   try{ return el.play(); }catch(_){ return null; }
 }
 
+function resetSentenceToBank(){
+  [...sent.querySelectorAll('.word')].forEach(ch=> moveToBank(ch));
+  clearSelected();
+  refreshCheckState();
+}
+
 function checkLogic(){
   cancelAudioFlow();
-  if(locked || solved) return;
+  if(locked || solved || ansOpen) return;
 
   const correct = currentCorrect();
   const built = currentBuilt();
@@ -760,7 +804,6 @@ function checkLogic(){
     showBig(bigHeart);
 
     wrongStreak = 0;
-    showPlayHint(false);
 
     check.style.display = 'none';
     nextWrap.style.display = 'block';
@@ -777,9 +820,7 @@ function checkLogic(){
 
       if(myToken !== flowToken) return;
 
-      playSageForIndex(i, ()=>{
-        if(myToken !== flowToken) return;
-      });
+      playSageForIndex(i);
     };
 
     sfxDing.onended = afterDingOnce;
@@ -795,14 +836,13 @@ function checkLogic(){
     playOnce(sfxFart);
 
     wrongStreak++;
+
+    resetSentenceToBank();
+
     if(wrongStreak >= 3){
-      showPlayHint(true);
+      wrongStreak = 0;
+      openAnswerHelp();
     }
-
-    [...sent.querySelectorAll('.word')].forEach(ch=> moveToBank(ch));
-    clearSelected();
-
-    refreshCheckState();
   }
 }
 
@@ -883,9 +923,34 @@ if(helpBtnEl && helpModal){
 }
 
 /* =========================
+   Answer popup controls
+   ========================= */
+ansSpeakBtn.addEventListener('click', (e)=>{
+  e.preventDefault();
+  e.stopPropagation();
+  if(!ansOpen) return;
+  cancelAudioFlow();
+  primeSage();
+  playSageForIndex(i);
+});
+
+function closeAnsFromUI(){
+  closeAnswerHelp();
+}
+ansCloseBtn.addEventListener('click', closeAnsFromUI);
+ansModal.querySelectorAll('[data-close-ans]').forEach(el=>{
+  el.addEventListener('click', closeAnsFromUI);
+});
+ansModal.addEventListener('click', (e)=>{
+  if(e.target === ansModal) closeAnsFromUI();
+});
+document.addEventListener('keydown', (e)=>{
+  if(e.key === 'Escape' && ansOpen) closeAnsFromUI();
+});
+
+/* =========================
    Init
    ========================= */
-bindGoldOnce();
 mount();
 </script>
 
