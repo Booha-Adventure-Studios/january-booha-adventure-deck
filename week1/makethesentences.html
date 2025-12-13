@@ -60,9 +60,7 @@ header{text-align:center;padding:26px 12px 12px}
   user-select:none;
   -webkit-tap-highlight-color:transparent;
 }
-.jpCard.replay{
-  cursor:pointer;
-}
+.jpCard.replay{ cursor:pointer; }
 .jpCard.locked{
   cursor:default;
   filter:saturate(.92) brightness(.98);
@@ -470,6 +468,7 @@ let locked=false;
 
 let wrongStreak=0;        // wrong answers in a row for the current sentence
 let replayUnlocked=false; // rainbow replay is only allowed after correct
+let solved=false;         // ✅ once correct, hide Check and lock tiles
 
 /* =========================
    SAGE
@@ -562,6 +561,8 @@ function clearSelected(){
 }
 
 function refreshCheckState(){
+  // ✅ once solved, Check is hidden anyway
+  if(solved) { check.disabled = true; return; }
   check.disabled = (bank.querySelectorAll('.word').length !== 0) || locked;
 }
 
@@ -581,11 +582,16 @@ function moveToSentence(word, beforeEl=null){
   refreshCheckState();
 }
 
+function lockTiles(on){
+  // locks only word tiles (not Next button)
+  [...document.querySelectorAll('.word')].forEach(w=>w.disabled = !!on);
+}
+
 function lockUI(on){
   locked = !!on;
-  [...document.querySelectorAll('.word')].forEach(w=>w.disabled = locked);
+  lockTiles(locked);
   playBtn.disabled = locked;
-  check.disabled = locked || (bank.querySelectorAll('.word').length !== 0);
+  refreshCheckState();
 }
 
 function setReplayUnlocked(on){
@@ -613,6 +619,8 @@ function mount(){
   sent.appendChild(playBtn);
 
   nextWrap.style.display='none';
+
+  // ✅ Check is visible at start of each round
   check.style.display='block';
   check.disabled=true;
 
@@ -623,6 +631,8 @@ function mount(){
   wrongStreak=0;
   showPlayHint(false);
   setReplayUnlocked(false);
+
+  solved=false; // ✅ reset solved state
 
   const item = DATA[i];
   jp.textContent=item.jp;
@@ -638,7 +648,7 @@ function mount(){
 
     b.addEventListener('click',(e)=>{
       e.stopPropagation();
-      if(locked) return;
+      if(locked || solved) return;
 
       const parent = b.parentElement;
       if(parent === bank){
@@ -666,6 +676,7 @@ function mount(){
   updateProgress();
   refreshCheckState();
 
+  // ✅ Sage primes only when student first uses Check (not before)
   check.onclick = () => {
     primeSage();
     checkLogic();
@@ -682,7 +693,6 @@ if(jpCard){
   jpCard.addEventListener('click', (e)=>{
     e.preventDefault();
     e.stopPropagation();
-    if(locked) return;
     if(!replayUnlocked) return;
     primeSage();
     playSageForIndex(i);
@@ -693,7 +703,8 @@ if(jpCard){
 playBtn.addEventListener('click', (e)=>{
   e.preventDefault();
   e.stopPropagation();
-  if(locked) return;
+  if(!playBtn.classList.contains('show')) return;
+  if(solved) return; // ✅ after solved, replay is rainbow only
   primeSage();
   playSageForIndex(i);
 });
@@ -716,12 +727,15 @@ function playOnce(el){
 }
 
 function checkLogic(){
-  if(locked) return;
+  if(locked || solved) return;
 
   const correct = currentCorrect();
   const built = currentBuilt();
 
   if(built === correct){
+    solved = true;
+
+    // lock everything immediately
     lockUI(true);
 
     if(!wrongMode) score++;
@@ -730,7 +744,11 @@ function checkLogic(){
     wrongStreak = 0;
     showPlayHint(false);
 
-    // Correct flow (ONCE): ding -> Sage -> Next
+    // ✅ After correct: hide Check, show Next (no more checking needed)
+    check.style.display = 'none';
+    nextWrap.style.display = 'block';
+
+    // ✅ Correct flow (ONCE): ding -> Sage -> then unlock rainbow replay (but keep tiles locked)
     let afterDone = false;
     const afterDingOnce = ()=>{
       if(afterDone) return;
@@ -738,9 +756,8 @@ function checkLogic(){
       sfxDing.onended = null;
 
       playSageForIndex(i, ()=>{
-        setReplayUnlocked(true);     // replay unlocks AFTER they succeed
-        nextWrap.style.display='block';
-        lockUI(false);
+        setReplayUnlocked(true); // replay after success
+        // keep tiles locked; Next works
       });
     };
 
@@ -770,6 +787,8 @@ function checkLogic(){
 }
 
 nextBtn.onclick = () => {
+  // stop Sage when moving on (prevents overlap if they skip fast)
+  try{ sageVoice.pause(); }catch(_){}
   i++;
   if(i >= DATA.length) return finish();
   mount();
