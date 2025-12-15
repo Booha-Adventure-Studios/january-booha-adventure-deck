@@ -1,1 +1,747 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
 
+<!-- =========================
+  //* CHANGE 1/6: Page title (week name)
+  ========================= -->
+<title>Booha Word Builder – January Week 3</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Noto+Sans+JP:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0b1530; --ink:#fff; --outline:#ffffff26;
+  --green:#22c55e; --red:#ef4444; --purple:#7c3aed;
+  --gold:#ffd54a; --goldSoft:#ffe59966;
+  --tile:#1b2046;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  background:var(--bg); color:var(--ink);
+  font-family:system-ui,'Noto Sans JP',sans-serif;
+  min-height:100vh; display:flex; flex-direction:column;
+  overflow-x:hidden; overflow-y:auto;
+  user-select:none; -webkit-user-select:none; -ms-user-select:none;
+}
+
+/* Top nav buttons (standard Booha) */
+.top-nav-btn{
+  position:fixed; top:10px; left:10px; z-index:60;
+  border-radius:999px; padding:6px 14px;
+  border:1px solid #ffffff66;
+  background:rgba(15,23,42,.95);
+  color:#fff; font-size:.78rem; font-weight:700; letter-spacing:.04em;
+  cursor:pointer; display:flex; align-items:center; gap:4px;
+  box-shadow:0 0 12px rgba(0,0,0,.6);
+  backdrop-filter:blur(4px);
+}
+.top-nav-btn span.jp{font-family:'Noto Sans JP',sans-serif;font-size:.74em}
+
+/* Help "?" button */
+.icon-btn{
+  position:fixed; top:10px; right:10px;
+  width:34px; height:34px; border-radius:999px;
+  border:1px solid #ffffff66;
+  background:radial-gradient(circle at 30% 30%,#ffffffee,#38bdf8cc,#4f46e5ff);
+  color:#0b1530; font-weight:900; font-size:1.15rem;
+  display:flex; align-items:center; justify-content:center;
+  cursor:pointer;
+  box-shadow:0 0 16px rgba(96,165,250,.9),0 0 32px rgba(129,140,248,.75);
+  backdrop-filter:blur(6px);
+  z-index:60;
+  animation:helpPulse 1.9s ease-in-out infinite;
+}
+@keyframes helpPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
+
+/* Help modal */
+.help-modal{
+  position:fixed; inset:0;
+  background:rgba(15,23,42,.86);
+  backdrop-filter:blur(6px);
+  display:none; align-items:center; justify-content:center;
+  z-index:80;
+}
+.help-panel{
+  width:min(520px,92vw);
+  max-height:80vh;
+  background:#020617;
+  border-radius:24px;
+  border:1px solid #ffffff33;
+  box-shadow:0 18px 60px rgba(0,0,0,.85);
+  padding:18px 18px 22px;
+  overflow-y:auto;
+  font-size:.9rem;
+  line-height:1.6;
+  position:relative;
+}
+.help-panel h2{font-family:'Cinzel',serif;font-size:1.3rem;margin-bottom:4px}
+.help-panel h3{font-size:.95rem;opacity:.9;margin-bottom:12px}
+.help-panel p{margin-bottom:8px}
+.help-panel p.jp{font-family:'Noto Sans JP',sans-serif}
+.help-close{
+  position:absolute; top:10px; right:14px;
+  border:none; background:transparent;
+  color:#e5e7eb; font-size:1.2rem; cursor:pointer;
+}
+
+/* Global overlays */
+#overlay{position:fixed; inset:0; pointer-events:none; z-index:9999}
+.flashRed{position:fixed; inset:0; background:rgba(255,0,0,.35); animation:flash .35s ease; pointer-events:none; z-index:9998}
+@keyframes flash{0%{opacity:0}40%{opacity:1}100%{opacity:0}}
+
+/* Header */
+header{
+  text-align:center;
+  padding:48px 16px 8px;
+  position:relative;
+  z-index:5;
+}
+header h1,header h2,header h3{font-family:'Cinzel',serif}
+header h2{font-size:clamp(2rem,6vw,3rem);margin-top:4px}
+header h3{margin-top:6px;opacity:.9}
+
+/* Play (fizzle behind triangle) */
+.playWrap{
+  position:relative;
+  z-index:10;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  margin-top:28px;
+}
+.playBtn{
+  appearance:none;border:none;cursor:pointer;width:240px;height:240px;border-radius:50%;
+  display:grid;place-items:center;font-size:6rem;font-weight:900;color:#0b1530;
+  background:conic-gradient(from 0deg,#ff007f,#ff7f00,#ffff00,#00ff00,#00ffff,#007fff,#ff00ff,#ff007f);
+  box-shadow:0 0 80px #ff00ff88,0 0 150px #00ffff66;
+  animation:rgbSpin 4s linear infinite,pulse 2s ease-in-out infinite;
+  position:relative;overflow:hidden;z-index:11;
+}
+.playBtn::before,.playBtn::after{content:"";position:absolute;inset:0;border-radius:50%;pointer-events:none}
+.playBtn.fizzy::before{
+  background:
+    radial-gradient(circle at 25% 75%,rgba(255,255,255,.6),transparent 60%),
+    radial-gradient(circle at 75% 25%,rgba(255,255,255,.4),transparent 60%),
+    radial-gradient(circle at 50% 50%,rgba(255,255,255,.3),transparent 60%);
+  animation:fizzmove .35s infinite linear; z-index:0;
+}
+.playBtn.fizzy::after{
+  box-shadow:0 0 40px 10px #fff8,0 0 90px 20px #00ffff99;
+  animation:fizzglow .25s ease-in-out infinite alternate; z-index:0;
+}
+.playBtn span{position:relative;z-index:5;transform:translateX(4px)}
+@keyframes rgbSpin{to{filter:hue-rotate(360deg)}}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
+@keyframes fizzmove{0%{transform:translate(0,0) rotate(0)}50%{transform:translate(-4px,-4px) rotate(180deg)}100%{transform:translate(0,0) rotate(360deg)}}
+@keyframes fizzglow{0%{opacity:.4;filter:blur(3px)}100%{opacity:1;filter:blur(7px)}}
+
+main{
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:18px;
+  padding:0 10px 18px;
+}
+
+.dropZone,
+.bank{
+  display:flex;
+  flex-wrap:wrap;
+  gap:14px;
+  justify-content:center;
+  align-items:center;
+  max-width:100%;
+  overflow:visible;
+  padding:8px 4px;
+}
+
+.slot,.tile{
+  border-radius:18px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-weight:900;
+  font-size:52px;
+  transition:box-shadow .15s, background .15s, transform .12s, filter .12s, color .12s;
+  flex:0 0 auto;
+}
+
+/* Slightly smaller tiles */
+.slot{width:88px;height:88px;border:2px dashed #ffffff3a;background:#27306b99}
+.slot.filled{background:#2a2f6b;border-color:#fff9;box-shadow:0 0 12px #facc15, 0 0 28px #fde68a66}
+.slot.hint{border-color:#fffbe8;box-shadow:0 0 18px #facc15,0 0 34px #fde68ab3}
+
+.tile{
+  width:88px;height:88px;
+  background:var(--tile);
+  border:1px solid #8690ff33;
+  box-shadow:0 8px 14px rgba(0,0,0,.28);
+  color:#fff;
+  cursor:pointer;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+.tile:active{transform:scale(1.04)}
+.tile.touched{
+  box-shadow:
+    0 0 0 2px rgba(255,255,255,.25) inset,
+    0 0 20px rgba(244,114,182,.75),
+    0 0 42px rgba(167,139,250,.55);
+  filter:saturate(1.2) brightness(1.15);
+}
+.tile.selected{
+  background:#2a2f6b;
+  box-shadow:
+    0 0 0 2px rgba(255,255,255,.18) inset,
+    0 0 20px rgba(125,211,252,.8),
+    0 0 44px rgba(167,139,250,.65);
+  transform:translateY(-2px) scale(1.05);
+}
+.slot .tile{width:100%;height:100%;border-radius:16px}
+.tile.inSlot{background:#fff4c2;color:#000;box-shadow:0 0 18px #facc15,0 0 32px #fde68a66}
+
+.controls{display:flex;gap:12px;justify-content:center;margin-top:10px}
+.btn{appearance:none;border:none;cursor:pointer;padding:12px 20px;border-radius:14px;font-weight:800;font-size:16px}
+.btn.primary{background:linear-gradient(135deg,#a78bfa,#7c3aed);color:#fff;box-shadow:0 0 20px #7c3aed66}
+
+#nextWrap{display:none;flex-direction:column;align-items:center;margin-top:14px}
+#nextBtn{
+  appearance:none;border:none;cursor:pointer;
+  padding:12px 24px;border-radius:14px;font-weight:900;font-size:18px;color:#fff;
+  background:linear-gradient(135deg,#22c55e,#16a34a);
+  box-shadow:0 0 20px #16a34a80,0 0 40px #22c55e55;
+  animation:nextPulse 1.4s ease-in-out infinite;
+}
+@keyframes nextPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
+#progressCount{margin-top:10px;font-weight:700;font-size:1.1rem}
+
+.bigFx{
+  position:fixed;
+  left:50%; top:52%;
+  transform:translate(-50%,-50%) scale(.6);
+  opacity:0;
+  pointer-events:none;
+  z-index:9999;
+  filter:drop-shadow(0 0 18px rgba(255,255,255,.22));
+  will-change:transform,opacity;
+}
+.bigFx.show{ animation:bigPop 900ms ease-out both; }
+@keyframes bigPop{
+  0%{opacity:0;transform:translate(-50%,-50%) scale(.6)}
+  20%{opacity:1;transform:translate(-50%,-54%) scale(1.25)}
+  100%{opacity:0;transform:translate(-50%,-64%) scale(1.55)}
+}
+
+#page-results{
+  display:none;
+  text-align:center;
+  padding:60px 16px;
+  min-height:60vh;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:22px;
+}
+#page-results h2{font-family:'Cinzel',serif;}
+#resultMsg{font-size:clamp(1.6rem,4vw,2rem);font-weight:900;text-shadow:0 0 10px rgba(255,255,255,.2)}
+#resultScore{font-size:clamp(1.4rem,3.5vw,1.8rem);font-weight:700}
+.redGlow{background:#2b0b0b}
+.orangeGlow{background:#2b1a0b}
+.blueGlow{background:#0b1530}
+.goldGlow{background:#2b210b}
+.confetti{position:fixed;top:-10vh;width:10px;height:16px;border-radius:2px;animation:fall linear both;z-index:9999}
+@keyframes fall{to{transform:translateY(110vh) rotate(720deg)}}
+
+footer{text-align:center;padding:16px;font-family:'Cinzel',serif;font-size:.95rem;opacity:.85;border-top:1px solid var(--outline)}
+
+@media (max-width:600px){
+  .slot,.tile{font-size:38px}
+  .slot{width:62px;height:62px;border-radius:14px}
+  .tile{width:62px;height:62px;border-radius:14px}
+  .slot .tile{border-radius:12px}
+  .dropZone,.bank{gap:10px}
+  header{padding-top:56px}
+  .playBtn{width:210px;height:210px;font-size:5.2rem}
+}
+</style>
+</head>
+<body>
+<div id="overlay"></div>
+
+<button class="top-nav-btn" id="quitBtn"><span>Quit</span><span class="jp">やめる</span></button>
+<button class="icon-btn" id="helpBtn">?</button>
+
+<div class="help-modal" id="helpModal">
+  <div class="help-panel">
+    <button class="help-close" id="helpClose">×</button>
+    <h2>遊び方 / How to Play</h2>
+    <h3>Word Builder Game</h3>
+    <p class="jp">１．レインボーの丸いボタン（▶）をタップして、英単語を聞きます。</p>
+    <p class="jp">２．下のアルファベットを「タップ」して、上のマスに入れて単語を作ります。</p>
+    <p class="jp">（※タイルを先にタップ → 入れたいマスをタップ でもOK！）</p>
+    <p class="jp">３．すべてのマスがうまったら「CHECK」を押します。</p>
+    <p class="jp">４．１回目で正解すると１ポイント！まちがえたらタイルがもどるので、もう一度チャレンジできます（その単語のポイントは０点）。</p>
+    <p class="jp">５．全部で１５問あります。パーフェクトスコアを目指してね！</p>
+
+    <p>1. Tap the rainbow circle ▶ to hear the English word.</p>
+    <p>2. Tap the letter tiles to put them into the empty slots (no dragging!).</p>
+    <p>(Tip: Tap a tile first, then tap the slot you want.)</p>
+    <p>3. When all slots are filled, tap CHECK.</p>
+    <p>4. Correct on the first try = 1 point. If you miss, the letters return and you can try again (no point).</p>
+    <p>5. There are 15 words. Try to get a perfect score!</p>
+  </div>
+</div>
+
+<header>
+  <h1>THE BOO-RICULUM</h1>
+  <h2>WORD BUILDER</h2>
+
+  <!-- =========================
+    //* CHANGE 2/6: Week label shown on page
+    ========================= -->
+  <h3>January Week 3 – １月第3週</h3>
+</header>
+
+<div class="playWrap" id="playWrap">
+  <button class="playBtn" id="playBtn"><span>▶</span></button>
+</div>
+
+<main id="page-round">
+  <div class="dropZone" id="dropZone"></div>
+  <div class="bank" id="bank"></div>
+  <div class="controls">
+    <button class="btn primary" id="checkBtn" disabled>CHECK</button>
+  </div>
+  <div id="nextWrap"><button id="nextBtn">Next / つぎへ</button></div>
+  <div id="progressCount">1 / 15</div>
+</main>
+
+<section id="page-results">
+  <h2>RESULTS / リザルト</h2>
+  <div id="resultMsg">いいね！あと少しでパーフェクト！</div>
+  <div id="resultScore">0/15（0%）</div>
+</section>
+
+<!-- Big FX (no emoji) -->
+<div class="bigFx" id="bigHeart" aria-hidden="true">
+  <svg viewBox="0 0 128 128" width="170" height="170" aria-hidden="true" focusable="false">
+    <path d="M64 112S14 84 14 44c0-16 12-28 28-28 10 0 18 5 22 12 4-7 12-12 22-12 16 0 28 12 28 28 0 40-50 68-50 68Z" fill="#ff3b6e"/>
+    <path d="M64 112S14 84 14 44c0-16 12-28 28-28 10 0 18 5 22 12 4-7 12-12 22-12 16 0 28 12 28 28 0 40-50 68-50 68Z" fill="none" stroke="#ffffff" stroke-opacity=".7" stroke-width="4"/>
+  </svg>
+</div>
+<div class="bigFx" id="bigFart" aria-hidden="true">
+  <svg viewBox="0 0 128 128" width="170" height="170" aria-hidden="true" focusable="false">
+    <g fill="#cbd5e1">
+      <path d="M44 92c-14 0-26-10-26-23 0-11 8-20 19-22 3-13 15-23 30-23 12 0 23 6 28 16 10 1 18 10 18 21 0 12-10 21-22 21H44Z"/>
+    </g>
+    <g fill="none" stroke="#ffffff" stroke-opacity=".65" stroke-width="4" stroke-linecap="round">
+      <path d="M28 50c-8-10-2-22 10-26"/>
+      <path d="M92 44c6-10 18-12 24-4"/>
+      <path d="M78 98c12 4 20 14 18 22"/>
+    </g>
+  </svg>
+</div>
+
+<footer>BRYAN'S ENGLISH SCHOOL</footer>
+
+<script>
+/* ====== Helpers ====== */
+const $=s=>document.querySelector(s);
+
+/* =========================
+  //* CHANGE 3/6: Week folder (ONLY change week number)
+  - This builds a SAFE base path so audio always resolves.
+  - Works if HTML is:
+    A) inside /week2/     => BASE "./"
+    B) at repo root       => BASE "week2/"
+  ========================= */
+const WEEK_FOLDER = "week3"; // change to "week3", "week4", etc.
+const BASE = location.pathname.includes("/" + WEEK_FOLDER + "/") ? "./" : (WEEK_FOLDER + "/");
+
+/* =========================
+  //* CHANGE 4/6: Weekly WORDS (15 items) + their AUDIO NUMBER
+  - Keep v numbers matching your mp3 filenames.
+  - Sage vocab lives in: audio/vocab/
+  - Example file: week3/audio/vocab/v01_body.mp3
+  ========================= */
+const WEEK_WORDS = [
+  { v: 1,  w: "body"      },
+  { v: 2,  w: "head"      },
+  { v: 3,  w: "stomach"   },
+  { v: 4,  w: "sleep"     },
+  { v: 5,  w: "food"      },
+  { v: 6,  w: "fruit"     },
+  { v: 7,  w: "vegetable" },
+  { v: 8,  w: "exercise"  },
+  { v: 9,  w: "walk"      },
+  { v: 10, w: "run"       },
+  { v: 11, w: "drink"     },
+  { v: 12, w: "water"     },
+  { v: 13, w: "strong"    },
+  { v: 14, w: "tired"     },
+  { v: 15, w: "healthy"  }
+];
+
+
+/* Build lookup: word -> v## */
+const WORD_TO_V = WEEK_WORDS.reduce((acc, it) => {
+  acc[it.w] = it.v;
+  return acc;
+}, Object.create(null));
+
+/* Shuffled play order (words only) */
+let WORDS=[]; // shuffled on load
+let index=0,totalScore=0,firstTry=true;
+
+/* ====== DOM ====== */
+const drop=$("#dropZone"),bank=$("#bank"),play=$("#playBtn"),check=$("#checkBtn");
+const nextWrap=$("#nextWrap"),nextBtn=$("#nextBtn"),progressCount=$("#progressCount");
+const pageRound=$("#page-round"),pageResults=$("#page-results");
+const playWrap=$("#playWrap");
+const quitBtn=$("#quitBtn");
+const helpBtn=$("#helpBtn"), helpModal=$("#helpModal"), helpClose=$("#helpClose");
+const bigHeart=$("#bigHeart"), bigFart=$("#bigFart");
+
+/* =========================
+  //* CHANGE 5/6: Menu link (only if you rename index.html)
+  ========================= */
+const MENU_HREF = "index.html";
+
+/* Quit = back to menu */
+quitBtn.addEventListener("click",()=>{ location.href = MENU_HREF; });
+
+/* Help popup logic */
+function openHelp(){ helpModal.style.display="flex"; }
+function closeHelp(){ helpModal.style.display="none"; }
+helpBtn.addEventListener("click",openHelp);
+helpClose.addEventListener("click",closeHelp);
+helpModal.addEventListener("click",e=>{ if(e.target===helpModal) closeHelp(); });
+
+/* =========================
+  Audio paths (DO NOT change)
+  - Sage:  audio/vocab/
+  - SFX:   assets/audio/
+  ========================= */
+const sfx = {
+  ding:  new Audio(BASE + "assets/audio/ding.mp3"),
+  fart:  new Audio(BASE + "assets/audio/fart.mp3"),
+  r0_5:  new Audio(BASE + "assets/audio/result_0-5.mp3"),
+  r6_10: new Audio(BASE + "assets/audio/result_6-10.mp3"),
+  r11_14:new Audio(BASE + "assets/audio/result_11-14.mp3"),
+  r15:   new Audio(BASE + "assets/audio/result_15.mp3"),
+};
+Object.values(sfx).forEach(a=>{
+  a.preload="auto";
+  a.playsInline = true;
+  try{ a.load(); }catch{}
+});
+function playSfx(audio){
+  try{
+    audio.currentTime=0;
+    audio.play().catch(()=>{
+      const clone = audio.cloneNode(true);
+      clone.preload="auto";
+      clone.playsInline = true;
+      clone.play().catch(()=>{});
+    });
+  }catch{}
+}
+
+/* Sage voice (single element = reliable on iOS) */
+const sageVoice = new Audio();
+sageVoice.preload = "auto";
+sageVoice.playsInline = true;
+
+function v2(n){ return String(n).padStart(2,"0"); }
+function sageSrcForWord(word){
+  const v = WORD_TO_V[word];
+  if(!v) return "";
+  return `${BASE}audio/vocab/v${v2(v)}_${word}.mp3`;
+}
+
+/* iOS/Safari: unlock audio with USER gesture */
+let audioUnlocked = false;
+async function unlockAudioOnce(){
+  if(audioUnlocked) return;
+  audioUnlocked = true;
+  try{
+    const probe = sfx.ding;
+    probe.muted = true;
+    await probe.play();
+    probe.pause();
+    probe.currentTime = 0;
+    probe.muted = false;
+  }catch{}
+}
+
+function stopSage(){
+  try{ sageVoice.pause(); sageVoice.currentTime=0; }catch{}
+}
+
+function speak(){
+  unlockAudioOnce();
+
+  const word = WORDS[index];
+  const src = sageSrcForWord(word);
+
+  if(!src){
+    console.warn("[Sage] missing mapping for:", word);
+    return;
+  }
+
+  stopSage();
+  play.classList.add("fizzy");
+
+  sageVoice.src = src;
+  try{ sageVoice.currentTime = 0; }catch{}
+  const clear = ()=>play.classList.remove("fizzy");
+  sageVoice.onended = clear;
+
+  const p = sageVoice.play();
+  if(p && typeof p.catch === "function"){
+    p.catch(err=>{
+      console.warn("[Sage] play failed:", err, "src=", src);
+      clear();
+    });
+  }
+}
+play.addEventListener("click", speak);
+
+/* =========================
+  //* CHANGE 6/6: (Optional) Result messages
+  - If you ever want to change result text per month/week.
+  ========================= */
+
+/* ====== Visual FX ====== */
+function flashRedScreen(){
+  const el=document.createElement("div");
+  el.className="flashRed";
+  document.body.appendChild(el);
+  setTimeout(()=>el.remove(),400);
+}
+function showBig(el){
+  el.classList.remove("show");
+  void el.offsetWidth;
+  el.classList.add("show");
+  setTimeout(()=>el.classList.remove("show"), 950);
+}
+
+/* ====== Tap Game State ====== */
+let selectedTile = null;
+
+function nextEmptySlot(){
+  return [...drop.children].find(s=>!s.firstChild) || null;
+}
+function allFilled(){
+  return [...drop.children].every(s=>s.firstChild);
+}
+function currentAnswer(){
+  return [...drop.children].map(s=>s.firstChild?.textContent ?? "").join("");
+}
+function enableCheck(){
+  check.disabled = !allFilled();
+}
+function clearSelected(){
+  if(selectedTile){ selectedTile.classList.remove("selected"); }
+  selectedTile = null;
+}
+function markHint(){
+  [...drop.children].forEach(s=>s.classList.remove("hint"));
+  const s = nextEmptySlot();
+  if(s) s.classList.add("hint");
+}
+
+function makeTile(ch){
+  const t=document.createElement("div");
+  t.className="tile";
+  t.textContent=ch;
+
+  t.addEventListener("pointerdown",()=>{
+    t.classList.add("touched");
+    setTimeout(()=>t.classList.remove("touched"), 180);
+  }, {passive:true});
+
+  t.addEventListener("click", (e)=>{
+    e.stopPropagation();
+
+    const inSlot = t.parentElement?.classList.contains("slot");
+    if(inSlot){
+      sendToBank(t);
+      clearSelected();
+      markHint();
+      enableCheck();
+      return;
+    }
+
+    if(selectedTile === t){
+      const s = nextEmptySlot();
+      if(s){ placeIntoSlot(t, s); }
+      clearSelected();
+      markHint();
+      enableCheck();
+      return;
+    }
+
+    clearSelected();
+    selectedTile = t;
+    t.classList.add("selected");
+  });
+
+  return t;
+}
+
+function buildSlots(w){
+  drop.innerHTML="";
+  for(let i=0;i<w.length;i++){
+    const s=document.createElement("div");
+    s.className="slot";
+
+    s.addEventListener("click", ()=>{
+      if(!selectedTile) return;
+      if(s.firstChild) return;
+      if(selectedTile.parentElement !== bank) return;
+      placeIntoSlot(selectedTile, s);
+      clearSelected();
+      markHint();
+      enableCheck();
+    });
+
+    drop.appendChild(s);
+  }
+}
+
+function buildBank(w){
+  bank.innerHTML="";
+  const chars=[...w];
+  let scr=[...chars];
+  if(chars.length>1){
+    do{ scr.sort(()=>Math.random()-.5); } while(scr.join("")===w);
+  }
+  scr.forEach((ch)=> bank.appendChild(makeTile(ch)) );
+}
+
+function placeIntoSlot(tile,slot){
+  if(slot.firstChild) return;
+
+  tile.classList.remove("selected");
+  tile.classList.add("inSlot");
+  slot.appendChild(tile);
+  slot.classList.add("filled");
+}
+
+function sendToBank(tile){
+  bank.appendChild(tile);
+  tile.classList.remove("inSlot","selected");
+  [...drop.children].forEach(s=>{
+    if(!s.firstChild) s.classList.remove("filled");
+    else s.classList.add("filled");
+  });
+}
+
+/* ====== Round / Check ====== */
+check.addEventListener("click",()=>{
+  const ans=currentAnswer(), correct=WORDS[index];
+  if(ans===correct){
+    if(firstTry) totalScore++;
+
+    showBig(bigHeart);
+    playSfx(sfx.ding);
+
+    nextWrap.style.display="flex";
+    check.style.display="none";
+  } else {
+    firstTry=false;
+    flashRedScreen();
+    showBig(bigFart);
+    playSfx(sfx.fart);
+
+    const tiles=[...drop.querySelectorAll(".tile")];
+    tiles.forEach(t=>sendToBank(t));
+
+    clearSelected();
+    markHint();
+    enableCheck();
+  }
+});
+
+nextBtn.addEventListener("click",()=>{
+  index++;
+  progressCount.textContent=`${Math.min(index+1,WORDS.length)} / ${WORDS.length}`;
+  if(index>=WORDS.length){ showResults(); return; }
+  loadCard();
+});
+
+/* ====== Results ====== */
+function showResults(){
+  pageRound.style.display="none";
+  playWrap.style.display="none";
+  pageResults.style.display="flex";
+
+  const pct=Math.round((totalScore/WORDS.length)*100);
+  const msg=$("#resultMsg"), score=$("#resultScore");
+  let bg="blueGlow", snd=sfx.r11_14, text="いいね！あと少しでパーフェクト！";
+  if(totalScore<=5){ bg="redGlow"; snd=sfx.r0_5; text="ブーリキュラム見てないでしょ！"; }
+  else if(totalScore<=10){ bg="orangeGlow"; snd=sfx.r6_10; text="YouTube見すぎ！ブーリキュラムもやろう！"; }
+  else if(totalScore===15){ bg="goldGlow"; snd=sfx.r15; text="すごい！あなたは地球で一番頭がいい！"; }
+
+  document.body.className=bg;
+  msg.textContent=text;
+  score.textContent=`${totalScore}/${WORDS.length}（${pct}%）`;
+
+  playSfx(snd);
+
+  if(totalScore===15){
+    for(let i=0;i<160;i++){
+      setTimeout(()=>{
+        const c=document.createElement("div");
+        c.className="confetti";
+        c.style.left=(Math.random()*100)+"vw";
+        c.style.background=`hsl(${Math.random()*360},100%,60%)`;
+        c.style.animationDuration=(0.9+Math.random()*0.9)+"s";
+        document.body.appendChild(c);
+        setTimeout(()=>c.remove(),1900);
+      }, i*10);
+    }
+  }
+}
+
+/* ====== Utils ====== */
+function shuffle(arr){
+  for(let i=arr.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [arr[i],arr[j]]=[arr[j],arr[i]];
+  }
+  return arr;
+}
+
+/* ====== Game Init ====== */
+function loadCard(){
+  const w=WORDS[index];
+  firstTry=true;
+  clearSelected();
+  buildSlots(w);
+  buildBank(w);
+  check.disabled=true;
+  check.style.display="inline-block";
+  nextWrap.style.display="none";
+  markHint();
+}
+function initGame(){
+  WORDS = shuffle(WEEK_WORDS.map(it=>it.w));
+  index=0; totalScore=0; firstTry=true;
+  document.body.className="";
+  pageResults.style.display="none";
+  playWrap.style.display="flex";
+  pageRound.style.display="flex";
+  progressCount.textContent=`1 / ${WORDS.length}`;
+  loadCard();
+}
+initGame();
+</script>
+</body>
+</html>
