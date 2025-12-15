@@ -275,7 +275,6 @@ mix-blend-mode:screen;opacity:.8;border-radius:6px;transform:translateX(-100%);z
   </div>
 </div>
 
-<!-- iOS-only notice overlay -->
 <div id="iosNotice" class="ios-overlay" aria-hidden="true">
   <div class="ios-dialog">
     <div class="ios-title">iPad / iPhone をお使いのみなさんへ</div>
@@ -298,7 +297,7 @@ iPad / iPhone 版は、
 
 <!-- RESULT PAGES -->
 <div id="resRed" class="resultPage"><div class="resultInner glowRed">
-<header><div class="h1">THE BOO-RICULUM</div><div class="h2">EIGO PERA PERA</div><div class="h3">January Week 1 – Speaking Practice</div></header>
+<header><div class="h1">THE BOO-RICULUM</div><div class="h2">EIGO PERA PERA</div><div class="h3">January Week 2 – Speaking Practice</div></header>
 <div class="resultCenter"><div>
 <div id="msgRed" class="resultMsg">ブーリキュラム見てないでしょ！</div>
 <div id="scoreRed" class="resultScore">0/15（0%）</div>
@@ -308,7 +307,7 @@ iPad / iPhone 版は、
 </div></div>
 
 <div id="resOrange" class="resultPage"><div class="resultInner glowOrange">
-<header><div class="h1">THE BOO-RICULUM</div><div class="h2">EIGO PERA PERA</div><div class="h3">January Week 1 – Speaking Practice</div></header>
+<header><div class="h1">THE BOO-RICULUM</div><div class="h2">EIGO PERA PERA</div><div class="h3">January Week 2 – Speaking Practice</div></header>
 <div class="resultCenter"><div>
 <div id="msgOrange" class="resultMsg">YouTube見すぎ！ブーリキュラムもやろう！</div>
 <div id="scoreOrange" class="resultScore">0/15（0%）</div>
@@ -318,7 +317,7 @@ iPad / iPhone 版は、
 </div></div>
 
 <div id="resBlue" class="resultPage"><div class="resultInner glowBlue">
-<header><div class="h1">THE BOO-RICULUM</div><div class="h2">EIGO PERA PERA</div><div class="h3">January Week 1 – Speaking Practice</div></header>
+<header><div class="h1">THE BOO-RICULUM</div><div class="h2">EIGO PERA PERA</div><div class="h3">January Week 2 – Speaking Practice</div></header>
 <div class="resultCenter"><div>
 <div id="msgBlue" class="resultMsg">いいね！あと少しでパーフェクト！</div>
 <div id="scoreBlue" class="resultScore">0/15（0%）</div>
@@ -328,7 +327,7 @@ iPad / iPhone 版は、
 </div></div>
 
 <div id="resGold" class="resultPage"><div class="resultInner glowGold">
-<header><div class="h1">THE BOO-RICULUM</div><div class="h2">EIGO PERA PERA</div><div class="h3">January Week 1 – Speaking Practice</div></header>
+<header><div class="h1">THE BOO-RICULUM</div><div class="h2">EIGO PERA PERA</div><div class="h3">January Week 2 – Speaking Practice</div></header>
 <div class="resultCenter"><div>
 <div id="msgGold" class="resultMsg">すごい！あなたは地球で一番頭がいい！</div>
 <div id="scoreGold" class="resultScore">15/15（100%）</div>
@@ -337,23 +336,31 @@ iPad / iPhone 版は、
 <footer>Bryan’s English School</footer>
 </div></div>
 
-<!-- Audio (src set by JS so it works from /week1/ OR from site root) -->
 <audio id="a_ding" preload="auto" playsinline></audio>
 <audio id="a_fart" preload="auto" playsinline></audio>
-
 <audio id="a_r05" preload="auto" playsinline></audio>
 <audio id="a_r610" preload="auto" playsinline></audio>
 <audio id="a_r1114" preload="auto" playsinline></audio>
 <audio id="a_r15" preload="auto" playsinline></audio>
-
-<!-- Sage (single element, reliable) -->
 <audio id="sageVoice" preload="auto" playsinline></audio>
 
 <script>
-/* =========================
-   WEEK PATHS (change week number only)
-   ========================= */
-const WEEK_FOLDER = 'week2';
+/* =========================================================
+   CHANGE EACH WEEK — PART 1: WEEK SETTINGS
+   - Change ONLY these values each week.
+   ========================================================= */
+const WEEK_FOLDER = 'week2';                 // ex: 'week3'
+const MONTH_LABEL_EN = 'January';            // ex: 'February'
+const WEEK_NUM = 2;                          // ex: 3
+const GAME_TITLE_EN = 'EIGO PERA PERA';      // usually same
+const PRACTICE_LABEL_EN = 'Speaking Practice';
+
+/* Time per round (ms) */
+const DUR_MS = 7500;
+
+/* =========================================================
+   AUTO PATHS (do not change)
+   ========================================================= */
 const WEEK_PREFIX = location.pathname.includes('/' + WEEK_FOLDER + '/') ? '' : (WEEK_FOLDER + '/');
 
 function setAudioSrc(id, relPath){
@@ -372,14 +379,38 @@ function initAudioPaths(){
 }
 initAudioPaths();
 
-/* =========================
-   CONFIG
-   ========================= */
-const DUR_MS = 7500;
+/* =========================================================
+   CHANGE EACH WEEK — PART 2: WEEK DATA (15 items)
+   - Keep id 1..15 (matches s01..s15).
+   - en text must match your Sage filenames (slug rule below).
+   ========================================================= */
+const BASE_DATA = [
+  {id:1,  en:"I wake up at seven.",                    jp:"７時に起きます。",                 hira:"７じ に おきます"},
+  {id:2,  en:"I eat breakfast every day.",            jp:"毎日朝ごはんを食べます。",         hira:"まいにち あさごはん を たべます"},
+  {id:3,  en:"I go to school at eight.",              jp:"８時に学校へ行きます。",           hira:"８じ に がっこう へ いきます"},
+  {id:4,  en:"I take a shower in the morning.",       jp:"朝シャワーをあびます。",           hira:"あさ しゃわー を あびます"},
+  {id:5,  en:"I brush my teeth after meals.",         jp:"食事のあとに歯をみがきます。",     hira:"しょくじ の あと に は を みがきます"},
+  {id:6,  en:"I study English after dinner.",         jp:"夕ごはんのあとに英語を勉強します。", hira:"ゆうごはん の あと に えいご を べんきょう します"},
+  {id:7,  en:"I do my homework before bed.",          jp:"寝る前に宿題をします。",           hira:"ねる まえ に しゅくだい を します"},
+  {id:8,  en:"I help my family in the evening.",      jp:"夜に家族を手伝います。",           hira:"よる に かぞく を てつだいます"},
+  {id:9,  en:"I clean my room every Sunday.",         jp:"毎週日曜日に部屋をそうじします。", hira:"まいしゅう にちようび に へや を そうじ します"},
+  {id:10, en:"I sleep at ten o’clock.",               jp:"１０時に寝ます。",                 hira:"１０じ に ねます"},
+  {id:11, en:"I sometimes read at night.",            jp:"夜にときどき本を読みます。",       hira:"よる に ときどき ほん を よみます"},
+  {id:12, en:"I never watch TV before school.",       jp:"学校の前にテレビを見ません。",     hira:"がっこう の まえ に てれび を みません"},
+  {id:13, en:"I usually eat lunch with friends.",     jp:"たいてい友だちと昼ごはんを食べます。", hira:"たいてい ともだち と ひるごはん を たべます"},
+  {id:14, en:"I walk to school every day.",           jp:"毎日学校まで歩きます。",           hira:"まいにち がっこう まで あるきます"},
+  {id:15, en:"I relax after class.",                  jp:"授業のあとにリラックスします。",   hira:"じゅぎょう の あと に りらっくす します"}
+];
+
+/* =========================================================
+   DO NOT CHANGE — core state
+   ========================================================= */
+const ITEMS = shuffle([...BASE_DATA]);   // FIXED: was BASE_ITEMS (undefined)
+const TOTAL = ITEMS.length;
 
 let idx = 0, SR = null, listening = false, streamAllowed = false, isBusy = false;
 
-/* For results: store first-attempt score per ITEM, not per shuffled index */
+/* For results: store first-attempt score per ITEM id */
 let firstScoresById = Object.create(null);
 let firstPerfectCount = 0;
 
@@ -408,34 +439,12 @@ const RES = {
   gold: document.getElementById('a_r15')
 };
 
-/* =========================
-   DATA (Week 1 sentences)
-   - IMPORTANT: id 1..15 matches s01_.. to s15_..
-   ========================= */
-const BASE_DATA = [
-  {id:1,  en:"I wake up at seven.",                    jp:"７時に起きます。",                 hira:"７じ に おきます"},
-  {id:2,  en:"I eat breakfast every day.",            jp:"毎日朝ごはんを食べます。",         hira:"まいにち あさごはん を たべます"},
-  {id:3,  en:"I go to school at eight.",              jp:"８時に学校へ行きます。",           hira:"８じ に がっこう へ いきます"},
-  {id:4,  en:"I take a shower in the morning.",       jp:"朝シャワーをあびます。",           hira:"あさ しゃわー を あびます"},
-  {id:5,  en:"I brush my teeth after meals.",         jp:"食事のあとに歯をみがきます。",     hira:"しょくじ の あと に は を みがきます"},
-  {id:6,  en:"I study English after dinner.",         jp:"夕ごはんのあとに英語を勉強します。", hira:"ゆうごはん の あと に えいご を べんきょう します"},
-  {id:7,  en:"I do my homework before bed.",          jp:"寝る前に宿題をします。",           hira:"ねる まえ に しゅくだい を します"},
-  {id:8,  en:"I help my family in the evening.",      jp:"夜に家族を手伝います。",           hira:"よる に かぞく を てつだいます"},
-  {id:9,  en:"I clean my room every Sunday.",         jp:"毎週日曜日に部屋をそうじします。", hira:"まいしゅう にちようび に へや を そうじ します"},
-  {id:10, en:"I sleep at ten o’clock.",               jp:"１０時に寝ます。",                 hira:"１０じ に ねます"},
-  {id:11, en:"I sometimes read at night.",            jp:"夜にときどき本を読みます。",       hira:"よる に ときどき ほん を よみます"},
-  {id:12, en:"I never watch TV before school.",       jp:"学校の前にテレビを見ません。",     hira:"がっこう の まえ に てれび を みません"},
-  {id:13, en:"I usually eat lunch with friends.",     jp:"たいてい友だちと昼ごはんを食べます。", hira:"たいてい ともだち と ひるごはん を たべます"},
-  {id:14, en:"I walk to school every day.",           jp:"毎日学校まで歩きます。",           hira:"まいにち がっこう まで あるきます"},
-  {id:15, en:"I relax after class.",                  jp:"授業のあとにリラックスします。",   hira:"じゅぎょう の あと に りらっくす します"}
-];
+/* =========================================================
+   CHANGE EACH WEEK — PART 3: SAGE MODE (sentences path)
+   If you ever switch to vocab/questions, change ONLY this folder.
+   ========================================================= */
+const SAGE_SUBFOLDER = 'audio/sentences'; // ex: 'audio/questions' or 'audio/vocab'
 
-const ITEMS = shuffle([...BASE_ITEMS]); // shuffle order each refresh
-
-/* =========================
-   SAGE filename rule (sentences)
-   week1/audio/sentences/s01_i_will_study_every_day.mp3
-   ========================= */
 function slugFromSentence(en){
   return (en||'')
     .toLowerCase()
@@ -450,7 +459,7 @@ function slugFromSentence(en){
 function sNum(n){ return String(n).padStart(2,'0'); }
 function sageSrcForItem(it){
   const slug = slugFromSentence(it.en);
-  return `${WEEK_PREFIX}audio/sentences/s${sNum(it.id)}_${slug}.mp3`;
+  return `${WEEK_PREFIX}${SAGE_SUBFOLDER}/s${sNum(it.id)}_${slug}.mp3`;
 }
 
 /* Prime Sage once */
@@ -472,9 +481,7 @@ async function primeSage(){
   }
 }
 
-/* =========================
-   Helpers
-   ========================= */
+/* Helpers */
 const sleep = ms => new Promise(r=>setTimeout(r, ms));
 function normalize(s){return s.toLowerCase().replace(/[’‘´`]/g,"'").replace(/[^a-z0-9'\s]/g,' ').replace(/\s+/g,' ').trim();}
 function toSet(s){return new Set(normalize(s).split(' ').filter(Boolean));}
@@ -525,7 +532,7 @@ function startSweep(){
   sweep.classList.remove('run'); void sweep.offsetWidth; sweep.classList.add('run');
 }
 function stopSweep(){ sweep.classList.remove('run'); }
-function updateCounter(){ counter.textContent = `${idx+1} / 15`; }
+function updateCounter(){ counter.textContent = `${idx+1} / ${TOTAL}`; }
 
 async function countdown321(){
   const colors=['#ff7eb9','#7dd3fc','#a6f7b2'];
@@ -735,10 +742,10 @@ async function beginRound(){
 /* Results */
 function avgPercent(){
   let sum=0;
-  for(let id=1; id<=15; id++){
-    sum += (firstScoresById[id] ?? 0);
+  for(const it of BASE_DATA){
+    sum += (firstScoresById[it.id] ?? 0);
   }
-  return Math.round(sum/15);
+  return Math.round(sum / TOTAL);
 }
 function hideAllResults(){
   ['resRed','resOrange','resBlue','resGold'].forEach(id=>{
@@ -775,7 +782,7 @@ async function showResults(){
   else if(pct===100){page='resGold'; snd=RES.gold; scoreSel='scoreGold';}
 
   const se=document.getElementById(scoreSel);
-  if(se) se.textContent=`${xOf15}/15（${pct}%）`;
+  if(se) se.textContent=`${xOf15}/${TOTAL}（${pct}%）`;
 
   hideAllResults();
   document.getElementById(page).style.display='block';
@@ -799,13 +806,10 @@ async function showResults(){
 /* Buttons */
 beginBtn.addEventListener('click', async()=>{
   await primeSage();
-  if(isIOS){
-    showItem();
-    beginRound();
-    return;
+  if(!isIOS){
+    if(!streamAllowed) await ensureMicPermission();
+    if(!streamAllowed) return;
   }
-  if(!streamAllowed) await ensureMicPermission();
-  if(!streamAllowed) return;
   showItem();
   beginRound();
 });
@@ -816,7 +820,7 @@ retryBtn.addEventListener('click', ()=>{
 nextBtn.addEventListener('click', ()=>{
   if(isBusy) return;
   idx++;
-  if(idx>=ITEMS.length){
+  if(idx>=TOTAL){
     nextBtn.style.display='none';
     retryBtn.style.display='none';
     beginBtn.style.display='none';
