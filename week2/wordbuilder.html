@@ -4,7 +4,9 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
 
-<!-- //* CHANGE 1/6: Page title (week name) *// -->
+<!-- =========================
+  //* CHANGE 1/6: Page title (week name)
+  ========================= -->
 <title>Booha Word Builder – January Week 2</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Noto+Sans+JP:wght@500;700&display=swap" rel="stylesheet">
@@ -72,6 +74,7 @@ body{
   overflow-y:auto;
   font-size:.9rem;
   line-height:1.6;
+  position:relative;
 }
 .help-panel h2{font-family:'Cinzel',serif;font-size:1.3rem;margin-bottom:4px}
 .help-panel h3{font-size:.95rem;opacity:.9;margin-bottom:12px}
@@ -226,9 +229,7 @@ main{
   filter:drop-shadow(0 0 18px rgba(255,255,255,.22));
   will-change:transform,opacity;
 }
-.bigFx.show{
-  animation:bigPop 900ms ease-out both;
-}
+.bigFx.show{ animation:bigPop 900ms ease-out both; }
 @keyframes bigPop{
   0%{opacity:0;transform:translate(-50%,-50%) scale(.6)}
   20%{opacity:1;transform:translate(-50%,-54%) scale(1.25)}
@@ -300,7 +301,9 @@ footer{text-align:center;padding:16px;font-family:'Cinzel',serif;font-size:.95re
   <h1>THE BOO-RICULUM</h1>
   <h2>WORD BUILDER</h2>
 
-  <!-- //* CHANGE 2/6: Week label shown on page *// -->
+  <!-- =========================
+    //* CHANGE 2/6: Week label shown on page
+    ========================= -->
   <h3>January Week 2 – １月第2週</h3>
 </header>
 
@@ -324,9 +327,25 @@ footer{text-align:center;padding:16px;font-family:'Cinzel',serif;font-size:.95re
   <div id="resultScore">0/15（0%）</div>
 </section>
 
-<!-- Big FX nodes (single heart + single fart cloud) -->
-<div class="bigFx" id="bigHeart" aria-hidden="true" style="font-size:120px;">❤️</div>
-<div class="bigFx" id="bigFart" aria-hidden="true" style="font-size:120px;">💨</div>
+<!-- Big FX (no emoji) -->
+<div class="bigFx" id="bigHeart" aria-hidden="true">
+  <svg viewBox="0 0 128 128" width="170" height="170" aria-hidden="true" focusable="false">
+    <path d="M64 112S14 84 14 44c0-16 12-28 28-28 10 0 18 5 22 12 4-7 12-12 22-12 16 0 28 12 28 28 0 40-50 68-50 68Z" fill="#ff3b6e"/>
+    <path d="M64 112S14 84 14 44c0-16 12-28 28-28 10 0 18 5 22 12 4-7 12-12 22-12 16 0 28 12 28 28 0 40-50 68-50 68Z" fill="none" stroke="#ffffff" stroke-opacity=".7" stroke-width="4"/>
+  </svg>
+</div>
+<div class="bigFx" id="bigFart" aria-hidden="true">
+  <svg viewBox="0 0 128 128" width="170" height="170" aria-hidden="true" focusable="false">
+    <g fill="#cbd5e1">
+      <path d="M44 92c-14 0-26-10-26-23 0-11 8-20 19-22 3-13 15-23 30-23 12 0 23 6 28 16 10 1 18 10 18 21 0 12-10 21-22 21H44Z"/>
+    </g>
+    <g fill="none" stroke="#ffffff" stroke-opacity=".65" stroke-width="4" stroke-linecap="round">
+      <path d="M28 50c-8-10-2-22 10-26"/>
+      <path d="M92 44c6-10 18-12 24-4"/>
+      <path d="M78 98c12 4 20 14 18 22"/>
+    </g>
+  </svg>
+</div>
 
 <footer>BRYAN'S ENGLISH SCHOOL</footer>
 
@@ -335,29 +354,45 @@ footer{text-align:center;padding:16px;font-family:'Cinzel',serif;font-size:.95re
 const $=s=>document.querySelector(s);
 
 /* =========================
-   //* CHANGE 3/6: Week folder prefix (ONLY change week number)
-   - Keeps code working whether HTML is:
-     A) inside /week1/  (prefix '')
-     B) at repo root    (prefix 'week1/')
-   ========================= */
+  //* CHANGE 3/6: Week folder prefix (ONLY change week number)
+  - Works if HTML is:
+    A) inside /week2/     => prefix ''
+    B) at repo root       => prefix 'week2/'
+  ========================= */
 const WEEK_FOLDER = 'week2';
 const WEEK_PREFIX = location.pathname.includes('/' + WEEK_FOLDER + '/') ? '' : (WEEK_FOLDER + '/');
 
 /* =========================
-   //* CHANGE 4/6: Weekly WORD list (15 items)
-   - Must match Sage filenames: v01_<word>.mp3 ... v15_<word>.mp3
-   - Use lowercase a-z words (no spaces)
-   ========================= */
-const MASTER_BASE=["morning","night","breakfast","lunch","dinner","brush","wash","go","come","sleep","study","homework","clean","start","finish"];
+  //* CHANGE 4/6: Weekly WORDS (15 items) + their AUDIO NUMBER
+  - This is the FIX:
+    You can reorder words freely, BUT keep v numbers matching your mp3 filenames.
+  - Example file: week2/audio/vocab/v03_breakfast.mp3
+  ========================= */
+const WEEK_WORDS = [
+  { v: 1,  w: "morning"   },
+  { v: 2,  w: "night"     },
+  { v: 3,  w: "breakfast" },
+  { v: 4,  w: "lunch"     },
+  { v: 5,  w: "dinner"    },
+  { v: 6,  w: "brush"     },
+  { v: 7,  w: "wash"      },
+  { v: 8,  w: "go"        },
+  { v: 9,  w: "come"      },
+  { v: 10, w: "sleep"     },
+  { v: 11, w: "study"     },
+  { v: 12, w: "homework"  },
+  { v: 13, w: "clean"     },
+  { v: 14, w: "start"     },
+  { v: 15, w: "finish"    }
+];
 
-
-/* Optional lookup (kept for reference / debugging) */
-const SAGE_INDEX = MASTER_BASE.reduce((acc, word, i) => {
-  const num = String(i + 1).padStart(2, '0');
-  acc[word] = `${WEEK_PREFIX}audio/vocab/v${num}_${word}.mp3`;
+/* Build a safe lookup: word -> v## */
+const WORD_TO_V = WEEK_WORDS.reduce((acc, it) => {
+  acc[it.w] = it.v;
   return acc;
-}, {});
+}, Object.create(null));
 
+/* Shuffled play order (words only) */
 let WORDS=[]; // shuffled on load
 let index=0,totalScore=0,firstTry=true;
 
@@ -370,8 +405,13 @@ const quitBtn=$("#quitBtn");
 const helpBtn=$("#helpBtn"), helpModal=$("#helpModal"), helpClose=$("#helpClose");
 const bigHeart=$("#bigHeart"), bigFart=$("#bigFart");
 
+/* =========================
+  //* CHANGE 6/6: Menu link (if you ever rename your menu file)
+  ========================= */
+const MENU_HREF = "index.html";
+
 /* Quit = back to menu */
-quitBtn.addEventListener("click",()=>{ location.href="index.html"; });
+quitBtn.addEventListener("click",()=>{ location.href = MENU_HREF; });
 
 /* Help popup logic */
 function openHelp(){ helpModal.style.display="flex"; }
@@ -381,12 +421,10 @@ helpClose.addEventListener("click",closeHelp);
 helpModal.addEventListener("click",e=>{ if(e.target===helpModal) closeHelp(); });
 
 /* =========================
-   //* CHANGE 5/6: Audio paths (usually never change)
-   - SFX:   week#/assets/audio/
-   - Sage:  week#/audio/vocab/
-   ========================= */
-
-/* SFX: Works whether this HTML is at repo root OR inside /week1/ */
+  Audio paths (usually never change)
+  - SFX:   week#/assets/audio/
+  - Sage:  week#/audio/vocab/
+  ========================= */
 const sfx = {
   ding:  new Audio(WEEK_PREFIX + 'assets/audio/ding.mp3'),
   fart:  new Audio(WEEK_PREFIX + 'assets/audio/fart.mp3'),
@@ -395,13 +433,11 @@ const sfx = {
   r11_14:new Audio(WEEK_PREFIX + 'assets/audio/result_11-14.mp3'),
   r15:   new Audio(WEEK_PREFIX + 'assets/audio/result_15.mp3'),
 };
-
 Object.values(sfx).forEach(a=>{
   a.preload='auto';
   a.playsInline = true;
   try{ a.load(); }catch{}
 });
-
 function playSfx(audio){
   try{
     audio.currentTime=0;
@@ -414,33 +450,25 @@ function playSfx(audio){
   }catch{}
 }
 
-/* Sage voice (LOCAL)
-   - Uses WEEK_PREFIX so it works from root OR inside /week1/
-*/
-const sage = new Map();
-MASTER_BASE.forEach((word, i) => {
-  const num = String(i + 1).padStart(2, '0');
-  const src = `${WEEK_PREFIX}audio/vocab/v${num}_${word}.mp3`;
-  const a = new Audio(src);
-  a.preload = 'auto';
-  a.playsInline = true;
-  a.loop = false;
-  try { a.load(); } catch {}
-  sage.set(word, a);
-});
+/* Sage voice (single element = more reliable on iOS) */
+const sageVoice = new Audio();
+sageVoice.preload = "auto";
+sageVoice.playsInline = true;
 
-function stopAllSage(){
-  sage.forEach(a=>{ try{ a.pause(); a.currentTime = 0; }catch{} });
+function v2(n){ return String(n).padStart(2,'0'); }
+function sageSrcForWord(word){
+  const v = WORD_TO_V[word];
+  if(!v) return "";
+  return `${WEEK_PREFIX}audio/vocab/v${v2(v)}_${word}.mp3`;
 }
 
-/* iOS/Safari: must unlock audio with a USER gesture */
+/* iOS/Safari: unlock audio with USER gesture */
 let audioUnlocked = false;
 async function unlockAudioOnce(){
   if(audioUnlocked) return;
   audioUnlocked = true;
-
-  const probe = sfx.ding;
   try{
+    const probe = sfx.ding;
     probe.muted = true;
     await probe.play();
     probe.pause();
@@ -449,28 +477,34 @@ async function unlockAudioOnce(){
   }catch{}
 }
 
+function stopSage(){
+  try{ sageVoice.pause(); sageVoice.currentTime=0; }catch{}
+}
+
 function speak(){
-  // ensure iOS audio unlock happens on this tap
   unlockAudioOnce();
 
   const word = WORDS[index];
-  const a = sage.get(word);
-  if(!a){ console.warn('[Sage] missing audio for:', word); return; }
+  const src = sageSrcForWord(word);
+  if(!src){
+    console.warn("[Sage] missing mapping for:", word);
+    return;
+  }
 
-  stopAllSage();
-  play.classList.add('fizzy');
+  stopSage();
+  play.classList.add("fizzy");
 
-  try{ a.currentTime = 0; }catch{}
-  const clear = ()=>play.classList.remove('fizzy');
-  a.onended = clear;
+  sageVoice.src = src;
+  try{ sageVoice.currentTime = 0; }catch{}
+  const clear = ()=>play.classList.remove("fizzy");
+  sageVoice.onended = clear;
 
-  const p = a.play();
-  if(p && typeof p.catch === 'function'){
-    p.catch(err=>{ console.warn('[Sage] play blocked or missing:', err); clear(); });
+  const p = sageVoice.play();
+  if(p && typeof p.catch === "function"){
+    p.catch(err=>{ console.warn("[Sage] play blocked or missing:", err, "src=", src); clear(); });
   }
 }
-
-play.addEventListener('click', speak);
+play.addEventListener("click", speak);
 
 /* ====== Visual FX ====== */
 function flashRedScreen(){
@@ -687,7 +721,7 @@ function loadCard(){
   markHint();
 }
 function initGame(){
-  WORDS = shuffle([...MASTER_BASE]);
+  WORDS = shuffle(WEEK_WORDS.map(it=>it.w));
   index=0; totalScore=0; firstTry=true;
   document.body.className="";
   pageResults.style.display="none";
@@ -697,32 +731,6 @@ function initGame(){
   loadCard();
 }
 initGame();
-
-/* Pre-warm audio (best-effort) */
-setTimeout(()=>{
-  Object.values(sfx).forEach(a=>{
-    try{
-      a.muted = true;
-      a.play().then(()=>{
-        a.pause();
-        a.currentTime = 0;
-        a.muted = false;
-      }).catch(()=>{});
-    }catch{}
-  });
-
-  sage.forEach(a=>{
-    try{
-      a.muted = true;
-      a.play().then(()=>{
-        a.pause();
-        a.currentTime = 0;
-        a.muted = false;
-      }).catch(()=>{});
-    }catch{}
-  });
-}, 300);
-
 </script>
 </body>
 </html>
