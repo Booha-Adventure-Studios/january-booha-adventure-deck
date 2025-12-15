@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
 
 <!-- //* CHANGE 1/6: Page title (week name) *// -->
-<title>Booha Word Builder – January Week 1</title>
+<title>Booha Word Builder – January Week 2</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Noto+Sans+JP:wght@500;700&display=swap" rel="stylesheet">
 <style>
@@ -301,7 +301,7 @@ footer{text-align:center;padding:16px;font-family:'Cinzel',serif;font-size:.95re
   <h2>WORD BUILDER</h2>
 
   <!-- //* CHANGE 2/6: Week label shown on page *// -->
-  <h3>January Week 1 – １月第１週</h3>
+  <h3>January Week 2 – １月第2週</h3>
 </header>
 
 <div class="playWrap" id="playWrap">
@@ -340,7 +340,7 @@ const $=s=>document.querySelector(s);
      A) inside /week1/  (prefix '')
      B) at repo root    (prefix 'week1/')
    ========================= */
-const WEEK_FOLDER = 'week1';
+const WEEK_FOLDER = 'week2';
 const WEEK_PREFIX = location.pathname.includes('/' + WEEK_FOLDER + '/') ? '' : (WEEK_FOLDER + '/');
 
 /* =========================
@@ -348,7 +348,23 @@ const WEEK_PREFIX = location.pathname.includes('/' + WEEK_FOLDER + '/') ? '' : (
    - Must match Sage filenames: v01_<word>.mp3 ... v15_<word>.mp3
    - Use lowercase a-z words (no spaces)
    ========================= */
-const MASTER_BASE=["goal","plan","future","dream","challenge","try","change","habit","exercise","study","learn","practice","success","focus","motivation"];
+const MASTER_BASE=[
+  "morning",
+  "night",
+  "breakfast",
+  "lunch",
+  "dinner",
+  "brush",
+  "wash",
+  "go",
+  "come",
+  "sleep",
+  "study",
+  "homework",
+  "clean",
+  "start",
+  "finish"
+];
 
 /* Optional lookup (kept for reference / debugging) */
 const SAGE_INDEX = MASTER_BASE.reduce((acc, word, i) => {
