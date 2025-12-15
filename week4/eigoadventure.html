@@ -1,1 +1,1299 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+<title>Booha Eigo Adventure – January Week 4</title>
+<meta name="theme-color" content="#0b1530" />
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Noto+Sans+JP:wght@500;700;900&display=swap" rel="stylesheet" />
 
+<!-- Preload results + SFX -->
+<link rel="preload" as="audio" href="assets/audio/ding.mp3" />
+<link rel="preload" as="audio" href="assets/audio/fart.mp3" />
+<link rel="preload" as="audio" href="assets/audio/result_0-5.mp3" />
+<link rel="preload" as="audio" href="assets/audio/result_6-10.mp3" />
+<link rel="preload" as="audio" href="assets/audio/result_11-14.mp3" />
+<link rel="preload" as="audio" href="assets/audio/result_15.mp3" />
+
+<style>
+:root{
+  --bg:#0b1530;--ink:#fff;--gold1:#fdd86d;--gold2:#ffb347;--outline:#ffffff26;--radius:26px;
+  --goldGlow:0 0 8px #facc15,0 0 20px #fde68a;--purpleGlow:0 0 20px #c084fc,0 0 40px #c084fc;
+  --talkGlow:0 0 14px rgba(250,204,21,.9),0 0 34px rgba(253,230,138,.65),0 0 54px rgba(192,132,252,.45);
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{
+  background:var(--bg);
+  color:var(--ink);
+  font-family:'Noto Sans JP',sans-serif;
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  overflow-x:hidden;
+}
+header{text-align:center;padding:26px 12px 12px}
+.h1{font-family:'Cinzel',serif;font-weight:900;font-size:clamp(34px,6.2vw,56px);} 
+.h2{font-family:'Cinzel',serif;font-weight:900;font-size:clamp(18px,4.2vw,32px);} 
+.h3{font-family:'Cinzel',serif;font-weight:900;font-size:clamp(16px,3.6vw,22px);} 
+.h4{font-weight:800;font-size:clamp(14px,3.4vw,20px);color:#cfe1ff;}
+
+main{
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  width:100%;
+  max-width:700px;
+  text-align:center;
+  padding:0 1rem;
+}
+
+.sageWrapper{position:relative;width:100%;margin-top:1rem;}
+
+/* Rainbow question box (tap to listen) */
+#sageBox{
+  width:100%;
+  min-height:104px;
+  border:1px solid var(--outline);
+  border-radius:var(--radius);
+  overflow:hidden;
+  position:relative;
+  margin-bottom:1rem;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  box-shadow:0 6px 24px rgba(0,0,0,.4);
+  background:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.02));
+  cursor:pointer;
+  user-select:none;
+  -webkit-tap-highlight-color:transparent;
+}
+#sageBox::before{
+  content:'';
+  position:absolute;
+  inset:0;
+  z-index:0;
+  animation:stripeSlide 18s linear infinite;
+  background:repeating-linear-gradient(
+    to bottom,
+    #ff6ec7 0 28px,
+    #5ee6ff 28px 56px,
+    #ffd166 56px 84px,
+    #8aff80 84px 112px,
+    #c77dff 112px 140px,
+    #fff680 140px 168px
+  );
+  background-size:100% 600px;
+}
+@keyframes stripeSlide{from{background-position-y:0}to{background-position-y:-600px}}
+
+#sageBox.talking{
+  box-shadow:var(--talkGlow);
+  transform:translateY(-1px);
+}
+
+#sageText{
+  position:relative;
+  z-index:1;
+  font-weight:900;
+  font-size:clamp(1.05rem,4.4vw,1.7rem);
+  line-height:1.15;
+  color:#0b1530;
+  text-shadow:0 1px 0 rgba(255,255,255,.6);
+  padding:12px 16px;
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:center;
+  align-items:center;
+  text-align:center;
+  max-width:100%;
+  overflow:hidden;
+}
+.word{
+  opacity:0;
+  margin:0 .25rem .12rem;
+  transition:opacity .25s ease;
+  max-width:100%;
+  overflow-wrap:anywhere;
+  word-break:break-word;
+}
+
+.tapHint{
+  margin-top:-10px;
+  margin-bottom:10px;
+  font-size:.95rem;
+  color:#fdd86d;
+  text-shadow:var(--goldGlow);
+  line-height:1.25;
+}
+.tapHint small{display:block;color:#ffe27a;margin-top:3px;}
+
+/* Student box */
+.studentWrapper{position:relative;width:100%;}
+#studentBox{
+  width:100%;
+  min-height:92px;
+  border:1px solid var(--outline);
+  border-radius:var(--radius);
+  overflow:hidden;
+  position:relative;
+  margin-bottom:1rem;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  box-shadow:0 6px 24px rgba(0,0,0,.4);
+  background:#fff;
+  color:#000;
+  transition:box-shadow .3s,background .3s,transform .15s;
+  padding:0.8rem 1rem;
+  font-weight:900;
+  font-size:clamp(1.05rem,4.2vw,1.3rem);
+}
+#studentBox.listening{box-shadow:var(--purpleGlow);}
+#studentBox.shake{animation:shake .3s;}
+@keyframes shake{0%,100%{transform:translateX(0);}25%{transform:translateX(-5px);}75%{transform:translateX(5px);}}
+
+/* Erase button (Android/Desktop only) */
+.eraseBtn{
+  position:absolute;
+  right:-10px;
+  top:50%;
+  transform:translateY(-50%);
+  border:none;
+  border-radius:999px;
+  padding:10px 14px;
+  font-weight:900;
+  cursor:pointer;
+  background:linear-gradient(135deg,#93c5fd,#3b82f6);
+  color:#00163a;
+  box-shadow:0 0 14px rgba(59,130,246,.55);
+  display:none;
+}
+.eraseBtn small{display:block;font-size:.75em;opacity:.85;}
+
+.statusLine{
+  margin-top:-6px;
+  margin-bottom:10px;
+  font-size:.95rem;
+  color:#c7d2fe;
+  text-shadow:0 0 10px rgba(59,130,246,.35);
+  line-height:1.25;
+}
+.statusLine small{display:block;color:#93c5fd;margin-top:3px;}
+
+/* answer options */
+#options{width:100%;margin-top:0.5rem;}
+#options .option{
+  border:2px solid var(--outline);
+  border-radius:var(--radius);
+  padding:1rem;
+  margin:0.5rem 0;
+  width:100%;
+  font-size:clamp(1.05rem,4vw,1.35rem);
+  font-weight:800;
+  background:#00000040;
+  color:#fff;
+  cursor:pointer;
+  transition:opacity .2s,background .3s,border-color .3s,transform .1s;
+}
+#options .option:hover{transform:translateY(-1px);} 
+#options .option.selected{
+  background:#1d4ed8;
+  border-color:#bfdbfe;
+  box-shadow:0 0 12px rgba(59,130,246,.7);
+}
+#options.locked .option{
+  cursor:not-allowed;
+  opacity:.55;
+}
+
+/* hint text */
+#hintBox{
+  margin-top:.8rem;
+  font-size:1rem;
+  color:#fdd86d;
+  text-shadow:var(--goldGlow);
+  line-height:1.4;
+  min-height:2.2em;
+}
+#hintBox small{display:block;color:#ffe27a;margin-top:4px;}
+
+.btnRow{
+  display:flex;
+  gap:1rem;
+  justify-content:center;
+  margin-top:1rem;
+  flex-direction:column;
+  align-items:center;
+}
+.nextBtn{
+  padding:.7rem 1.8rem;
+  border-radius:var(--radius);
+  color:#000;
+  font-weight:900;
+  font-family:'Cinzel',serif;
+  font-size:1.1rem;
+  border:none;
+  cursor:pointer;
+  display:none;
+  background:linear-gradient(135deg,#f9a8d4,#ec4899);
+  animation:pinkShimmer 2s infinite;
+}
+@keyframes pinkShimmer{0%,100%{box-shadow:0 0 10px #f9a8d4,0 0 20px #ec4899;}50%{box-shadow:0 0 20px #f472b6,0 0 40px #db2777;}}
+
+#pointsContainer{display:flex;flex-direction:column;align-items:center;margin-top:0.8rem;}
+#pointsCircle{
+  width:90px;height:90px;border-radius:50%;
+  background:linear-gradient(135deg,var(--gold1),var(--gold2));
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Cinzel',serif;font-size:2rem;font-weight:900;
+  box-shadow:var(--goldGlow);
+  position:relative;overflow:hidden;text-shadow:0 0 10px #fff,0 0 20px #fff;z-index:1;
+}
+#pointsCircle span{position:relative;z-index:2;color:#000;}
+#pointsCircle::after{
+  content:'';position:absolute;width:140%;height:140%;
+  background:radial-gradient(circle at 50% 50%,rgba(255,255,255,0.6) 0%,rgba(255,255,255,0) 70%);
+  animation:pulse 2.5s infinite ease-in-out;z-index:0;
+}
+@keyframes pulse{0%,100%{transform:scale(1);}50%{transform:scale(1.3);opacity:0.6;}}
+#scoreLabel{margin-top:8px;font-family:'Cinzel',serif;font-size:1rem;color:#fdd86d;text-shadow:var(--goldGlow);animation:goldShimmer 2s infinite;}
+@keyframes goldShimmer{0%,100%{text-shadow:0 0 8px #facc15,0 0 20px #fde68a;}50%{text-shadow:0 0 14px #ffef9f,0 0 30px #fde68a;}}
+#counter{margin-top:4px;font-family:'Cinzel',serif;color:#fff;font-size:1rem;text-shadow:0 0 6px rgba(255,255,255,.4);}
+footer{text-align:center;color:#fff;padding:16px 0 22px;font-family:'Cinzel',serif;font-weight:900;font-size:clamp(14px,2.8vw,20px);}
+
+/* Mobile: slightly smaller but bolder question text */
+@media (max-width:520px){
+  #sageText{font-weight:900;font-size:1.22rem;}
+}
+
+/* Standard Booha QUIT button (small version) */
+.top-nav-btn{
+  position:fixed;top:10px;left:10px;z-index:12001;
+  border-radius:999px;padding:6px 14px;
+  border:1px solid #ffffff66;background:rgba(15,23,42,.95);
+  color:#fff;font-size:.78rem;font-weight:700;letter-spacing:.04em;
+  cursor:pointer;display:flex;align-items:center;gap:4px;
+  box-shadow:0 0 12px rgba(0,0,0,.6);backdrop-filter:blur(4px);
+}
+.top-nav-btn .jp{font-size:.72em;}
+.top-nav-btn .en{font-size:.8em;}
+
+/* Glowing help button */
+.help-btn{
+  position:fixed;top:10px;right:10px;z-index:12001;
+  width:40px;height:40px;border-radius:999px;
+  border:1px solid #ffffff88;
+  background:radial-gradient(circle at 30% 30%,#7dd3fc,#1e3a8a 65%,#020617 100%);
+  color:#fff;font-weight:900;font-size:20px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 0 12px rgba(125,211,252,.9),0 0 28px rgba(59,130,246,.9),0 0 52px rgba(56,189,248,.9);
+  backdrop-filter:blur(4px);
+}
+
+/* Help modal */
+.help-modal{position:fixed;inset:0;z-index:12000;display:none;align-items:center;justify-content:center;}
+.help-modal.show{display:flex;}
+.help-backdrop{position:absolute;inset:0;background:rgba(15,23,42,.8);backdrop-filter:blur(6px);}
+.help-dialog{
+  position:relative;z-index:1;max-width:720px;width:calc(100% - 32px);max-height:80vh;
+  border-radius:20px;border:1px solid #ffffff33;
+  background:radial-gradient(circle at top,#111827,#020617 55%);
+  box-shadow:0 22px 70px rgba(0,0,0,.9);
+  padding:18px 18px 20px;display:flex;flex-direction:column;
+}
+.help-dialog h2{font-family:'Cinzel',serif;font-size:1.2rem;text-align:center;margin-bottom:6px;}
+.help-sub{font-size:.85rem;text-align:center;color:#c7d2fe;margin-bottom:10px;}
+.help-body{margin-top:6px;padding-right:4px;font-size:.9rem;line-height:1.6;color:#e5e7f5;overflow-y:auto;}
+.help-body h3{font-size:.9rem;margin:10px 0 4px;color:#bfdbfe;}
+.help-body ul{padding-left:1.1rem;margin:4px 0 10px;}
+.help-body li{margin-bottom:4px;}
+.help-close{position:absolute;top:8px;right:10px;border:none;background:transparent;color:#e5e7f5;font-size:22px;cursor:pointer;}
+
+/* Results overlay */
+.resultsOverlay{position:fixed;inset:0;display:none;align-items:center;justify-content:center;z-index:14000;text-align:center;padding:20px;}
+.resultsInner{width:min(720px, calc(100% - 28px));border-radius:26px;border:1px solid #ffffff33;background:radial-gradient(circle at top,#111827,#020617 58%);box-shadow:0 26px 80px rgba(0,0,0,.9);padding:22px 18px 18px;color:#fff;}
+.resultsTitle{font-family:'Cinzel',serif;font-weight:900;font-size:clamp(26px,6vw,42px);margin-bottom:10px;}
+.resultsScore{font-weight:900;font-size:clamp(24px,5.8vw,44px);margin:10px 0 14px;}
+.resultsMsg{font-weight:900;font-size:clamp(18px,4vw,26px);margin:8px 0 16px;}
+.resultsBtns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;}
+.rb{border:none;border-radius:999px;padding:12px 18px;font-weight:900;cursor:pointer;}
+.rb.green{background:linear-gradient(135deg,#4ade80,#22c55e);color:#022c22;}
+.rb.blue{background:linear-gradient(135deg,#93c5fd,#3b82f6);color:#00163a;}
+
+/* iPad / iPhone overlay */
+.ios-overlay{position:fixed;inset:0;z-index:13000;display:none;align-items:center;justify-content:center;}
+.ios-overlay-inner{
+  max-width:460px;width:calc(100% - 40px);
+  border-radius:24px;background:#f9fafb;color:#0f172a;
+  padding:18px 18px 20px;box-shadow:0 22px 60px rgba(0,0,0,.8);
+  font-size:.92rem;
+}
+.ios-overlay-inner h2{font-family:'Cinzel',serif;font-size:1.1rem;text-align:center;margin-bottom:6px;}
+.ios-overlay-inner p{margin:8px 0;line-height:1.5;}
+.ios-overlay-inner strong{font-weight:900;}
+.ios-overlay-note{
+  margin-top:10px;
+  padding:10px 12px;
+  border-radius:16px;
+  background:linear-gradient(135deg,#e0f2fe,#dbeafe);
+  border:1px solid #93c5fd;
+  color:#0f172a;
+  font-weight:800;
+}
+.ios-ok{
+  margin-top:12px;display:block;width:100%;
+  border:none;border-radius:999px;padding:10px 0;
+  font-weight:900;font-family:'Noto Sans JP',system-ui,sans-serif;
+  background:linear-gradient(135deg,#4ade80,#22c55e);color:#022c22;cursor:pointer;
+}
+
+/* Correct answer translation modal */
+.ans-modal{position:fixed;inset:0;z-index:13500;display:none;align-items:center;justify-content:center;}
+.ans-modal.show{display:flex;}
+.ans-backdrop{position:absolute;inset:0;background:rgba(2,6,23,.78);backdrop-filter:blur(7px);}
+.ans-dialog{
+  position:relative;z-index:1;
+  width:min(720px, calc(100% - 28px));
+  border-radius:26px;
+  border:1px solid #ffffff33;
+  background:radial-gradient(circle at top,#111827,#020617 60%);
+  box-shadow:0 26px 90px rgba(0,0,0,.95);
+  padding:16px 16px 18px;
+  text-align:center;
+}
+.ans-close{
+  position:absolute;top:10px;right:12px;
+  border:none;background:transparent;
+  color:#fff;font-size:26px;cursor:pointer;
+  line-height:1;
+}
+.ans-title{
+  font-family:'Cinzel',serif;
+  font-weight:900;
+  font-size:clamp(16px,4.2vw,20px);
+  color:#fdd86d;
+  text-shadow:var(--goldGlow);
+  margin-bottom:8px;
+}
+.ans-line{
+  margin-top:10px;
+  padding:12px 12px;
+  border-radius:20px;
+  border:1px solid #ffffff22;
+  background:rgba(255,255,255,.06);
+}
+.ans-en{
+  font-weight:900;
+  font-size:clamp(18px,4.8vw,26px);
+  line-height:1.22;
+  color:#facc15;
+  text-shadow:0 0 10px rgba(250,204,21,.6);
+}
+.ans-jp{
+  font-weight:900;
+  font-size:clamp(16px,4.3vw,22px);
+  line-height:1.25;
+  margin-top:8px;
+  color:#22c55e;
+  text-shadow:0 0 10px rgba(34,197,94,.5);
+}
+.ans-hi{
+  font-weight:900;
+  font-size:clamp(14px,4vw,20px);
+  line-height:1.25;
+  margin-top:6px;
+  color:#ef4444;
+  text-shadow:0 0 10px rgba(239,68,68,.45);
+}
+.ans-tip{margin-top:10px;color:#e5e7f5;font-weight:900;}
+.ans-tip small{display:block;color:#94a3b8;margin-top:4px;font-weight:800;}
+</style>
+</head>
+
+<body>
+<!-- Quit + Help -->
+<button type="button" class="top-nav-btn" onclick="window.location.href='index.html'">
+  <span class="jp">やめる</span>
+  <span class="en">QUIT</span>
+</button>
+<button id="helpBtn" type="button" class="help-btn">?</button>
+
+<header>
+  <div class="h1">THE BOO-RICULUM</div>
+  <div class="h2">Eigo Adventure – January Week 4</div>
+  <div class="h3">１月第4週 – 英語アドベンチャー</div>
+</header>
+
+<main>
+  <div class="sageWrapper">
+    <div id="sageBox" role="button" aria-label="Tap to listen">
+      <div id="sageText"></div>
+    </div>
+    <div class="tapHint">ここをタップして Sage を聞こう！<small>Tap the rainbow box to listen to Sage.</small></div>
+  </div>
+
+  <div class="studentWrapper">
+    <div id="studentBox"></div>
+    <button id="eraseBtn" class="eraseBtn" type="button">けす<small>Erase</small></button>
+  </div>
+
+  <div id="statusLine" class="statusLine" style="display:none"></div>
+
+  <div id="options"></div>
+  <div id="hintBox"></div>
+
+  <div class="btnRow">
+    <div id="pointsContainer">
+      <div id="pointsCircle"><span id="pointsValue">0</span></div>
+      <div id="scoreLabel">SCORE</div>
+      <div id="counter">1 / 15</div>
+    </div>
+    <button class="nextBtn" id="nextBtn">Next ▶</button>
+  </div>
+</main>
+
+<footer>Bryan’s English School</footer>
+
+<!-- Help popup -->
+<div id="helpModal" class="help-modal" aria-hidden="true">
+  <div class="help-backdrop" data-close-help></div>
+  <div class="help-dialog">
+    <button class="help-close" type="button" data-close-help>×</button>
+    <h2>遊び方 ／ How to Play</h2>
+    <div class="help-sub">Booha Eigo Adventure Game</div>
+    <div class="help-body">
+      <h3>日本語</h3>
+      <ul>
+        <li><strong>虹の質問ボックス</strong>をタップして、Sage のしつもん（英語）を聞きます。（話している間は光ります）</li>
+        <li>下の４つから答えを選びます。</li>
+        <li><strong>パソコン・Android：</strong>声で答えます。<strong>言った英語だけ</strong>が白いボックスに表示されます。タップしても動きません。</li>
+        <li>まちがえたら、白いボックスの文字は<strong>消えるまで残ります</strong>。<strong>「けす」</strong>ボタン（またはボックスをタップ）で消して、もう一回！</li>
+        <li><strong>iPad / iPhone：</strong>答えをタップすると白いボックスに入り、<strong>自動でチェック</strong>されます。</li>
+        <li>正解：<strong>ding</strong>＋紙吹雪／不正解：<strong>fart</strong>＋ブルブル</li>
+        <li>ぜんぶで<strong>15問</strong>。最後に結果画面と音が出ます。</li>
+      </ul>
+
+      <h3>English</h3>
+      <ul>
+        <li>Tap the <strong>rainbow question box</strong> to hear Sage. (It glows while speaking.)</li>
+        <li>Choose the correct sentence from the 4 options.</li>
+        <li><strong>Computers & Android:</strong> answer by speaking. Only what you <strong>say</strong> appears in the white box. Tapping does nothing.</li>
+        <li>If you’re wrong, the text stays until you erase it. Tap <strong>Erase</strong> (or tap the white box) to clear and try again.</li>
+        <li><strong>iPad / iPhone:</strong> tap an option to move it into the box and it <strong>auto-checks</strong>.</li>
+        <li>Correct: <strong>ding</strong> + confetti. Wrong: <strong>fart</strong> + shake.</li>
+        <li>There are <strong>15 questions</strong>. At the end, you get a results screen + sound.</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- iPad / iPhone overlay (friendlier) -->
+<div id="iosOverlay" class="ios-overlay" aria-hidden="true">
+  <div class="ios-overlay-inner">
+    <h2>iPad / iPhone のみなさんへ</h2>
+    <p><strong>この端末では「話してチェックするフル版」が使えません。</strong></p>
+    <p>でも大丈夫。<strong>見た目は同じ</strong>で、遊び方だけ少し違います。</p>
+    <div class="ios-overlay-note">
+      ① 答えをタップ<br>
+      ② 白いボックスに入る<br>
+      ③ 自動でチェック
+      <div style="margin-top:8px;font-weight:900;">
+        Tap an answer → it moves into the box → auto-check.
+      </div>
+    </div>
+    <button id="iosOverlayOk" class="ios-ok">OK</button>
+  </div>
+</div>
+
+<!-- Correct answer popup (EN + JP + HIRAGANA) -->
+<div id="ansModal" class="ans-modal" aria-hidden="true">
+  <div class="ans-backdrop" data-close-ans></div>
+  <div class="ans-dialog" role="dialog" aria-modal="true" aria-label="Correct answer translation">
+    <button class="ans-close" type="button" data-close-ans aria-label="Close">×</button>
+    <div class="ans-title">CORRECT ANSWER</div>
+
+    <div class="ans-line">
+      <div id="ansEn" class="ans-en"></div>
+      <div id="ansJp" class="ans-jp"></div>
+      <div id="ansHi" class="ans-hi"></div>
+    </div>
+
+    <div class="ans-tip">
+      なんども れんしゅう！
+      <small>Practice again and again!</small>
+    </div>
+  </div>
+</div>
+
+<!-- Results overlay -->
+<div id="resultsOverlay" class="resultsOverlay" aria-hidden="true">
+  <div class="resultsInner">
+    <div class="resultsTitle">RESULT</div>
+    <div id="resultsScore" class="resultsScore">0/15（0%）</div>
+    <div id="resultsMsg" class="resultsMsg">おつかれさま！</div>
+    <div class="resultsBtns">
+      <button id="restartBtn" class="rb green">もう一度 / Restart</button>
+      <button class="rb blue" onclick="window.location.href='index.html'">メニュー / Menu</button>
+    </div>
+  </div>
+</div>
+
+<!-- Results audio (local) -->
+<audio id="r05"  src="assets/audio/result_0-5.mp3"  preload="auto"></audio>
+<audio id="r610" src="assets/audio/result_6-10.mp3" preload="auto"></audio>
+<audio id="r1114"src="assets/audio/result_11-14.mp3" preload="auto"></audio>
+<audio id="r15"  src="assets/audio/result_15.mp3"  preload="auto"></audio>
+
+<script>
+/* Booha Eigo Adventure – January Week 1 */
+
+const SFX = { ding: "assets/audio/ding.mp3", fart: "assets/audio/fart.mp3" };
+
+const RES = {
+  r05:  document.getElementById('r05'),
+  r610: document.getElementById('r610'),
+  r1114:document.getElementById('r1114'),
+  r15:  document.getElementById('r15')
+};
+
+const isIOS = /iP(hone|od|ad)/.test(navigator.userAgent) ||
+  (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+
+const $ = function(s){ return document.querySelector(s); };
+const sageBox = $('#sageBox');
+const sageText = $('#sageText');
+const studentBox = $('#studentBox');
+const eraseBtn = $('#eraseBtn');
+const statusLine = $('#statusLine');
+const optionsBox = $('#options');
+const hintBox = $('#hintBox');
+const nextBtn = $('#nextBtn');
+const pointsValue = $('#pointsValue');
+const counter = $('#counter');
+
+const helpBtn = $('#helpBtn');
+const helpModal = $('#helpModal');
+
+const resultsOverlay = document.getElementById('resultsOverlay');
+const resultsScore = document.getElementById('resultsScore');
+const resultsMsg = document.getElementById('resultsMsg');
+const restartBtn = document.getElementById('restartBtn');
+
+const iosOverlay = document.getElementById('iosOverlay');
+const iosOverlayOk = document.getElementById('iosOverlayOk');
+
+/* Answer modal elements */
+const ansModal = document.getElementById('ansModal');
+const ansEn = document.getElementById('ansEn');
+const ansJp = document.getElementById('ansJp');
+const ansHi = document.getElementById('ansHi');
+
+function setHint(jp, en){
+  hintBox.innerHTML = jp + '<small>' + en + '</small>';
+}
+
+function setMicStatus(on){
+  if(!statusLine) return;
+  if(isIOS){
+    statusLine.style.display='none';
+    return;
+  }
+  statusLine.style.display='block';
+  if(on){
+    statusLine.innerHTML = '聞いてるよ…<small>Listening...</small>';
+  } else {
+    statusLine.innerHTML = '白いボックスをタップしてスタート<small>Tap white box to start</small>';
+  }
+}
+
+/* Questions */
+const BASE_QUESTIONS = [
+  { index1:1, q:"What do you want to learn this year?", a:0, answers:[
+    "I want to learn English better.",
+    "I want to learn how to fly.",
+    "I want to learn pizza language.",
+    "I want to learn nothing forever."
+  ]},
+
+  { index1:2, q:"What are you good at?", a:0, answers:[
+    "I’m good at studying and trying.",
+    "I’m good at sleeping in class.",
+    "I’m good at becoming invisible.",
+    "I’m good at eating the desk."
+  ]},
+
+  { index1:3, q:"What do you find difficult?", a:0, answers:[
+    "I find math or English difficult sometimes.",
+    "I find chairs very confusing.",
+    "I find air too heavy.",
+    "I find everything easy because I am a robot."
+  ]},
+
+  { index1:4, q:"How do you keep trying?", a:0, answers:[
+    "I keep trying and don’t give up.",
+    "I shout at my homework.",
+    "I run away dramatically.",
+    "I ask my shoe for help."
+  ]},
+
+  { index1:5, q:"What helps you focus?", a:0, answers:[
+    "A quiet place helps me focus.",
+    "Loud dinosaurs help me focus.",
+    "I focus with my eyes closed forever.",
+    "Nothing helps, I am a potato."
+  ]},
+
+  { index1:6, q:"Do you believe in yourself?", a:0, answers:[
+    "Yes, I believe in myself.",
+    "No, I believe in my pencil.",
+    "I believe in invisible unicorns.",
+    "I believe the floor controls me."
+  ]},
+
+  { index1:7, q:"What do you do when you make mistakes?", a:0, answers:[
+    "I learn from my mistakes.",
+    "I cry for three years.",
+    "I blame the wall.",
+    "I pretend it never happened."
+  ]},
+
+  { index1:8, q:"Who inspires you?", a:0, answers:[
+    "My teacher or my family inspires me.",
+    "A talking sandwich inspires me.",
+    "My reflection inspires me.",
+    "Nobody inspires me, I inspire the sun."
+  ]},
+
+  { index1:9, q:"What makes you happy at school?", a:0, answers:[
+    "Learning and spending time with friends.",
+    "Running in the hallway forever.",
+    "Eating chalk secretly.",
+    "School makes me happy when it ends."
+  ]},
+
+  { index1:10, q:"What is one thing you want to improve?", a:0, answers:[
+    "I want to improve my English.",
+    "I want to improve my superpowers.",
+    "I want to improve my shoe collection.",
+    "I want to improve nothing ever."
+  ]},
+
+  { index1:11, q:"Do you like challenges?", a:0, answers:[
+    "Yes, I like challenges.",
+    "No, challenges like me.",
+    "Only challenges on the moon.",
+    "I challenge my chair daily."
+  ]},
+
+  { index1:12, q:"How do you relax?", a:0, answers:[
+    "I relax by resting or listening to music.",
+    "I relax by yelling at clouds.",
+    "I relax by spinning in circles.",
+    "I never relax, I vibrate."
+  ]},
+
+  { index1:13, q:"What do you do when you feel nervous?", a:0, answers:[
+    "I take deep breaths.",
+    "I scream internally.",
+    "I turn into a turtle.",
+    "I run in slow motion."
+  ]},
+
+  { index1:14, q:"How do you motivate yourself?", a:0, answers:[
+    "I think about my goals.",
+    "I talk to my socks.",
+    "I bribe myself with air.",
+    "Motivation finds me, I hide."
+  ]},
+
+  { index1:15, q:"What’s your biggest goal right now?", a:0, answers:[
+    "My biggest goal is to improve myself.",
+    "My biggest goal is lunch.",
+    "My biggest goal is world domination.",
+    "My biggest goal is becoming a chair."
+  ]}
+];
+
+
+function shuffle(a){
+  for(let i=a.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    const tmp=a[i]; a[i]=a[j]; a[j]=tmp;
+  }
+  return a;
+}
+
+function makeShuffledQuestions(){
+  const list = BASE_QUESTIONS.map(function(q){
+    const correct = q.answers[q.a];
+    const mixed = shuffle(q.answers.slice());
+    return Object.assign({}, q, {
+      answers: mixed,
+      correct: correct
+    });
+  });
+  return shuffle(list);
+}
+
+let questions = makeShuffledQuestions();
+
+let current=0, points=0;
+let gotCorrect=false, firstAttempt=true;
+let showedAnswerPopup=false;
+
+let recog=null;
+let listening=false;
+
+let iosSelectedIndex=null;
+let iosFirstAttempt=true;
+
+/* Correct answer translations (chunk arrays) */
+const ANSWER_TRANSLATIONS = {
+  1:{
+    en:["I want to learn","English","better."],
+    jp:["私は","英語を","もっと","学びたいです。"],
+    hi:["わたしは","えいご を","もっと","まなびたい です"]
+  },
+  2:{
+    en:["I’m good at","studying","and trying."],
+    jp:["私は","勉強や","努力が","得意です。"],
+    hi:["わたしは","べんきょう や","どりょく が","とくい です"]
+  },
+  3:{
+    en:["I find","math or English","difficult sometimes."],
+    jp:["私は","数学や英語が","ときどき","むずかしいです。"],
+    hi:["わたしは","すうがく や えいご が","ときどき","むずかしい です"]
+  },
+  4:{
+    en:["I keep trying","and","don’t give up."],
+    jp:["私は","あきらめずに","がんばります。"],
+    hi:["わたしは","あきらめずに","がんばります"]
+  },
+  5:{
+    en:["A quiet place","helps me","focus."],
+    jp:["静かな場所が","集中するのに","役立ちます。"],
+    hi:["しずかな ばしょ が","しゅうちゅう する の に","やくだちます"]
+  },
+  6:{
+    en:["Yes,","I believe","in myself."],
+    jp:["はい、","自分を","信じています。"],
+    hi:["はい、","じぶん を","しんじて います"]
+  },
+  7:{
+    en:["I learn","from my","mistakes."],
+    jp:["私は","失敗から","学びます。"],
+    hi:["わたしは","しっぱい から","まなびます"]
+  },
+  8:{
+    en:["My teacher","or my family","inspires me."],
+    jp:["先生や","家族が","私を励ましてくれます。"],
+    hi:["せんせい や","かぞく が","わたし を はげまして くれます"]
+  },
+  9:{
+    en:["Learning","and spending time","with friends","makes me happy."],
+    jp:["勉強したり","友だちと過ごすことが","楽しいです。"],
+    hi:["べんきょう したり","ともだち と すごす こと が","たのしい です"]
+  },
+  10:{
+    en:["I want to improve","my","English."],
+    jp:["私は","英語を","上達させたいです。"],
+    hi:["わたしは","えいご を","じょうたつ させたい です"]
+  },
+  11:{
+    en:["Yes,","I like","challenges."],
+    jp:["はい、】【挑戦することが","好きです。"],
+    hi:["はい、","ちょうせん する こと が","すき です"]
+  },
+  12:{
+    en:["I relax","by resting","or listening to music."],
+    jp:["私は","休んだり","音楽を聞いて","リラックスします。"],
+    hi:["わたしは","やすんだり","おんがく を きいて","りらっくす します"]
+  },
+  13:{
+    en:["I take","deep","breaths."],
+    jp:["私は","深呼吸を","します。"],
+    hi:["わたしは","しんこきゅう を","します"]
+  },
+  14:{
+    en:["I think about","my","goals."],
+    jp:["私は","目標のことを","考えます。"],
+    hi:["わたしは","もくひょう の こと を","かんがえます"]
+  },
+  15:{
+    en:["My biggest goal","is to","improve myself."],
+    jp:["私の一番の目標は","自分を","成長させることです。"],
+    hi:["わたし の いちばん の もくひょう は","じぶん を","せいちょう させる こと です"]
+  }
+};
+
+
+function playSfx(path){
+  const a=new Audio(path);
+  a.preload='auto';
+  a.play().catch(function(){});
+}
+
+function playAudioFile(path){
+  return new Promise(function(resolve){
+    const a=new Audio(path);
+    a.onended=resolve;
+    a.onerror=resolve;
+    a.play().catch(function(){ resolve(); });
+    setTimeout(resolve, 9000);
+  });
+}
+
+/* Sage filename convention: q01_what_is_your_goal_this_year.mp3 */
+function qAudioFilename(qText, index1){
+  const n = String(index1).padStart(2,'0');
+  const slug = qText
+    .toLowerCase()
+    .replace(/[’‘´`]/g,"'")
+    .replace(/\s+/g,' ')
+    .trim()
+    .replace(/\?/g,'')
+    .replace(/[^a-z0-9\s]/g,'')
+    .replace(/\s+/g,'_');
+  return 'q' + n + '_' + slug + '.mp3';
+}
+
+function currentQuestion(){ return questions[current]; }
+
+async function playQuestionAudioForCurrent(){
+  const q = currentQuestion();
+  const file = qAudioFilename(q.q, q.index1);
+  sageBox.classList.add('talking');
+  try{
+    await playAudioFile('audio/questions/' + file);
+  } finally {
+    sageBox.classList.remove('talking');
+  }
+}
+
+function pulsePoints(){
+  const circle=document.getElementById('pointsCircle');
+  circle.style.transform='scale(1.3)';
+  setTimeout(function(){ circle.style.transform='scale(1)'; },300);
+}
+
+function updateUI(){
+  pointsValue.textContent=points;
+  counter.textContent=(current+1) + ' / ' + questions.length;
+}
+
+/* Make rainbow question text fit */
+function fitSageText(){
+  const box = sageBox;
+  const el = sageText;
+  if(!box || !el) return;
+
+  const maxPx = 32;
+  const minPx = 14;
+  let size = maxPx;
+  el.style.fontSize = size + 'px';
+
+  for(let i=0;i<80;i++){
+    const fitsH = el.scrollHeight <= box.clientHeight - 10;
+    const fitsW = el.scrollWidth  <= box.clientWidth  - 10;
+    if(fitsH && fitsW) break;
+    size -= 1;
+    if(size <= minPx) break;
+    el.style.fontSize = size + 'px';
+  }
+}
+
+function animateWords(t){
+  sageText.innerHTML='';
+  const parts = t.split(' ');
+  for(let i=0;i<parts.length;i++){
+    const s=document.createElement('span');
+    s.className='word';
+    s.textContent=parts[i];
+    sageText.appendChild(s);
+    (function(span,delay){ setTimeout(function(){ span.style.opacity=1; }, delay); })(s, 110*i);
+  }
+  requestAnimationFrame(function(){
+    fitSageText();
+    setTimeout(fitSageText, 250);
+  });
+}
+
+function normalize(s){
+  return (s||"")
+    .toLowerCase()
+    .replace(/[’‘´`]/g,"'")
+    .replace(/'s\b/g,"s")
+    .replace(/'/g,"")
+    .replace(/[^a-z0-9\s]/g,' ')
+    .replace(/\s+/g,' ')
+    .trim();
+}
+
+function strictMatch(s,a){
+  const ns=normalize(s), na=normalize(a);
+  if(!ns||!na) return false;
+  const sa=ns.split(' '), aa=na.split(' ');
+  const overlap=aa.filter(function(w){ return sa.includes(w); }).length;
+  const extra=sa.filter(function(w){ return !aa.includes(w); });
+  return overlap/aa.length>=0.9 && extra.length<=2;
+}
+
+function confetti(n){
+  n = n || 80;
+  for(let i=0;i<n;i++){
+    const c=document.createElement('div');
+    c.style.cssText='position:fixed;width:10px;height:10px;left:'+(Math.random()*100)+'%;top:-10px;background:hsl('+(Math.random()*360)+',100%,70%);opacity:.9;pointer-events:none;z-index:9999;';
+    document.body.appendChild(c);
+    const d=900+Math.random()*1200;
+    c.animate([{transform:'translateY(0)'},{transform:'translateY(100vh) rotate(720deg)'}],{duration:d,easing:'ease-out'});
+    setTimeout(function(){ c.remove(); }, d);
+  }
+}
+
+function setModeUI(){
+  if(isIOS){
+    if(statusLine) statusLine.style.display='none';
+    eraseBtn.style.display='none';
+    optionsBox.classList.remove('locked');
+    studentBox.classList.remove('listening');
+    studentBox.style.cursor='default';
+  } else {
+    eraseBtn.style.display='inline-block';
+    optionsBox.classList.add('locked');
+    studentBox.style.cursor='pointer';
+    setMicStatus(false);
+  }
+}
+
+function renderAnswers(){
+  optionsBox.innerHTML='';
+  const q=currentQuestion();
+  for(let i=0;i<q.answers.length;i++){
+    const a=q.answers[i];
+    const d=document.createElement('div');
+    d.className='option';
+    d.dataset.index=i;
+    d.textContent=a;
+
+    d.addEventListener('click',function(){
+      if(!isIOS){
+        setHint('パソコン・Android は声で答えるよ。','On computers/Android, answer by speaking.');
+        return;
+      }
+      document.querySelectorAll('.option').forEach(function(o){ o.classList.remove('selected'); });
+      d.classList.add('selected');
+      iosSelectedIndex=i;
+      studentBox.textContent=a;
+      checkIOSAnswer();
+    });
+
+    optionsBox.appendChild(d);
+  }
+}
+
+async function wrongAndroidDesktop(){
+  studentBox.classList.add('shake');
+  studentBox.style.background='#fee2e2';
+  playSfx(SFX.fart);
+  setHint('ちがう。見てから消してもう一回。','Wrong. Look, erase, and try again.');
+  await new Promise(function(r){ setTimeout(r, 320); });
+  studentBox.classList.remove('shake');
+}
+
+async function wrongIOS(){
+  playSfx(SFX.fart);
+  studentBox.classList.add('shake');
+  studentBox.style.background='#fee2e2';
+  setHint('ちがう。もう一回。','Wrong. Try again.');
+  await new Promise(function(r){ setTimeout(r, 950); });
+  studentBox.classList.remove('shake');
+  studentBox.style.background='#fff';
+  studentBox.textContent='';
+  iosSelectedIndex=null;
+  document.querySelectorAll('.option').forEach(function(o){ o.classList.remove('selected'); });
+}
+
+/* Answer popup */
+function openAnswerModalFor(index1){
+  const t = ANSWER_TRANSLATIONS[index1];
+  if(!t) return;
+
+  ansEn.textContent = (t.en || []).join(' ');
+  ansJp.textContent = (t.jp || []).join('');
+  ansHi.textContent = (t.hi || []).join(' ');
+
+  ansModal.classList.add('show');
+  ansModal.style.display = 'flex';
+  ansModal.setAttribute('aria-hidden','false');
+}
+
+function closeAnswerModal(){
+  ansModal.classList.remove('show');
+  ansModal.style.display='none';
+  ansModal.setAttribute('aria-hidden','true');
+}
+
+if(ansModal){
+  ansModal.addEventListener('click', function(e){
+    if(e.target && e.target.hasAttribute('data-close-ans')) closeAnswerModal();
+  });
+  const closeBtns = ansModal.querySelectorAll('[data-close-ans]');
+  closeBtns.forEach(function(b){ b.addEventListener('click', closeAnswerModal); });
+  document.addEventListener('keydown', function(e){
+    if(e.key==='Escape' && ansModal.classList.contains('show')) closeAnswerModal();
+  });
+}
+
+/* Correct / scoring */
+function correctCommon(){
+  gotCorrect=true;
+  playSfx(SFX.ding);
+  confetti(70);
+  points += firstAttempt ? 1 : 0;
+  pulsePoints();
+  updateUI();
+  setHint('正解。つぎへ。','Correct. Tap Next.');
+  nextBtn.style.display='inline-block';
+
+  if(!showedAnswerPopup){
+    showedAnswerPopup=true;
+    const q = currentQuestion();
+    openAnswerModalFor(q.index1);
+  }
+}
+
+async function checkIOSAnswer(){
+  if(gotCorrect) return;
+  const q=currentQuestion();
+  if(iosSelectedIndex===null) return;
+  const answer=q.answers[iosSelectedIndex];
+  if(answer===q.correct){
+    if(!iosFirstAttempt) firstAttempt=false;
+    correctCommon();
+  } else {
+    iosFirstAttempt=false;
+    firstAttempt=false;
+    await wrongIOS();
+  }
+}
+
+function ensureRecog(){
+  const R=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!R){
+    setMicStatus(false);
+    setHint('この端末は音声認識に対応していません。','Speech recognition is not supported on this device.');
+    return;
+  }
+  if(recog) return;
+
+  recog=new R();
+  recog.lang='en-US';
+  recog.interimResults=true;
+
+  recog.onstart=function(){
+    listening=true;
+    studentBox.classList.add('listening');
+    setMicStatus(true);
+  };
+
+  recog.onend=function(){
+    listening=false;
+    studentBox.classList.remove('listening');
+    setMicStatus(false);
+  };
+
+  recog.onerror=function(){
+    setMicStatus(false);
+    setHint('マイクを許可してね。','Please allow microphone access.');
+  };
+
+  recog.onresult=function(e){
+    let t='';
+    for(const r of e.results){
+      t += r[0].transcript + ' ';
+      if(r.isFinal){
+        const finalText=t.trim();
+        studentBox.textContent=finalText;
+        checkSpeech(finalText);
+      }
+    }
+    const interim = t.trim();
+    if(interim && !gotCorrect){
+      studentBox.textContent=interim;
+    }
+  };
+}
+
+function startMic(){
+  if(isIOS) return;
+  if(!recog) ensureRecog();
+  if(!recog) return;
+  if(!listening){
+    try{recog.start();}catch(e){}
+  }
+}
+
+function stopMic(){
+  if(recog && listening){
+    try{recog.stop();}catch(e){}
+  } else {
+    setMicStatus(false);
+  }
+}
+
+async function checkSpeech(spoken){
+  if(isIOS || gotCorrect) return;
+  const q=currentQuestion();
+
+  const matchIndex=q.answers.findIndex(function(ans){ return strictMatch(spoken,ans); });
+  if(matchIndex===-1){
+    firstAttempt=false;
+    await wrongAndroidDesktop();
+    return;
+  }
+
+  const isCorrect = strictMatch(spoken, q.correct);
+  if(isCorrect){
+    correctCommon();
+    stopMic();
+  } else {
+    firstAttempt=false;
+    await wrongAndroidDesktop();
+  }
+}
+
+function clearAnswer(){
+  studentBox.textContent='';
+  studentBox.style.background='#fff';
+  setHint('もう一回言ってね。','Say it again.');
+}
+
+function loadQuestion(){
+  gotCorrect=false;
+  firstAttempt=true;
+  showedAnswerPopup=false;
+
+  iosSelectedIndex=null;
+  iosFirstAttempt=true;
+
+  hintBox.textContent='';
+  studentBox.textContent='';
+  studentBox.style.background='#fff';
+  nextBtn.style.display='none';
+
+  const q=currentQuestion();
+  animateWords(q.q);
+  renderAnswers();
+  updateUI();
+  setModeUI();
+}
+
+function showResults(){
+  stopMic();
+  const total=questions.length;
+  const pct=Math.round((points/total)*100);
+  resultsScore.textContent = points + '/' + total + '（' + pct + '%）';
+
+  let msg = 'いいね。あと少し。';
+  let snd = RES.r1114;
+
+  if(points<=5){ msg='ブーリキュラム見てないでしょ。'; snd=RES.r05; }
+  else if(points<=10){ msg='YouTube見すぎ。ブーリキュラムもやろう。'; snd=RES.r610; }
+  else if(points===15){ msg='すごい。パーフェクト。'; snd=RES.r15; }
+
+  resultsMsg.textContent = msg;
+  resultsOverlay.style.display='flex';
+  resultsOverlay.setAttribute('aria-hidden','false');
+
+  try{ snd.currentTime=0; snd.play(); }catch(e){}
+  if(points===15) confetti(140);
+}
+
+/* Rainbow tap: Sage audio */
+let audioLock=false;
+async function onTapSage(){
+  if(audioLock) return;
+  audioLock=true;
+  try{ await playQuestionAudioForCurrent(); }
+  finally{ audioLock=false; }
+}
+sageBox.addEventListener('click', onTapSage);
+
+/* White box tap: toggle mic (Android/Desktop) */
+studentBox.addEventListener('click', function(){
+  if(isIOS) return;
+  if(!recog) ensureRecog();
+  if(!recog) return;
+
+  if(listening){
+    stopMic();
+    setMicStatus(false);
+  } else {
+    startMic();
+    setMicStatus(true);
+  }
+});
+
+eraseBtn.addEventListener('click', function(){ clearAnswer(); });
+
+document.addEventListener('keydown', function(e){
+  if(isIOS) return;
+  if(e.key==='Backspace' || e.key==='Delete') clearAnswer();
+});
+
+nextBtn.onclick=function(){
+  current++;
+  if(current>=questions.length){
+    showResults();
+    return;
+  }
+  loadQuestion();
+};
+
+restartBtn.onclick=function(){
+  resultsOverlay.style.display='none';
+  resultsOverlay.setAttribute('aria-hidden','true');
+  current=0; points=0;
+  questions = makeShuffledQuestions();
+  loadQuestion();
+};
+
+/* Help modal */
+if(helpBtn && helpModal){
+  const closeEls=helpModal.querySelectorAll('[data-close-help]');
+  const openHelp=function(){ helpModal.classList.add('show'); helpModal.setAttribute('aria-hidden','false'); };
+  const closeHelp=function(){ helpModal.classList.remove('show'); helpModal.setAttribute('aria-hidden','true'); };
+  helpBtn.addEventListener('click', openHelp);
+  closeEls.forEach(function(el){ el.addEventListener('click', closeHelp); });
+  helpModal.addEventListener('click', function(e){ if(e.target===helpModal) closeHelp(); });
+  document.addEventListener('keydown', function(e){ if(e.key==='Escape') closeHelp(); });
+}
+
+/* Init */
+window.onload=function(){
+  loadQuestion();
+
+  if(isIOS){
+    setHint('iPad / iPhone：答えをタップすると自動チェック。', 'iPad/iPhone: Tap an answer to auto-check.');
+    if(iosOverlay){
+      iosOverlay.style.display='flex';
+      iosOverlay.setAttribute('aria-hidden','false');
+      if(iosOverlayOk){
+        iosOverlayOk.addEventListener('click', function(){
+          iosOverlay.style.display='none';
+          iosOverlay.setAttribute('aria-hidden','true');
+        });
+      }
+    }
+  } else {
+    setHint('白いボックスをタップしてスタート','Tap white box to start');
+    setMicStatus(false);
+  }
+};
+</script>
+</body>
+</html>
