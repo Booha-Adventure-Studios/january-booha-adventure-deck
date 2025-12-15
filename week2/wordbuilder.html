@@ -354,18 +354,19 @@ footer{text-align:center;padding:16px;font-family:'Cinzel',serif;font-size:.95re
 const $=s=>document.querySelector(s);
 
 /* =========================
-  //* CHANGE 3/6: Week folder prefix (ONLY change week number)
+  //* CHANGE 3/6: Week folder (ONLY change week number)
+  - This builds a SAFE base path so audio always resolves.
   - Works if HTML is:
-    A) inside /week2/     => prefix ''
-    B) at repo root       => prefix 'week2/'
+    A) inside /week2/     => BASE "./"
+    B) at repo root       => BASE "week2/"
   ========================= */
-const WEEK_FOLDER = 'week2';
-const WEEK_PREFIX = location.pathname.includes('/' + WEEK_FOLDER + '/') ? '' : (WEEK_FOLDER + '/');
+const WEEK_FOLDER = "week2"; // change to "week3", "week4", etc.
+const BASE = location.pathname.includes("/" + WEEK_FOLDER + "/") ? "./" : (WEEK_FOLDER + "/");
 
 /* =========================
   //* CHANGE 4/6: Weekly WORDS (15 items) + their AUDIO NUMBER
-  - This is the FIX:
-    You can reorder words freely, BUT keep v numbers matching your mp3 filenames.
+  - Keep v numbers matching your mp3 filenames.
+  - Sage vocab lives in: audio/vocab/
   - Example file: week2/audio/vocab/v03_breakfast.mp3
   ========================= */
 const WEEK_WORDS = [
@@ -386,7 +387,7 @@ const WEEK_WORDS = [
   { v: 15, w: "finish"    }
 ];
 
-/* Build a safe lookup: word -> v## */
+/* Build lookup: word -> v## */
 const WORD_TO_V = WEEK_WORDS.reduce((acc, it) => {
   acc[it.w] = it.v;
   return acc;
@@ -406,7 +407,7 @@ const helpBtn=$("#helpBtn"), helpModal=$("#helpModal"), helpClose=$("#helpClose"
 const bigHeart=$("#bigHeart"), bigFart=$("#bigFart");
 
 /* =========================
-  //* CHANGE 6/6: Menu link (if you ever rename your menu file)
+  //* CHANGE 5/6: Menu link (only if you rename index.html)
   ========================= */
 const MENU_HREF = "index.html";
 
@@ -421,20 +422,20 @@ helpClose.addEventListener("click",closeHelp);
 helpModal.addEventListener("click",e=>{ if(e.target===helpModal) closeHelp(); });
 
 /* =========================
-  Audio paths (usually never change)
-  - SFX:   week#/assets/audio/
-  - Sage:  week#/audio/vocab/
+  Audio paths (DO NOT change)
+  - Sage:  audio/vocab/
+  - SFX:   assets/audio/
   ========================= */
 const sfx = {
-  ding:  new Audio(WEEK_PREFIX + 'assets/audio/ding.mp3'),
-  fart:  new Audio(WEEK_PREFIX + 'assets/audio/fart.mp3'),
-  r0_5:  new Audio(WEEK_PREFIX + 'assets/audio/result_0-5.mp3'),
-  r6_10: new Audio(WEEK_PREFIX + 'assets/audio/result_6-10.mp3'),
-  r11_14:new Audio(WEEK_PREFIX + 'assets/audio/result_11-14.mp3'),
-  r15:   new Audio(WEEK_PREFIX + 'assets/audio/result_15.mp3'),
+  ding:  new Audio(BASE + "assets/audio/ding.mp3"),
+  fart:  new Audio(BASE + "assets/audio/fart.mp3"),
+  r0_5:  new Audio(BASE + "assets/audio/result_0-5.mp3"),
+  r6_10: new Audio(BASE + "assets/audio/result_6-10.mp3"),
+  r11_14:new Audio(BASE + "assets/audio/result_11-14.mp3"),
+  r15:   new Audio(BASE + "assets/audio/result_15.mp3"),
 };
 Object.values(sfx).forEach(a=>{
-  a.preload='auto';
+  a.preload="auto";
   a.playsInline = true;
   try{ a.load(); }catch{}
 });
@@ -443,23 +444,23 @@ function playSfx(audio){
     audio.currentTime=0;
     audio.play().catch(()=>{
       const clone = audio.cloneNode(true);
-      clone.preload='auto';
+      clone.preload="auto";
       clone.playsInline = true;
       clone.play().catch(()=>{});
     });
   }catch{}
 }
 
-/* Sage voice (single element = more reliable on iOS) */
+/* Sage voice (single element = reliable on iOS) */
 const sageVoice = new Audio();
 sageVoice.preload = "auto";
 sageVoice.playsInline = true;
 
-function v2(n){ return String(n).padStart(2,'0'); }
+function v2(n){ return String(n).padStart(2,"0"); }
 function sageSrcForWord(word){
   const v = WORD_TO_V[word];
   if(!v) return "";
-  return `${WEEK_PREFIX}audio/vocab/v${v2(v)}_${word}.mp3`;
+  return `${BASE}audio/vocab/v${v2(v)}_${word}.mp3`;
 }
 
 /* iOS/Safari: unlock audio with USER gesture */
@@ -486,6 +487,7 @@ function speak(){
 
   const word = WORDS[index];
   const src = sageSrcForWord(word);
+
   if(!src){
     console.warn("[Sage] missing mapping for:", word);
     return;
@@ -501,23 +503,31 @@ function speak(){
 
   const p = sageVoice.play();
   if(p && typeof p.catch === "function"){
-    p.catch(err=>{ console.warn("[Sage] play blocked or missing:", err, "src=", src); clear(); });
+    p.catch(err=>{
+      console.warn("[Sage] play failed:", err, "src=", src);
+      clear();
+    });
   }
 }
 play.addEventListener("click", speak);
 
+/* =========================
+  //* CHANGE 6/6: (Optional) Result messages
+  - If you ever want to change result text per month/week.
+  ========================= */
+
 /* ====== Visual FX ====== */
 function flashRedScreen(){
-  const el=document.createElement('div');
-  el.className='flashRed';
+  const el=document.createElement("div");
+  el.className="flashRed";
   document.body.appendChild(el);
   setTimeout(()=>el.remove(),400);
 }
 function showBig(el){
-  el.classList.remove('show');
+  el.classList.remove("show");
   void el.offsetWidth;
-  el.classList.add('show');
-  setTimeout(()=>el.classList.remove('show'), 950);
+  el.classList.add("show");
+  setTimeout(()=>el.classList.remove("show"), 950);
 }
 
 /* ====== Tap Game State ====== */
@@ -536,29 +546,29 @@ function enableCheck(){
   check.disabled = !allFilled();
 }
 function clearSelected(){
-  if(selectedTile){ selectedTile.classList.remove('selected'); }
+  if(selectedTile){ selectedTile.classList.remove("selected"); }
   selectedTile = null;
 }
 function markHint(){
-  [...drop.children].forEach(s=>s.classList.remove('hint'));
+  [...drop.children].forEach(s=>s.classList.remove("hint"));
   const s = nextEmptySlot();
-  if(s) s.classList.add('hint');
+  if(s) s.classList.add("hint");
 }
 
 function makeTile(ch){
-  const t=document.createElement('div');
+  const t=document.createElement("div");
   t.className="tile";
   t.textContent=ch;
 
-  t.addEventListener('pointerdown',()=>{
-    t.classList.add('touched');
-    setTimeout(()=>t.classList.remove('touched'), 180);
+  t.addEventListener("pointerdown",()=>{
+    t.classList.add("touched");
+    setTimeout(()=>t.classList.remove("touched"), 180);
   }, {passive:true});
 
-  t.addEventListener('click', (e)=>{
+  t.addEventListener("click", (e)=>{
     e.stopPropagation();
 
-    const inSlot = t.parentElement?.classList.contains('slot');
+    const inSlot = t.parentElement?.classList.contains("slot");
     if(inSlot){
       sendToBank(t);
       clearSelected();
@@ -578,7 +588,7 @@ function makeTile(ch){
 
     clearSelected();
     selectedTile = t;
-    t.classList.add('selected');
+    t.classList.add("selected");
   });
 
   return t;
@@ -587,10 +597,10 @@ function makeTile(ch){
 function buildSlots(w){
   drop.innerHTML="";
   for(let i=0;i<w.length;i++){
-    const s=document.createElement('div');
+    const s=document.createElement("div");
     s.className="slot";
 
-    s.addEventListener('click', ()=>{
+    s.addEventListener("click", ()=>{
       if(!selectedTile) return;
       if(s.firstChild) return;
       if(selectedTile.parentElement !== bank) return;
@@ -617,18 +627,18 @@ function buildBank(w){
 function placeIntoSlot(tile,slot){
   if(slot.firstChild) return;
 
-  tile.classList.remove('selected');
-  tile.classList.add('inSlot');
+  tile.classList.remove("selected");
+  tile.classList.add("inSlot");
   slot.appendChild(tile);
-  slot.classList.add('filled');
+  slot.classList.add("filled");
 }
 
 function sendToBank(tile){
   bank.appendChild(tile);
-  tile.classList.remove('inSlot','selected');
+  tile.classList.remove("inSlot","selected");
   [...drop.children].forEach(s=>{
-    if(!s.firstChild) s.classList.remove('filled');
-    else s.classList.add('filled');
+    if(!s.firstChild) s.classList.remove("filled");
+    else s.classList.add("filled");
   });
 }
 
@@ -649,7 +659,7 @@ check.addEventListener("click",()=>{
     showBig(bigFart);
     playSfx(sfx.fart);
 
-    const tiles=[...drop.querySelectorAll('.tile')];
+    const tiles=[...drop.querySelectorAll(".tile")];
     tiles.forEach(t=>sendToBank(t));
 
     clearSelected();
