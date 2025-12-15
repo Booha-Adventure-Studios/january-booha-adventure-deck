@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-<title>Booha Eigo Adventure – January Week 1</title>
+<title>Booha Eigo Adventure – January Week 2</title>
 <meta name="theme-color" content="#0b1530" />
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Noto+Sans+JP:wght@500;700;900&display=swap" rel="stylesheet" />
 
@@ -424,8 +424,8 @@ footer{text-align:center;color:#fff;padding:16px 0 22px;font-family:'Cinzel',ser
 
 <header>
   <div class="h1">THE BOO-RICULUM</div>
-  <div class="h2">Eigo Adventure – January Week 1</div>
-  <div class="h3">１月第１週 – 英語アドベンチャー</div>
+  <div class="h2">Eigo Adventure – January Week 2</div>
+  <div class="h3">１月第2週 – 英語アドベンチャー</div>
 </header>
 
 <main>
@@ -612,36 +612,50 @@ function setMicStatus(on){
 
 /* Questions */
 const BASE_QUESTIONS = [
-  {index1:1, q:"What is your goal this year?", a:0, answers:[
-    "I want to improve my English this year.","I want to turn into a banana.","My goal is to sleep for one year.","I want to live on Mars with aliens."]},
-  {index1:2, q:"Why is it important to you?", a:0, answers:[
-    "It is important because it helps my future.","Because my shoes told me to.","Because pizza is watching me.","I don’t know, my cat decided."]},
-  {index1:3, q:"How will you reach your goal?", a:0, answers:[
-    "I will study and practice every day.","I will close my eyes and hope.","I will shout my goal at the moon.","I will wait for magic."]},
-  {index1:4, q:"Who helps you stay motivated?", a:0, answers:[
-    "My family and teachers help me.","A talking sandwich helps me.","My pillow gives me advice.","Nobody, I talk to the wall."]},
-  {index1:5, q:"What habit do you want to change?", a:0, answers:[
-    "I want to stop procrastinating.","I want to stop breathing air.","I want to stop being human.","I want to stop existing on Mondays."]},
-  {index1:6, q:"Do you like making resolutions?", a:0, answers:[
-    "Yes, I like making resolutions.","No, resolutions are scared of me.","I only make food, not resolutions.","I make resolutions for my socks."]},
-  {index1:7, q:"What do you want to try this year?", a:0, answers:[
-    "I want to try something new this year.","I want to try flying without wings.","I want to try eating rocks.","I want to try sleeping in class forever."]},
-  {index1:8, q:"What’s something new you learned recently?", a:0, answers:[
-    "I learned a new English word.","I learned how to talk to chairs.","I learned that water is dry.","I learned nothing since birth."]},
-  {index1:9, q:"Is it easy to keep goals?", a:0, answers:[
-    "No, it is not always easy.","Yes, goals walk by themselves.","Goals are easy because they disappear.","Goals are easy when you never try."]},
-  {index1:10, q:"What happens when you don’t try?", a:0, answers:[
-    "You cannot improve if you don’t try.","You turn into a potato.","The world stops spinning.","Nothing, everything does itself."]},
-  {index1:11, q:"What makes you feel proud?", a:0, answers:[
-    "Doing my best makes me feel proud.","Eating ten cakes makes me proud.","Falling asleep in class makes me proud.","Forgetting everything makes me proud."]},
-  {index1:12, q:"What’s your dream for the future?", a:0, answers:[
-    "I want to have a happy future.","I want to be a rock.","I want to live inside a video game.","I want to disappear forever."]},
-  {index1:13, q:"How do you stay positive?", a:0, answers:[
-    "I stay positive by thinking positively.","I stay positive by yelling at clouds.","I stay positive by running away.","I don’t, I hide under a desk."]},
-  {index1:14, q:"Who inspires you?", a:0, answers:[
-    "My family inspires me.","A flying spoon inspires me.","A random tree inspires me.","Nobody, inspiration is scary."]},
-  {index1:15, q:"How can English help your goals?", a:0, answers:[
-    "English can help me in my future.","English helps my shoes run faster.","English helps me talk to fish.","English has no use at all."]}
+  {index1:1, q:"What time do you wake up?", a:0, answers:[
+    "I wake up at seven.","I wake up at pizza o’clock.","I wake up when the moon tells me.","I never wake up, ever."]},
+
+  {index1:2, q:"What do you do after school?", a:0, answers:[
+    "I do my homework or relax.","I turn into a superhero.","I fly to another country.","I disappear into the sofa."]},
+
+  {index1:3, q:"Do you help at home?", a:0, answers:[
+    "Yes, I help at home.","No, my house helps me.","Only my goldfish helps.","I help by sleeping."]},
+
+  {index1:4, q:"What do you do every morning?", a:0, answers:[
+    "I eat breakfast and get ready.","I fight a dragon.","I go back to bed forever.","I scream at the wall."]},
+
+  {index1:5, q:"What time do you eat dinner?", a:0, answers:[
+    "I eat dinner in the evening.","I eat dinner at midnight in space.","I eat dinner yesterday.","I never eat dinner."]},
+
+  {index1:6, q:"Do you use your phone before bed?", a:0, answers:[
+    "No, I don’t use my phone before bed.","Yes, I watch my phone sleep.","I talk to my phone all night.","My phone uses me."]},
+
+  {index1:7, q:"How do you get ready for school?", a:0, answers:[
+    "I wake up, eat breakfast, and get dressed.","I teleport to school.","I wear pajamas forever.","I roll to school."]},
+
+  {index1:8, q:"What is your favorite part of the day?", a:0, answers:[
+    "My favorite part is the evening.","My favorite part is yesterday.","My favorite part is the floor.","I don’t like days."]},
+
+  {index1:9, q:"When do you do homework?", a:0, answers:[
+    "I do homework after school.","I do homework in my sleep.","I do homework next year.","Homework does me."]},
+
+  {index1:10, q:"Do you study every day?", a:0, answers:[
+    "Yes, I study every day.","No, books study me.","Only on Mars.","I study never times."]},
+
+  {index1:11, q:"What time do you go to bed?", a:0, answers:[
+    "I go to bed at ten.","I go to bed at breakfast.","I go to bed in the afternoon.","I never go to bed."]},
+
+  {index1:12, q:"What do you do on weekends?", a:0, answers:[
+    "I relax or spend time with family.","I go to school forever.","I fight homework monsters.","I disappear on weekends."]},
+
+  {index1:13, q:"What do you usually eat for breakfast?", a:0, answers:[
+    "I usually eat breakfast at home.","I eat homework.","I eat air and dreams.","I eat dinner for breakfast."]},
+
+  {index1:14, q:"Who do you spend time with after school?", a:0, answers:[
+    "I spend time with my friends or family.","I spend time with my chair.","I spend time with aliens.","I spend time with nobody at all."]},
+
+  {index1:15, q:"What time do you finish dinner?", a:0, answers:[
+    "I finish dinner in the evening.","I finish dinner next week.","I finish dinner last year.","I never finish dinner."]}
 ];
 
 function shuffle(a){
@@ -678,21 +692,81 @@ let iosFirstAttempt=true;
 
 /* Correct answer translations (chunk arrays) */
 const ANSWER_TRANSLATIONS = {
-  1:{ en:["I want to","improve","my English","this year."], jp:["私は","今年","英語を","上達させたいです。"], hi:["わたしは","ことし","えいごを","じょうたつさせたいです。"] },
-  2:{ en:["It is important","because","it helps","my future."], jp:["それは","将来のために","役に立つので","大切です。"], hi:["それは","しょうらいのために","やくにたつので","たいせつです。"] },
-  3:{ en:["I will","study and practice","every day."], jp:["私は","毎日","勉強して練習します。"], hi:["わたしは","まいにち","べんきょうしてれんしゅうします。"] },
-  4:{ en:["My family and teachers","help me."], jp:["家族と先生が","私を助けてくれます。"], hi:["かぞくとせんせいが","わたしをたすけてくれます。"] },
-  5:{ en:["I want to stop","procrastinating."], jp:["私は","先のばしをやめたいです。"], hi:["わたしは","さきのばしをやめたいです。"] },
-  6:{ en:["Yes,","I like","making resolutions."], jp:["はい、","私は","目標を立てるのが好きです。"], hi:["はい、","わたしは","もくひょうをたてるのがすきです。"] },
-  7:{ en:["I want to try","something new","this year."], jp:["私は","今年","新しいことに挑戦したいです。"], hi:["わたしは","ことし","あたらしいことにちょうせんしたいです。"] },
-  8:{ en:["I learned","a new","English word."], jp:["私は","新しい","英単語を覚えました。"], hi:["わたしは","あたらしい","えいたんごをおぼえました。"] },
-  9:{ en:["No,","it is not always","easy."], jp:["いいえ、","いつも","簡単ではありません。"], hi:["いいえ、","いつも","かんたんではありません。"] },
-  10:{ en:["You cannot improve","if you don’t try."], jp:["挑戦しないと","上達できません。"], hi:["ちょうせんしないと","じょうたつできません。"] },
-  11:{ en:["Doing my best","makes me feel proud."], jp:["全力を出すと","誇らしい気持ちになります。"], hi:["ぜんりょくをだすと","ほこらしいきもちになります。"] },
-  12:{ en:["I want to have","a happy","future."], jp:["私は","幸せな","未来にしたいです。"], hi:["わたしは","しあわせな","みらいにしたいです。"] },
-  13:{ en:["I stay positive","by thinking","positively."], jp:["私は","前向きに考えて","前向きでいます。"], hi:["わたしは","まえむきにかんがえて","まえむきでいます。"] },
-  14:{ en:["My family","inspires me."], jp:["家族が","私にやる気をくれます。"], hi:["かぞくが","わたしにやるきをくれます。"] },
-  15:{ en:["English can help me","in my","future."], jp:["英語は","将来に","役立ちます。"], hi:["えいごは","しょうらいに","やくだちます。"] }
+  1:{
+    en:["I wake up","at seven."],
+    jp:["私は","７時に起きます。"],
+    hi:["わたしは","７じ に おきます"]
+  },
+  2:{
+    en:["I do my homework","or relax."],
+    jp:["私は","宿題をしたり","リラックスします。"],
+    hi:["わたしは","しゅくだい を したり","りらっくす します"]
+  },
+  3:{
+    en:["Yes,","I help","at home."],
+    jp:["はい、","家で","手伝います。"],
+    hi:["はい、","いえ で","てつだいます"]
+  },
+  4:{
+    en:["I eat breakfast","and get ready."],
+    jp:["私は","朝ごはんを食べて","準備します。"],
+    hi:["わたしは","あさごはん を たべて","じゅんび します"]
+  },
+  5:{
+    en:["I eat dinner","in the evening."],
+    jp:["私は","夜に","夕ごはんを食べます。"],
+    hi:["わたしは","よる に","ゆうごはん を たべます"]
+  },
+  6:{
+    en:["No,","I don’t use my phone","before bed."],
+    jp:["いいえ、","寝る前に","スマホを使いません。"],
+    hi:["いいえ、","ねる まえ に","すまほ を つかいません"]
+  },
+  7:{
+    en:["I wake up,","eat breakfast,","and get dressed."],
+    jp:["私は","起きて","朝ごはんを食べて","服を着ます。"],
+    hi:["わたしは","おきて","あさごはん を たべて","ふく を きます"]
+  },
+  8:{
+    en:["My favorite part","is the evening."],
+    jp:["一番好きな時間は","夜です。"],
+    hi:["いちばん すきな じかん は","よる です"]
+  },
+  9:{
+    en:["I do homework","after school."],
+    jp:["私は","学校のあとに","宿題をします。"],
+    hi:["わたしは","がっこう の あと に","しゅくだい を します"]
+  },
+  10:{
+    en:["Yes,","I study","every day."],
+    jp:["はい、","毎日","勉強します。"],
+    hi:["はい、","まいにち","べんきょう します"]
+  },
+  11:{
+    en:["I go to bed","at ten."],
+    jp:["私は","１０時に","寝ます。"],
+    hi:["わたしは","１０じ に","ねます"]
+  },
+  12:{
+    en:["I relax","or spend time","with my family."],
+    jp:["私は","リラックスしたり","家族と過ごします。"],
+    hi:["わたしは","りらっくす したり","かぞく と すごします"]
+  },
+  13:{
+    en:["I usually eat","breakfast","at home."],
+    jp:["私は","たいてい","家で朝ごはんを食べます。"],
+    hi:["わたしは","たいてい","いえ で あさごはん を たべます"]
+  },
+  14:{
+    en:["I spend time","with my friends","after school."],
+    jp:["私は","放課後に","友だちと過ごします。"],
+    hi:["わたしは","ほうかご に","ともだち と すごします"]
+  },
+  15:{
+    en:["I finish dinner","in the evening."],
+    jp:["私は","夜に","夕ごはんを終えます。"],
+    hi:["わたしは","よる に","ゆうごはん を おえます"]
+  }
 };
 
 function playSfx(path){
