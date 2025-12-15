@@ -3,7 +3,10 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-<title>Booha Tap Match – January Week 2</title>
+
+<!-- //* CHANGE 1/7: Page <title> (week label) *// -->
+<title>Booha Tap Match – January Week 1</title>
+
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Noto+Sans+JP:wght@500;700&display=swap" rel="stylesheet">
 
 <style>
@@ -114,23 +117,15 @@ display:flex;gap:26px;align-items:flex-start;justify-content:center;flex-wrap:wr
 
 /* MOBILE layout improvements */
 @media (max-width:700px){
-/* ✅ slightly smaller tiles on mobile */
 :root{ --cardH: 86px; }
-
-/* ✅ IMPORTANT: stop inner div scrolling (Android hates nested scrollbars) */
 .round-viewport{
   overflow:visible;
   min-height:auto;
   padding-bottom: 0;
 }
-
-/* Keep layout as two columns */
 #page-round.page.active{display:flex; flex-direction:column; padding-bottom:0;}
 .round-wrap{flex-wrap:nowrap;gap:10px}
-
-/* ✅ more side grab space */
 .col{flex:0 0 48%;max-width:48%}
-
 .card{
 height:var(--cardH);
 padding:10px 12px;
@@ -138,8 +133,6 @@ font-size:1.1rem;
 }
 .card.en{font-size:1.4rem;}
 .card.jp{font-size:.9rem;line-height:1.35;}
-
-/* Sticky actions stays */
 .actions{
 position:sticky; bottom:0; z-index:5;
 height: var(--actionsH);
@@ -175,8 +168,6 @@ hyphens: none;
 background:transparent; border:3px dashed var(--outline); color:var(--ink);
 white-space:pre-line;
 }
-
-/* ✅ Selected glow (tap) */
 .card.selected{
 transform:scale(1.02);
 box-shadow:
@@ -185,15 +176,11 @@ box-shadow:
 0 0 36px rgba(255,209,102,.55);
 border-color:#fff !important;
 }
-
-/* ✅ JP “wake up” when an English is selected */
 .jpAwake .card.jp:not(.combined):not(.correct):not(.wrong){
 filter: brightness(1.08);
 border-color:#ffffffdd;
 box-shadow: 0 0 10px rgba(255,255,255,.18);
 }
-
-/* Combined before grading */
 .card.combined{ border:0; display:flex; flex-direction:column; gap:8px; }
 .card.matchedBlue{
 background:var(--cuteBlue)!important;
@@ -202,16 +189,12 @@ box-shadow:var(--cuteBlueGlow)!important;
 }
 .card.combined .enTxt{font-size:1.05em; font-weight:1000; letter-spacing:-.01em}
 .card.combined .jpTxt{font-size:.7em; opacity:.98}
-
-/* ✅ Tiny “pop” feedback when pairing */
 @keyframes pairPop{
 0%{transform:scale(0.98)}
 60%{transform:scale(1.03)}
 100%{transform:scale(1)}
 }
 .card.pairedPop{ animation: pairPop .18s ease-out; }
-
-/* Grading wins */
 .card.correct{background:var(--green) !important; color:#062a12 !important; border:0 !important}
 .card.wrong {background:var(--red) !important; color:#fff !important; border:0 !important; animation:shake .45s}
 .card.locked{pointer-events:none}
@@ -409,8 +392,9 @@ text-align:center;
 <h1>THE BOO-RICULUM</h1>
 <h2>TAP MATCH</h2>
 <div class="subtitle-stack">
-<div class="en">January Week 2 - Vocabulary</div>
-<div class="jp">１月第２週 - 語彙</div>
+  <!-- //* CHANGE 2/7: Week label text shown on page *// -->
+  <div class="en">January Week 1 - Vocabulary</div>
+  <div class="jp">１月第１週 - 語彙</div>
 </div>
 <hr class="sep">
 </header>
@@ -488,31 +472,41 @@ text-align:center;
 <audio id="s_r1114" preload="auto" playsinline></audio>
 <audio id="s_r15"   preload="auto" playsinline></audio>
 
-
-
 <!-- ✅ One reusable vocab player -->
 <audio id="vocabPlayer" preload="auto" playsinline></audio>
 
 <script>
-/* DATA */
-const MASTER = [
-  {id:1,  en:"morning",   jp:"朝",         hira:"あさ"},
-  {id:2,  en:"night",     jp:"夜",         hira:"よる"},
-  {id:3,  en:"breakfast", jp:"朝ごはん",   hira:"あさごはん"},
-  {id:4,  en:"lunch",     jp:"昼ごはん",   hira:"ひるごはん"},
-  {id:5,  en:"dinner",    jp:"夕ごはん",   hira:"ゆうごはん"},
-  {id:6,  en:"brush",     jp:"みがく",     hira:"みがく"},
-  {id:7,  en:"wash",      jp:"洗う",       hira:"あらう"},
-  {id:8,  en:"go",        jp:"行く",       hira:"いく"},
-  {id:9,  en:"come",      jp:"来る",       hira:"くる"},
-  {id:10, en:"sleep",     jp:"寝る",       hira:"ねる"},
-  {id:11, en:"study",     jp:"勉強する",   hira:"べんきょうする"},
-  {id:12, en:"homework",  jp:"宿題",       hira:"しゅくだい"},
-  {id:13, en:"clean",     jp:"そうじする", hira:"そうじする"},
-  {id:14, en:"start",     jp:"始める",     hira:"はじめる"},
-  {id:15, en:"finish",    jp:"終わる",     hira:"おわる"}
-];
+/* =========================
+   //* CHANGE 3/7: Week folder prefix (ONLY change week number)
+   - Keeps code working whether HTML is:
+     A) inside /week1/  (prefix '')
+     B) at repo root    (prefix 'week1/')
+   ========================= */
+const WEEK_FOLDER = 'week1';
+const WEEK_PREFIX = location.pathname.includes('/' + WEEK_FOLDER + '/') ? '' : (WEEK_FOLDER + '/');
 
+/* =========================
+   //* CHANGE 4/7: Weekly vocab data (15 items)
+   - id MUST match Sage numbering (v01_.. v15_..)
+   - en MUST match filename word (lowercase recommended)
+   ========================= */
+const MASTER = [
+{id:1, en:"goal",jp:"目標",hira:"もくひょう"},
+{id:2, en:"plan",jp:"計画",hira:"けいかく"},
+{id:3, en:"future",jp:"未来",hira:"みらい"},
+{id:4, en:"dream",jp:"夢",hira:"ゆめ"},
+{id:5, en:"challenge",jp:"挑戦",hira:"ちょうせん"},
+{id:6, en:"try",jp:"挑戦する",hira:"ちょうせん する"},
+{id:7, en:"change",jp:"変える",hira:"かえる"},
+{id:8, en:"habit",jp:"習慣",hira:"しゅうかん"},
+{id:9, en:"exercise",jp:"運動",hira:"うんどう"},
+{id:10,en:"study",jp:"勉強",hira:"べんきょう"},
+{id:11,en:"learn",jp:"学ぶ",hira:"まなぶ"},
+{id:12,en:"practice",jp:"練習",hira:"れんしゅう"},
+{id:13,en:"success",jp:"成功",hira:"せいこう"},
+{id:14,en:"focus",jp:"集中",hira:"しゅうちゅう"},
+{id:15,en:"motivation",jp:"やる気",hira:"やるき"}
+];
 
 /* State */
 let rounds=[], roundIndex=0, totalScore=0, connections={}, jpOrder=[];
@@ -525,27 +519,24 @@ let isGrading = false;
 /* Helpers */
 const $ = s => document.querySelector(s);
 
-/* ✅ Works whether this HTML is at repo root OR inside /week1/ */
-const WEEK_PREFIX = location.pathname.includes('/week2/') ? '' : 'week2/';
-
-
+/* =========================
+   //* CHANGE 5/7: Audio paths (usually never change)
+   - SFX:   week#/assets/audio/
+   - Sage:  week#/audio/vocab/v01_...mp3
+   ========================= */
 function setAudioSrc(id, relPath){
   const el = document.getElementById(id);
   if(!el) return;
   el.src = WEEK_PREFIX + relPath;
 }
-
 function initAudioPaths(){
   setAudioSrc('s_ding',  'assets/audio/ding.mp3');
   setAudioSrc('s_fart',  'assets/audio/fart.mp3');
-
   setAudioSrc('s_r05',   'assets/audio/result_0-5.mp3');
   setAudioSrc('s_r610',  'assets/audio/result_6-10.mp3');
   setAudioSrc('s_r1114', 'assets/audio/result_11-14.mp3');
   setAudioSrc('s_r15',   'assets/audio/result_15.mp3');
 }
-
-/* Call immediately (safe before gameplay) */
 initAudioPaths();
 
 function playSfx(id){
@@ -559,26 +550,19 @@ function playSfx(id){
   document.body.appendChild(a);
   a.play().catch(()=>{}).finally(()=>setTimeout(()=>a.remove(), 2000));
 }
-
-/* ✅ END scorecard audio (longer) */
 function playEndCard(el){
   if(!el) return;
-
   const a = el.cloneNode(true);
   a.setAttribute('playsinline','');
   a.currentTime = 0;
-
   document.body.appendChild(a);
-  a.play().catch(()=>{}).finally(()=>{
-    setTimeout(()=>a.remove(), 12000);
-  });
+  a.play().catch(()=>{}).finally(()=>setTimeout(()=>a.remove(), 12000));
 }
 
 function centerOf(el){
   const r = el.getBoundingClientRect();
   return { x: r.left + r.width/2, y: r.top + r.height/2 };
 }
-
 function shuffle(a){
   return a
     .map(v => [Math.random(), v])
@@ -588,265 +572,257 @@ function shuffle(a){
 
 /* Effects */
 function burstConfettiAt(el,count=44){
-const {x,y}=centerOf(el);
-for(let i=0;i<count;i++){
-const b=document.createElement('div'); b.className='bit';
-b.style.left=x+'px'; b.style.top=y+'px';
-const ang=Math.random()*2*Math.PI, dist=80+Math.random()*130;
-b.style.setProperty('--dx', Math.cos(ang)*dist+'px');
-b.style.setProperty('--dy', Math.sin(ang)*dist-10+'px');
-b.style.background=`hsl(${Math.random()*360},100%,60%)`;
-document.body.appendChild(b); setTimeout(()=>b.remove(),820);
-}
+  const {x,y}=centerOf(el);
+  for(let i=0;i<count;i++){
+    const b=document.createElement('div'); b.className='bit';
+    b.style.left=x+'px'; b.style.top=y+'px';
+    const ang=Math.random()*2*Math.PI, dist=80+Math.random()*130;
+    b.style.setProperty('--dx', Math.cos(ang)*dist+'px');
+    b.style.setProperty('--dy', Math.sin(ang)*dist-10+'px');
+    b.style.background=`hsl(${Math.random()*360},100%,60%)`;
+    document.body.appendChild(b); setTimeout(()=>b.remove(),820);
+  }
 }
 function fartPoofAt(el){
-const {x,y}=centerOf(el);
-const p=document.createElement('div'); p.className='poof';
-p.style.left=x+'px'; p.style.top=y+'px';
-document.body.appendChild(p); setTimeout(()=>p.remove(),980);
+  const {x,y}=centerOf(el);
+  const p=document.createElement('div'); p.className='poof';
+  p.style.left=x+'px'; p.style.top=y+'px';
+  document.body.appendChild(p); setTimeout(()=>p.remove(),980);
 }
 
-/* Local vocab audio */
+/* =========================
+   //* CHANGE 6/7: Sage vocab filename rule (usually never change)
+   - v01_goal.mp3 etc
+   ========================= */
 function pad2(n){ return String(n).padStart(2,'0'); }
 function safeWord(s){
-return (s||"").toLowerCase().trim().replace(/\s+/g,'_').replace(/[^a-z0-9_'-]/g,'');
+  return (s||"").toLowerCase().trim().replace(/\s+/g,'_').replace(/[^a-z0-9_'-]/g,'');
 }
 function vocabSrc(id, en){
   return `${WEEK_PREFIX}audio/vocab/v${pad2(id)}_${safeWord(en)}.mp3`;
 }
-
 function playVocabById(id, en){
-if(!id || !en) return;
-const p = $("#vocabPlayer");
-if(!p) return;
-p.pause();
-p.currentTime = 0;
-p.src = vocabSrc(id, en);
-p.play().catch(()=>{});
+  if(!id || !en) return;
+  const p = $("#vocabPlayer");
+  if(!p) return;
+  p.pause();
+  p.currentTime = 0;
+  p.src = vocabSrc(id, en);
+  p.play().catch(()=>{});
 }
 
-/* ✅ FIX: remove “autoplay blip”
-   We DO NOT play/pause on a global touch anymore.
-   We unlock only on the first real game action (tap EN/JP/CHECK). */
+/* Unlock: mark only (no blip) */
 function unlockAudioOnce(){
-if(audioUnlocked) return;
-audioUnlocked = true;
-/* no play() here — just marking unlocked */
+  if(audioUnlocked) return;
+  audioUnlocked = true;
 }
-
-/* Attach unlock to real actions */
 function armUnlockOn(el, evt="pointerdown"){
-if(!el) return;
-el.addEventListener(evt, unlockAudioOnce, {once:true, passive:true});
+  if(!el) return;
+  el.addEventListener(evt, unlockAudioOnce, {once:true, passive:true});
 }
 
 /* Selection UI */
 function setJpAwake(on){
-document.body.classList.toggle('jpAwake', !!on);
+  document.body.classList.toggle('jpAwake', !!on);
 }
 function clearEnSelection(){
-if(selectedEnEl) selectedEnEl.classList.remove('selected');
-selectedEn = null;
-selectedEnId = null;
-selectedEnEl = null;
-setJpAwake(false);
+  if(selectedEnEl) selectedEnEl.classList.remove('selected');
+  selectedEn = null;
+  selectedEnId = null;
+  selectedEnEl = null;
+  setJpAwake(false);
 }
 
 /* Clear JP slot */
 function clearJPCard(jpCard){
-const enText = jpCard.dataset.connected;
-const enId = Number(jpCard.dataset.connectedId || 0);
-if(!enText) return;
+  const enText = jpCard.dataset.connected;
+  const enId = Number(jpCard.dataset.connectedId || 0);
+  if(!enText) return;
 
-playVocabById(enId, enText);
+  playVocabById(enId, enText);
 
-const enCard = document.querySelector(`.en[data-en="${enText}"][data-id="${enId}"]`);
-if(enCard) enCard.style.visibility = 'visible';
+  const enCard = document.querySelector(`.en[data-en="${enText}"][data-id="${enId}"]`);
+  if(enCard) enCard.style.visibility = 'visible';
 
-jpCard.classList.remove('combined','matchedBlue','pairedPop','correct','wrong','locked');
-jpCard.classList.add('jp');
-jpCard.innerHTML = `${jpCard.dataset.jp}\n(${jpCard.dataset.hira})`;
+  jpCard.classList.remove('combined','matchedBlue','pairedPop','correct','wrong','locked');
+  jpCard.classList.add('jp');
+  jpCard.innerHTML = `${jpCard.dataset.jp}\n(${jpCard.dataset.hira})`;
 
-jpCard.dataset.connected = "";
-jpCard.dataset.connectedId = "";
-delete connections[jpCard.dataset.jp];
+  jpCard.dataset.connected = "";
+  jpCard.dataset.connectedId = "";
+  delete connections[jpCard.dataset.jp];
 
-$("#checkBtn").disabled = Object.keys(connections).length !== 5;
-clearEnSelection();
+  $("#checkBtn").disabled = Object.keys(connections).length !== 5;
+  clearEnSelection();
 }
 
 /* Combine */
 function combineIntoJP(jpCard, enText, enId){
-if(!jpCard || !jpCard.dataset) return;
+  if(!jpCard || !jpCard.dataset) return;
 
-if(jpCard.dataset.connected){
-const oldText = jpCard.dataset.connected;
-const oldId = Number(jpCard.dataset.connectedId || 0);
-const old = document.querySelector(`.en[data-en="${oldText}"][data-id="${oldId}"]`);
-if(old) old.style.visibility='visible';
-}
+  if(jpCard.dataset.connected){
+    const oldText = jpCard.dataset.connected;
+    const oldId = Number(jpCard.dataset.connectedId || 0);
+    const old = document.querySelector(`.en[data-en="${oldText}"][data-id="${oldId}"]`);
+    if(old) old.style.visibility='visible';
+  }
 
-const enCard=document.querySelector(`.en[data-en="${enText}"][data-id="${enId}"]`);
-if(enCard) enCard.style.visibility='hidden';
+  const enCard=document.querySelector(`.en[data-en="${enText}"][data-id="${enId}"]`);
+  if(enCard) enCard.style.visibility='hidden';
 
-const jp = jpCard.dataset.jp, hira = jpCard.dataset.hira;
-jpCard.classList.add('combined','matchedBlue','pairedPop');
-jpCard.classList.remove('jp','selected');
-jpCard.innerHTML = `<div class="enTxt">${enText}</div><div class="jpTxt">${jp}（${hira}）</div>`;
-jpCard.dataset.connected = enText;
-jpCard.dataset.connectedId = String(enId);
-connections[jp] = `${enId}|${enText}`;
+  const jp = jpCard.dataset.jp, hira = jpCard.dataset.hira;
+  jpCard.classList.add('combined','matchedBlue','pairedPop');
+  jpCard.classList.remove('jp','selected');
+  jpCard.innerHTML = `<div class="enTxt">${enText}</div><div class="jpTxt">${jp}（${hira}）</div>`;
+  jpCard.dataset.connected = enText;
+  jpCard.dataset.connectedId = String(enId);
+  connections[jp] = `${enId}|${enText}`;
 
-setTimeout(()=>jpCard.classList.remove('pairedPop'), 220);
+  setTimeout(()=>jpCard.classList.remove('pairedPop'), 220);
 
-$("#checkBtn").disabled = Object.keys(connections).length !== 5;
-clearEnSelection();
+  $("#checkBtn").disabled = Object.keys(connections).length !== 5;
+  clearEnSelection();
 }
 
 /* Round flash */
 function showRoundFlash(n){
-const o = $("#roundFlash");
-const t1 = $("#roundFlashT1");
-const t2 = $("#roundFlashT2");
-if(!o||!t1||!t2) return;
-t1.textContent = `ROUND ${n}`;
-t2.textContent = `ラウンド${n}`;
-o.classList.add('show');
-setTimeout(()=>o.classList.remove('show'), 1000);
+  const o = $("#roundFlash");
+  const t1 = $("#roundFlashT1");
+  const t2 = $("#roundFlashT2");
+  if(!o||!t1||!t2) return;
+  t1.textContent = `ROUND ${n}`;
+  t2.textContent = `ラウンド${n}`;
+  o.classList.add('show');
+  setTimeout(()=>o.classList.remove('show'), 1000);
 }
 
 /* Init */
 function initGame(){
-totalScore=0; roundIndex=0; document.body.className='';
-$("#page-results").classList.remove('active'); $("#page-round").classList.add('active');
-clearEnSelection();
-isGrading = false;
+  totalScore=0; roundIndex=0; document.body.className='';
+  $("#page-results").classList.remove('active'); $("#page-round").classList.add('active');
+  clearEnSelection();
+  isGrading = false;
 
-const shuffled=shuffle([...MASTER]);
-rounds=[shuffled.slice(0,5),shuffled.slice(5,10),shuffled.slice(10,15)];
-showRoundFlash(1);
-loadRound();
+  const shuffled=shuffle([...MASTER]);
+  rounds=[shuffled.slice(0,5),shuffled.slice(5,10),shuffled.slice(10,15)];
+  showRoundFlash(1);
+  loadRound();
 }
 
 /* Build round */
 function loadRound(){
-connections={};
-clearEnSelection();
-isGrading = false;
+  connections={};
+  clearEnSelection();
+  isGrading = false;
 
-const set=rounds[roundIndex], colEn=$("#col-en"), colJp=$("#col-jp");
-colEn.innerHTML=""; colJp.innerHTML="";
+  const set=rounds[roundIndex], colEn=$("#col-en"), colJp=$("#col-jp");
+  colEn.innerHTML=""; colJp.innerHTML="";
 
-const stripeClasses=shuffle(['sv1','sv2','sv3','sv4','sv5']);
+  const stripeClasses=shuffle(['sv1','sv2','sv3','sv4','sv5']);
 
-shuffle([...set]).forEach((item,idx)=>{
-const c=document.createElement('div');
-c.className=`card en sv ${stripeClasses[idx % stripeClasses.length]}`;
-c.textContent=item.en.toLowerCase();
-c.dataset.en=item.en.toLowerCase();
-c.dataset.id=String(item.id);
+  shuffle([...set]).forEach((item,idx)=>{
+    const c=document.createElement('div');
+    c.className=`card en sv ${stripeClasses[idx % stripeClasses.length]}`;
+    c.textContent=item.en.toLowerCase();
+    c.dataset.en=item.en.toLowerCase();
+    c.dataset.id=String(item.id);
 
-/* Unlock on first real tap */
-armUnlockOn(c);
+    armUnlockOn(c);
 
-/* Tap EN: select + replay */
-c.addEventListener('click', ()=>{
-if(isGrading) return;
-if(c.style.visibility === 'hidden') return;
+    c.addEventListener('click', ()=>{
+      if(isGrading) return;
+      if(c.style.visibility === 'hidden') return;
 
-playVocabById(item.id, item.en);
+      playVocabById(item.id, item.en);
 
-if(selectedEnEl === c){
-return;
-}
-clearEnSelection();
-selectedEn = item.en.toLowerCase();
-selectedEnId = item.id;
-selectedEnEl = c;
-c.classList.add('selected');
-setJpAwake(true);
-});
+      if(selectedEnEl === c) return;
 
-colEn.appendChild(c);
-});
+      clearEnSelection();
+      selectedEn = item.en.toLowerCase();
+      selectedEnId = item.id;
+      selectedEnEl = c;
+      c.classList.add('selected');
+      setJpAwake(true);
+    });
 
-shuffle([...set]).forEach(item=>{
-const c=document.createElement('div');
-c.className='card jp';
-c.dataset.jp=item.jp; c.dataset.hira=item.hira; c.dataset.connected=""; c.dataset.connectedId="";
-c.textContent=`${item.jp}\n(${item.hira})`;
+    colEn.appendChild(c);
+  });
 
-/* Unlock on first real tap */
-armUnlockOn(c);
+  shuffle([...set]).forEach(item=>{
+    const c=document.createElement('div');
+    c.className='card jp';
+    c.dataset.jp=item.jp; c.dataset.hira=item.hira; c.dataset.connected=""; c.dataset.connectedId="";
+    c.textContent=`${item.jp}\n(${item.hira})`;
 
-c.addEventListener('click', ()=>{
-if(isGrading) return;
-if(c.classList.contains('correct') || c.classList.contains('wrong')) return;
+    armUnlockOn(c);
 
-if(c.dataset.connected){
-clearJPCard(c);
-return;
-}
-if(!selectedEn) return;
+    c.addEventListener('click', ()=>{
+      if(isGrading) return;
+      if(c.classList.contains('correct') || c.classList.contains('wrong')) return;
 
-combineIntoJP(c, selectedEn, selectedEnId);
-/* feel-good replay */
-playVocabById(selectedEnId, selectedEn);
-});
+      if(c.dataset.connected){
+        clearJPCard(c);
+        return;
+      }
+      if(!selectedEn) return;
 
-colJp.appendChild(c);
-});
+      combineIntoJP(c, selectedEn, selectedEnId);
+      playVocabById(selectedEnId, selectedEn);
+    });
 
-jpOrder=[...colJp.querySelectorAll('[data-jp]')];
-$("#checkBtn").disabled=true;
+    colJp.appendChild(c);
+  });
 
-/* Unlock on CHECK as well */
-armUnlockOn($("#checkBtn"));
+  jpOrder=[...colJp.querySelectorAll('[data-jp]')];
+  $("#checkBtn").disabled=true;
+
+  armUnlockOn($("#checkBtn"));
 }
 
 /* Check flow */
 $("#checkBtn").addEventListener('click',()=>{
-unlockAudioOnce(); /* in case first action is CHECK */
-if(isGrading) return;
-isGrading = true;
-$("#checkBtn").disabled=true;
-clearEnSelection();
+  unlockAudioOnce();
+  if(isGrading) return;
+  isGrading = true;
+  $("#checkBtn").disabled=true;
+  clearEnSelection();
 
-let i=0;
-const step=setInterval(()=>{
-if(i>=jpOrder.length){
-clearInterval(step);
-setTimeout(()=>{
-roundIndex++;
-if(roundIndex<3){
-showRoundFlash(roundIndex+1);
-loadRound();
-}else{
-showResults();
-}
-},900);
-return;
-}
-const card=jpOrder[i], jp=card.dataset.jp;
-const chosen=card.dataset.connected||"";
-const correct = rounds.flat().find(v=>v.jp===jp)?.en.toLowerCase();
+  let i=0;
+  const step=setInterval(()=>{
+    if(i>=jpOrder.length){
+      clearInterval(step);
+      setTimeout(()=>{
+        roundIndex++;
+        if(roundIndex<3){
+          showRoundFlash(roundIndex+1);
+          loadRound();
+        }else{
+          showResults();
+        }
+      },900);
+      return;
+    }
 
-card.classList.remove('matchedBlue','pairedPop');
+    const card=jpOrder[i], jp=card.dataset.jp;
+    const chosen=card.dataset.connected||"";
+    const correct = rounds.flat().find(v=>v.jp===jp)?.en.toLowerCase();
 
-if(chosen && chosen===correct){
-card.classList.remove('wrong');
-card.classList.add('correct','locked');
-playSfx('s_ding');
-burstConfettiAt(card,44);
-totalScore++;
-}else{
-card.classList.remove('correct');
-card.classList.add('wrong');
-playSfx('s_fart');
-fartPoofAt(card);
-}
-i++;
-},850);
+    card.classList.remove('matchedBlue','pairedPop');
+
+    if(chosen && chosen===correct){
+      card.classList.remove('wrong');
+      card.classList.add('correct','locked');
+      playSfx('s_ding');
+      burstConfettiAt(card,44);
+      totalScore++;
+    }else{
+      card.classList.remove('correct');
+      card.classList.add('wrong');
+      playSfx('s_fart');
+      fartPoofAt(card);
+    }
+    i++;
+  },850);
 });
 
 /* Results */
@@ -897,7 +873,6 @@ function showResults(){
   }
 }
 
-
 /* Buttons */
 $("#playAgain").addEventListener('click', initGame);
 $("#backToMenu").addEventListener('click', () => { window.location.href = "index.html"; });
@@ -909,6 +884,9 @@ $("#helpBtn").addEventListener('click', () => { helpOverlay.classList.add('show'
 $("#helpClose").addEventListener('click', () => { helpOverlay.classList.remove('show'); });
 helpOverlay.addEventListener('click', (e) => { if(e.target === helpOverlay) helpOverlay.classList.remove('show'); });
 
+/* =========================
+   //* CHANGE 7/7: Boot
+   ========================= */
 initGame();
 </script>
 </body>
