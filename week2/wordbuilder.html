@@ -3,7 +3,10 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-<title>Booha Word Builder – January Week 2</title>
+
+<!-- //* CHANGE 1/6: Page title (week name) *// -->
+<title>Booha Word Builder – January Week 1</title>
+
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Noto+Sans+JP:wght@500;700&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -12,9 +15,7 @@
   --gold:#ffd54a; --goldSoft:#ffe59966;
   --tile:#1b2046;
 }
-
 *{box-sizing:border-box;margin:0;padding:0}
-
 body{
   background:var(--bg); color:var(--ink);
   font-family:system-ui,'Noto Sans JP',sans-serif;
@@ -181,8 +182,6 @@ main{
   -webkit-tap-highlight-color: transparent;
   touch-action: manipulation;
 }
-
-/* Cute glow when touched / selected */
 .tile:active{transform:scale(1.04)}
 .tile.touched{
   box-shadow:
@@ -199,8 +198,6 @@ main{
     0 0 44px rgba(167,139,250,.65);
   transform:translateY(-2px) scale(1.05);
 }
-
-/* Tile inside slot */
 .slot .tile{width:100%;height:100%;border-radius:16px}
 .tile.inSlot{background:#fff4c2;color:#000;box-shadow:0 0 18px #facc15,0 0 32px #fde68a66}
 
@@ -219,7 +216,6 @@ main{
 @keyframes nextPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
 #progressCount{margin-top:10px;font-weight:700;font-size:1.1rem}
 
-/* ONE big heart + ONE big fart cloud */
 .bigFx{
   position:fixed;
   left:50%; top:52%;
@@ -239,7 +235,6 @@ main{
   100%{opacity:0;transform:translate(-50%,-64%) scale(1.55)}
 }
 
-/* Results */
 #page-results{
   display:none;
   text-align:center;
@@ -285,7 +280,6 @@ footer{text-align:center;padding:16px;font-family:'Cinzel',serif;font-size:.95re
     <button class="help-close" id="helpClose">×</button>
     <h2>遊び方 / How to Play</h2>
     <h3>Word Builder Game</h3>
-
     <p class="jp">１．レインボーの丸いボタン（▶）をタップして、英単語を聞きます。</p>
     <p class="jp">２．下のアルファベットを「タップ」して、上のマスに入れて単語を作ります。</p>
     <p class="jp">（※タイルを先にタップ → 入れたいマスをタップ でもOK！）</p>
@@ -305,7 +299,9 @@ footer{text-align:center;padding:16px;font-family:'Cinzel',serif;font-size:.95re
 <header>
   <h1>THE BOO-RICULUM</h1>
   <h2>WORD BUILDER</h2>
-  <h3>January Week 2 – １月第2週</h3>
+
+  <!-- //* CHANGE 2/6: Week label shown on page *// -->
+  <h3>January Week 1 – １月第１週</h3>
 </header>
 
 <div class="playWrap" id="playWrap">
@@ -338,13 +334,23 @@ footer{text-align:center;padding:16px;font-family:'Cinzel',serif;font-size:.95re
 /* ====== Helpers ====== */
 const $=s=>document.querySelector(s);
 
-/* ====== Path helper (MUST be before SAGE_INDEX) ====== */
-const WEEK_PREFIX = location.pathname.includes('/week2/') ? '' : 'week2/';
+/* =========================
+   //* CHANGE 3/6: Week folder prefix (ONLY change week number)
+   - Keeps code working whether HTML is:
+     A) inside /week1/  (prefix '')
+     B) at repo root    (prefix 'week1/')
+   ========================= */
+const WEEK_FOLDER = 'week1';
+const WEEK_PREFIX = location.pathname.includes('/' + WEEK_FOLDER + '/') ? '' : (WEEK_FOLDER + '/');
 
-/* ====== Data ====== */
-const MASTER_BASE=["morning","night","breakfast","lunch","dinner","brush","wash","go","come","sleep","study","homework","clean","start","finish"];
+/* =========================
+   //* CHANGE 4/6: Weekly WORD list (15 items)
+   - Must match Sage filenames: v01_<word>.mp3 ... v15_<word>.mp3
+   - Use lowercase a-z words (no spaces)
+   ========================= */
+const MASTER_BASE=["goal","plan","future","dream","challenge","try","change","habit","exercise","study","learn","practice","success","focus","motivation"];
 
-// Sage vocab files are numbered: v01_goal.mp3, v02_plan.mp3, ...
+/* Optional lookup (kept for reference / debugging) */
 const SAGE_INDEX = MASTER_BASE.reduce((acc, word, i) => {
   const num = String(i + 1).padStart(2, '0');
   acc[word] = `${WEEK_PREFIX}audio/vocab/v${num}_${word}.mp3`;
@@ -373,8 +379,13 @@ helpBtn.addEventListener("click",openHelp);
 helpClose.addEventListener("click",closeHelp);
 helpModal.addEventListener("click",e=>{ if(e.target===helpModal) closeHelp(); });
 
-/* ====== Audio ====== */
-/* ✅ SFX: Works whether this HTML is at repo root OR inside /week1/ */
+/* =========================
+   //* CHANGE 5/6: Audio paths (usually never change)
+   - SFX:   week#/assets/audio/
+   - Sage:  week#/audio/vocab/
+   ========================= */
+
+/* SFX: Works whether this HTML is at repo root OR inside /week1/ */
 const sfx = {
   ding:  new Audio(WEEK_PREFIX + 'assets/audio/ding.mp3'),
   fart:  new Audio(WEEK_PREFIX + 'assets/audio/fart.mp3'),
@@ -402,21 +413,13 @@ function playSfx(audio){
   }catch{}
 }
 
-/* ====== Sage voice (LOCAL) ======
-   Always point to: .../week1/audio/vocab/
-   even if this HTML is inside week1/games/ or deeper.
+/* Sage voice (LOCAL)
+   - Uses WEEK_PREFIX so it works from root OR inside /week1/
 */
-const WEEK2_BASE =
-  location.pathname.includes('/week1/')
-    ? location.pathname.split('/week1/')[0] + '/week1/'
-    : '/week1/';
-
-const SAGE_BASE_URL = location.origin + WEEK2_BASE + 'audio/vocab/';
-
 const sage = new Map();
 MASTER_BASE.forEach((word, i) => {
   const num = String(i + 1).padStart(2, '0');
-  const src = `${SAGE_BASE_URL}v${num}_${word}.mp3`;
+  const src = `${WEEK_PREFIX}audio/vocab/v${num}_${word}.mp3`;
   const a = new Audio(src);
   a.preload = 'auto';
   a.playsInline = true;
@@ -424,7 +427,6 @@ MASTER_BASE.forEach((word, i) => {
   try { a.load(); } catch {}
   sage.set(word, a);
 });
-
 
 function stopAllSage(){
   sage.forEach(a=>{ try{ a.pause(); a.currentTime = 0; }catch{} });
@@ -436,25 +438,23 @@ async function unlockAudioOnce(){
   if(audioUnlocked) return;
   audioUnlocked = true;
 
-  // try a tiny play/pause on a real element to satisfy iOS
-  const probe = sfx.ding; // short local file
+  const probe = sfx.ding;
   try{
     probe.muted = true;
     await probe.play();
     probe.pause();
     probe.currentTime = 0;
     probe.muted = false;
-  }catch{
-    // If this fails, Sage may still work, but keep going
-  }
+  }catch{}
 }
 
 function speak(){
+  // ensure iOS audio unlock happens on this tap
+  unlockAudioOnce();
+
   const word = WORDS[index];
   const a = sage.get(word);
   if(!a){ console.warn('[Sage] missing audio for:', word); return; }
-
-  console.log('[Sage src]', a.src); // 👈 ADD THIS LINE
 
   stopAllSage();
   play.classList.add('fizzy');
@@ -469,7 +469,6 @@ function speak(){
   }
 }
 
-
 play.addEventListener('click', speak);
 
 /* ====== Visual FX ====== */
@@ -481,14 +480,13 @@ function flashRedScreen(){
 }
 function showBig(el){
   el.classList.remove('show');
-  // force reflow
   void el.offsetWidth;
   el.classList.add('show');
   setTimeout(()=>el.classList.remove('show'), 950);
 }
 
 /* ====== Tap Game State ====== */
-let selectedTile = null; // tile DOM
+let selectedTile = null;
 
 function nextEmptySlot(){
   return [...drop.children].find(s=>!s.firstChild) || null;
@@ -502,12 +500,10 @@ function currentAnswer(){
 function enableCheck(){
   check.disabled = !allFilled();
 }
-
 function clearSelected(){
   if(selectedTile){ selectedTile.classList.remove('selected'); }
   selectedTile = null;
 }
-
 function markHint(){
   [...drop.children].forEach(s=>s.classList.remove('hint'));
   const s = nextEmptySlot();
@@ -519,19 +515,16 @@ function makeTile(ch){
   t.className="tile";
   t.textContent=ch;
 
-  // cute glow on touch
   t.addEventListener('pointerdown',()=>{
     t.classList.add('touched');
     setTimeout(()=>t.classList.remove('touched'), 180);
   }, {passive:true});
 
-  // tap logic
   t.addEventListener('click', (e)=>{
     e.stopPropagation();
 
     const inSlot = t.parentElement?.classList.contains('slot');
     if(inSlot){
-      // tap tile in slot = send back to bank
       sendToBank(t);
       clearSelected();
       markHint();
@@ -539,9 +532,7 @@ function makeTile(ch){
       return;
     }
 
-    // tap tile in bank
     if(selectedTile === t){
-      // second tap = auto-place into next empty slot
       const s = nextEmptySlot();
       if(s){ placeIntoSlot(t, s); }
       clearSelected();
@@ -550,12 +541,9 @@ function makeTile(ch){
       return;
     }
 
-    // select tile
     clearSelected();
     selectedTile = t;
     t.classList.add('selected');
-
-    // if a slot is immediately available, we keep it selected so user can tap a specific slot
   });
 
   return t;
@@ -567,11 +555,9 @@ function buildSlots(w){
     const s=document.createElement('div');
     s.className="slot";
 
-    // tap slot: if tile selected, place here
     s.addEventListener('click', ()=>{
       if(!selectedTile) return;
       if(s.firstChild) return;
-      // if selected tile is still in bank
       if(selectedTile.parentElement !== bank) return;
       placeIntoSlot(selectedTile, s);
       clearSelected();
@@ -594,7 +580,6 @@ function buildBank(w){
 }
 
 function placeIntoSlot(tile,slot){
-  // safety
   if(slot.firstChild) return;
 
   tile.classList.remove('selected');
@@ -606,7 +591,6 @@ function placeIntoSlot(tile,slot){
 function sendToBank(tile){
   bank.appendChild(tile);
   tile.classList.remove('inSlot','selected');
-  // clean up slot classes
   [...drop.children].forEach(s=>{
     if(!s.firstChild) s.classList.remove('filled');
     else s.classList.add('filled');
@@ -616,22 +600,20 @@ function sendToBank(tile){
 /* ====== Round / Check ====== */
 check.addEventListener("click",()=>{
   const ans=currentAnswer(), correct=WORDS[index];
- if(ans===correct){
-  if(firstTry) totalScore++;
+  if(ans===correct){
+    if(firstTry) totalScore++;
 
-  showBig(bigHeart);
-  playSfx(sfx.ding);   // ✅ DING after correct answer
+    showBig(bigHeart);
+    playSfx(sfx.ding);
 
-  nextWrap.style.display="flex";
-  check.style.display="none";
-} else {
-
+    nextWrap.style.display="flex";
+    check.style.display="none";
+  } else {
     firstTry=false;
     flashRedScreen();
     showBig(bigFart);
     playSfx(sfx.fart);
 
-    // return all tiles to bank
     const tiles=[...drop.querySelectorAll('.tile')];
     tiles.forEach(t=>sendToBank(t));
 
