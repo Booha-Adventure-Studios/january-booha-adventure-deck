@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
 
 <!-- //* CHANGE 1/7: Page <title> (week label) *// -->
-<title>Booha Tap Match – January Week 1</title>
+<title>Booha Tap Match – January Week 2</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Noto+Sans+JP:wght@500;700&display=swap" rel="stylesheet">
 
@@ -393,8 +393,8 @@ text-align:center;
 <h2>TAP MATCH</h2>
 <div class="subtitle-stack">
   <!-- //* CHANGE 2/7: Week label text shown on page *// -->
-  <div class="en">January Week 1 - Vocabulary</div>
-  <div class="jp">１月第１週 - 語彙</div>
+  <div class="en">January Week 2 - Vocabulary</div>
+  <div class="jp">１月第2週 - 語彙</div>
 </div>
 <hr class="sep">
 </header>
@@ -482,7 +482,7 @@ text-align:center;
      A) inside /week1/  (prefix '')
      B) at repo root    (prefix 'week1/')
    ========================= */
-const WEEK_FOLDER = 'week1';
+const WEEK_FOLDER = 'week2';
 const WEEK_PREFIX = location.pathname.includes('/' + WEEK_FOLDER + '/') ? '' : (WEEK_FOLDER + '/');
 
 /* =========================
@@ -491,22 +491,23 @@ const WEEK_PREFIX = location.pathname.includes('/' + WEEK_FOLDER + '/') ? '' : (
    - en MUST match filename word (lowercase recommended)
    ========================= */
 const MASTER = [
-{id:1, en:"goal",jp:"目標",hira:"もくひょう"},
-{id:2, en:"plan",jp:"計画",hira:"けいかく"},
-{id:3, en:"future",jp:"未来",hira:"みらい"},
-{id:4, en:"dream",jp:"夢",hira:"ゆめ"},
-{id:5, en:"challenge",jp:"挑戦",hira:"ちょうせん"},
-{id:6, en:"try",jp:"挑戦する",hira:"ちょうせん する"},
-{id:7, en:"change",jp:"変える",hira:"かえる"},
-{id:8, en:"habit",jp:"習慣",hira:"しゅうかん"},
-{id:9, en:"exercise",jp:"運動",hira:"うんどう"},
-{id:10,en:"study",jp:"勉強",hira:"べんきょう"},
-{id:11,en:"learn",jp:"学ぶ",hira:"まなぶ"},
-{id:12,en:"practice",jp:"練習",hira:"れんしゅう"},
-{id:13,en:"success",jp:"成功",hira:"せいこう"},
-{id:14,en:"focus",jp:"集中",hira:"しゅうちゅう"},
-{id:15,en:"motivation",jp:"やる気",hira:"やるき"}
+  {id:1,  en:"morning",   jp:"朝",       hira:"あさ"},
+  {id:2,  en:"night",     jp:"夜",       hira:"よる"},
+  {id:3,  en:"breakfast", jp:"朝ごはん", hira:"あさごはん"},
+  {id:4,  en:"lunch",     jp:"昼ごはん", hira:"ひるごはん"},
+  {id:5,  en:"dinner",    jp:"晩ごはん", hira:"ばんごはん"},
+  {id:6,  en:"brush",     jp:"みがく",   hira:"みがく"},
+  {id:7,  en:"wash",      jp:"洗う",     hira:"あらう"},
+  {id:8,  en:"go",        jp:"行く",     hira:"いく"},
+  {id:9,  en:"come",      jp:"来る",     hira:"くる"},
+  {id:10, en:"sleep",     jp:"寝る",     hira:"ねる"},
+  {id:11, en:"study",     jp:"勉強する", hira:"べんきょうする"},
+  {id:12, en:"homework",  jp:"宿題",     hira:"しゅくだい"},
+  {id:13, en:"clean",     jp:"掃除する", hira:"そうじする"},
+  {id:14, en:"start",     jp:"始める",   hira:"はじめる"},
+  {id:15, en:"finish",    jp:"終わる",   hira:"おわる"}
 ];
+
 
 /* State */
 let rounds=[], roundIndex=0, totalScore=0, connections={}, jpOrder=[];
