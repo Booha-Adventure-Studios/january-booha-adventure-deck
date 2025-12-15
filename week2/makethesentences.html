@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
 
 <!-- //* CHANGE 1/7: Page <title> (week label) *// -->
-<title>Booha Make the Sentences – January Week 1</title>
+<title>Booha Make the Sentences – January Week 2</title>
 
 <meta name="theme-color" content="#0b1530" />
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Noto+Sans+JP:wght@500;700&display=swap" rel="stylesheet" />
@@ -354,8 +354,8 @@ footer{text-align:center;color:#c9d4ec;font-family:'Cinzel',serif;font-weight:70
   <div class="h2">MAKE THE SENTENCES</div>
 
   <!-- //* CHANGE 2/7: Week label text shown on page *// -->
-  <div class="h3">January Week 1 – Sentences</div>
-  <div class="h4">１月第１週 – 文の練習</div>
+  <div class="h3">January Week 2 – Sentences</div>
+  <div class="h4">１月第2週 – 文の練習</div>
 </header>
 
 <div class="wrap" id="page-round">
@@ -478,7 +478,7 @@ footer{text-align:center;color:#c9d4ec;font-family:'Cinzel',serif;font-weight:70
 /* =========================
    //* CHANGE 3/7: Week folder prefix (ONLY change week number)
    ========================= */
-const WEEK_FOLDER = 'week1';
+const WEEK_FOLDER = 'week2';
 const WEEK_PREFIX = location.pathname.includes('/' + WEEK_FOLDER + '/') ? '' : (WEEK_FOLDER + '/');
 
 /* =========================
@@ -502,23 +502,24 @@ initAudioPaths();
 /* =========================
    //* CHANGE 4/7: Sentence data (id 1..15 matches s01_.. s15_..)
    ========================= */
-const BASE_DATA=[
-  {id:1,  en:"I will study every day.",                 jp:"毎日勉強します。",               hira:"まいにち べんきょう します"},
-  {id:2,  en:"I’m going to try something new.",         jp:"新しいことをやってみます。",     hira:"あたらしい こと を やってみます"},
-  {id:3,  en:"I will do my best this year.",            jp:"今年はがんばります。",           hira:"ことし は がんばります"},
-  {id:4,  en:"I will make a new friend.",               jp:"新しい友だちを作ります。",       hira:"あたらしい ともだち を つくり ます"},
-  {id:5,  en:"I will not be late anymore.",             jp:"もう遅刻しません。",             hira:"もう ちこく しません"},
-  {id:6,  en:"I will help my classmates.",              jp:"クラスメートを助けます。",       hira:"くらすめーと を たすけ ます"},
-  {id:7,  en:"I will clean my desk today.",             jp:"今日は机を片づけます。",         hira:"きょう は つくえ を かたづけ ます"},
-  {id:8,  en:"I will read more books.",                 jp:"もっと本を読みます。",           hira:"もっと ほん を よみ ます"},
-  {id:9,  en:"I will start a good habit.",              jp:"良い習慣を始めます。",           hira:"よい しゅうかん を はじめ ます"},
-  {id:10, en:"I will speak more English.",              jp:"もっと英語を話します。",         hira:"もっと えいご を はなし ます"},
-  {id:11, en:"I will write in my diary every week.",    jp:"毎週日記を書きます。",           hira:"まいしゅう にっき を かき ます"},
-  {id:12, en:"I will wake up earlier.",                 jp:"もっと早く起きます。",           hira:"もっと はやく おき ます"},
-  {id:13, en:"I will listen carefully in class.",       jp:"授業でしっかり聞きます。",       hira:"じゅぎょう で しっかり きき ます"},
-  {id:14, en:"I will smile more.",                      jp:"もっと笑います。",               hira:"もっと わらい ます"},
-  {id:15, en:"I will enjoy learning.",                  jp:"学ぶことを楽しみます。",         hira:"まなぶ こと を たのしみ ます"}
+const BASE_DATA = [
+  {id:1,  en:"I wake up at seven.",                    jp:"７時に起きます。",                 hira:"７じ に おきます"},
+  {id:2,  en:"I eat breakfast every day.",            jp:"毎日朝ごはんを食べます。",         hira:"まいにち あさごはん を たべます"},
+  {id:3,  en:"I go to school at eight.",              jp:"８時に学校へ行きます。",           hira:"８じ に がっこう へ いきます"},
+  {id:4,  en:"I take a shower in the morning.",       jp:"朝シャワーをあびます。",           hira:"あさ しゃわー を あびます"},
+  {id:5,  en:"I brush my teeth after meals.",         jp:"食事のあとに歯をみがきます。",     hira:"しょくじ の あと に は を みがきます"},
+  {id:6,  en:"I study English after dinner.",         jp:"夕ごはんのあとに英語を勉強します。", hira:"ゆうごはん の あと に えいご を べんきょう します"},
+  {id:7,  en:"I do my homework before bed.",          jp:"寝る前に宿題をします。",           hira:"ねる まえ に しゅくだい を します"},
+  {id:8,  en:"I help my family in the evening.",      jp:"夜に家族を手伝います。",           hira:"よる に かぞく を てつだいます"},
+  {id:9,  en:"I clean my room every Sunday.",         jp:"毎週日曜日に部屋をそうじします。", hira:"まいしゅう にちようび に へや を そうじ します"},
+  {id:10, en:"I sleep at ten o’clock.",               jp:"１０時に寝ます。",                 hira:"１０じ に ねます"},
+  {id:11, en:"I sometimes read at night.",            jp:"夜にときどき本を読みます。",       hira:"よる に ときどき ほん を よみます"},
+  {id:12, en:"I never watch TV before school.",       jp:"学校の前にテレビを見ません。",     hira:"がっこう の まえ に てれび を みません"},
+  {id:13, en:"I usually eat lunch with friends.",     jp:"たいてい友だちと昼ごはんを食べます。", hira:"たいてい ともだち と ひるごはん を たべます"},
+  {id:14, en:"I walk to school every day.",           jp:"毎日学校まで歩きます。",           hira:"まいにち がっこう まで あるきます"},
+  {id:15, en:"I relax after class.",                  jp:"授業のあとにリラックスします。",   hira:"じゅぎょう の あと に りらっくす します"}
 ];
+
 
 /* Shuffle question order each refresh */
 const DATA = shuffle([...BASE_DATA]);
