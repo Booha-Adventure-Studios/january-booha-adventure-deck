@@ -348,23 +348,8 @@ const WEEK_PREFIX = location.pathname.includes('/' + WEEK_FOLDER + '/') ? '' : (
    - Must match Sage filenames: v01_<word>.mp3 ... v15_<word>.mp3
    - Use lowercase a-z words (no spaces)
    ========================= */
-const MASTER_BASE=[
-  "morning",
-  "night",
-  "breakfast",
-  "lunch",
-  "dinner",
-  "brush",
-  "wash",
-  "go",
-  "come",
-  "sleep",
-  "study",
-  "homework",
-  "clean",
-  "start",
-  "finish"
-];
+const MASTER_BASE=["morning","night","breakfast","lunch","dinner","brush","wash","go","come","sleep","study","homework","clean","start","finish"];
+
 
 /* Optional lookup (kept for reference / debugging) */
 const SAGE_INDEX = MASTER_BASE.reduce((acc, word, i) => {
