@@ -107,13 +107,14 @@ a.deck.is-hidden{ visibility:hidden; }
    December 19, 2026 – Fix for clone animation losing
    :nth-child() background during motion
    ====================================================== */
+/* Base colors */
+a.deck:nth-child(1){background:var(--pink);}
+a.deck:nth-child(2){background:var(--blue);}
+a.deck:nth-child(3){background:var(--yellow);}
+a.deck:nth-child(4){background:var(--purple);}
+a.deck:nth-child(5){background:var(--mint);}
+a.deck:nth-child(6){background:var(--orange);}
 
-<a class="deck" data-bg="pink"   href="tapmatch.html">...</a>
-<a class="deck" data-bg="blue"   href="saytheword.html">...</a>
-<a class="deck" data-bg="yellow" href="wordbuilder.html">...</a>
-<a class="deck" data-bg="purple" href="eigoperapera.html">...</a>
-<a class="deck" data-bg="mint"   href="makethesentences.html">...</a>
-<a class="deck" data-bg="orange" href="eigoadventure.html">...</a>
 
 
 
@@ -441,6 +442,8 @@ if (deckContainer) {
     const r = deck.getBoundingClientRect();
 
     const clone = deck.cloneNode(true);
+clone.style.background = getComputedStyle(deck).background;
+
     clone.classList.add('active');
     clone.style.setProperty('--spinDur','1.2s');
 
