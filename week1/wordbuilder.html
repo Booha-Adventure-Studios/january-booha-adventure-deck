@@ -715,30 +715,6 @@ function initGame(){
 }
 initGame();
 
-/* Pre-warm audio (best-effort) */
-setTimeout(()=>{
-  Object.values(sfx).forEach(a=>{
-    try{
-      a.muted = true;
-      a.play().then(()=>{
-        a.pause();
-        a.currentTime = 0;
-        a.muted = false;
-      }).catch(()=>{});
-    }catch{}
-  });
-
-  sage.forEach(a=>{
-    try{
-      a.muted = true;
-      a.play().then(()=>{
-        a.pause();
-        a.currentTime = 0;
-        a.muted = false;
-      }).catch(()=>{});
-    }catch{}
-  });
-}, 300);
 
 </script>
 </body>
