@@ -432,7 +432,12 @@ if (deckContainer) {
     // ---- SMOOTH CLONE ANIMATION (no grid jitter) ----
     const r = deck.getBoundingClientRect();
 
-    const clone = deck.cloneNode(true);
+  // FIX (Dec 19, 2026): preserve background color on cloned tiles
+// nth-child() styles no longer apply once the tile is moved to <body>
+const clone = deck.cloneNode(true);
+clone.style.background = getComputedStyle(deck).background;
+
+    
     clone.classList.add('active');
     clone.style.setProperty('--spinDur','1.2s');
 
