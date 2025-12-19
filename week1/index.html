@@ -102,13 +102,19 @@ a.deck.active{
 /* Hide original tile when animating a clone */
 a.deck.is-hidden{ visibility:hidden; }
 
-/* Base colors */
-a.deck:nth-child(1){background:var(--pink);}
-a.deck:nth-child(2){background:var(--blue);}
-a.deck:nth-child(3){background:var(--yellow);}
-a.deck:nth-child(4){background:var(--purple);}
-a.deck:nth-child(5){background:var(--mint);}
-a.deck:nth-child(6){background:var(--orange);}
+/* ======================================================
+   🎨 DECK BACKGROUND COLORS (DATA-BASED)
+   December 19, 2026 – Fix for clone animation losing
+   :nth-child() background during motion
+   ====================================================== */
+
+a.deck[data-bg="pink"]   { background: var(--pink); }
+a.deck[data-bg="blue"]   { background: var(--blue); }
+a.deck[data-bg="yellow"] { background: var(--yellow); }
+a.deck[data-bg="purple"] { background: var(--purple); }
+a.deck[data-bg="mint"]   { background: var(--mint); }
+a.deck[data-bg="orange"] { background: var(--orange); }
+
 
 /* Spiral animation */
 a.deck::after{
