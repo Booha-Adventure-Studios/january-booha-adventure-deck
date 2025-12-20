@@ -5,7 +5,21 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
 <title>Booha Eigo Adventure – January Week 1</title>
 <meta name="theme-color" content="#0b1530" />
+
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Noto+Sans+JP:wght@500;700;900&display=swap" rel="stylesheet" />
+
+<!--========================================================
+  /*-------- PRELOAD (SFX + RESULTS) --------*/
+  Notes:
+  - Helps reduce “first play delay” on many devices.
+  - iOS still requires a user gesture to actually play audio → we handle that in JS (unlockAudioOnce()).
+=========================================================-->
+<link rel="preload" as="audio" href="assets/audio/ding.mp3" />
+<link rel="preload" as="audio" href="assets/audio/fart.mp3" />
+<link rel="preload" as="audio" href="assets/audio/result_0-5.mp3" />
+<link rel="preload" as="audio" href="assets/audio/result_6-10.mp3" />
+<link rel="preload" as="audio" href="assets/audio/result_11-14.mp3" />
+<link rel="preload" as="audio" href="assets/audio/result_15.mp3" />
 
 <style>
 :root{
@@ -268,7 +282,7 @@ footer{text-align:center;color:#fff;padding:16px 0 22px;font-family:'Cinzel',ser
   border-radius:999px;padding:6px 14px;
   border:1px solid #ffffff66;background:rgba(15,23,42,.95);
   color:#fff;font-size:.78rem;font-weight:700;letter-spacing:.04em;
-  cursor:pointer;display:flex;align-items:center;gap:4px;
+  cursor:pointer;display:flex;align-items:baseline;gap:4px;
   box-shadow:0 0 12px rgba(0,0,0,.6);backdrop-filter:blur(4px);
 }
 .top-nav-btn .jp{font-size:.72em;}
@@ -385,7 +399,6 @@ footer{text-align:center;color:#fff;padding:16px 0 22px;font-family:'Cinzel',ser
   color:#facc15; /* gold */
   text-shadow:0 0 10px rgba(250,204,21,.6);
 }
-
 .ans-jp{
   font-weight:900;
   font-size:clamp(16px,4.3vw,22px);
@@ -394,7 +407,6 @@ footer{text-align:center;color:#fff;padding:16px 0 22px;font-family:'Cinzel',ser
   color:#22c55e; /* green */
   text-shadow:0 0 10px rgba(34,197,94,.5);
 }
-
 .ans-hi{
   font-weight:900;
   font-size:clamp(14px,4vw,20px);
@@ -403,12 +415,12 @@ footer{text-align:center;color:#fff;padding:16px 0 22px;font-family:'Cinzel',ser
   color:#ef4444; /* red */
   text-shadow:0 0 10px rgba(239,68,68,.45);
 }
-
+.ans-tip{margin-top:10px;color:#e5e7f5;font-weight:900;}
 .ans-tip small{display:block;color:#94a3b8;margin-top:4px;font-weight:800;}
 </style>
 </head>
 
-  <body>
+<body>
 <!-- Quit + Help -->
 <button type="button" class="top-nav-btn" onclick="window.location.href='index.html'">
   <span class="jp">やめる</span>
@@ -516,11 +528,12 @@ footer{text-align:center;color:#fff;padding:16px 0 22px;font-family:'Cinzel',ser
       <div id="ansHi" class="ans-hi"></div>
     </div>
 
- <div class="ans-tip">
-  なんども れんしゅう！
-  <small>Practice again and again!</small>
+    <div class="ans-tip">
+      なんども れんしゅう！
+      <small>Practice again and again!</small>
+    </div>
+  </div>
 </div>
-
 
 <!-- Results overlay -->
 <div id="resultsOverlay" class="resultsOverlay" aria-hidden="true">
@@ -536,61 +549,151 @@ footer{text-align:center;color:#fff;padding:16px 0 22px;font-family:'Cinzel',ser
 </div>
 
 <!-- Results audio (local) -->
-<audio id="r05"  src="assets/audio/result_0-5.mp3"  preload="auto"></audio>
-<audio id="r610" src="assets/audio/result_6-10.mp3" preload="auto"></audio>
-<audio id="r1114"src="assets/audio/result_11-14.mp3" preload="auto"></audio>
-<audio id="r15"  src="assets/audio/result_15.mp3"  preload="auto"></audio>
+<audio id="r05"   src="assets/audio/result_0-5.mp3"  preload="auto"></audio>
+<audio id="r610"  src="assets/audio/result_6-10.mp3" preload="auto"></audio>
+<audio id="r1114" src="assets/audio/result_11-14.mp3" preload="auto"></audio>
+<audio id="r15"   src="assets/audio/result_15.mp3"   preload="auto"></audio>
 
 <script>
-/* =========================================
-   Booha Eigo Adventure – stable rebuild
-   + Correct Answer Popup (EN + JP + HIRAGANA)
-   + Word/chunk color linking across lines
-   + Friendlier iPad/iPhone overlay
-   ========================================= */
+/* =========================================================
+   Booha Eigo Adventure – January Week 1 (MATCHES Week 2 FIXES)
+   ---------------------------------------------------------
+   /*-------- KEY FIXES APPLIED --------*/
+   1) Audio reliability:
+      - Reusable SFX audio objects (no new Audio() spam)
+      - Single Sage player (reused)
+      - iOS/Safari audio unlock on first user gesture
+   2) Shuffle correctness:
+      - Correct answer string is preserved after shuffling
+   3) Speech double-fire guard:
+      - checkingSpeech lock prevents duplicate ding/fart
+   4) HTML structure cleanup:
+      - ansModal tags fixed (your paste had a broken closing)
+   ========================================================= */
 
+/*------------------------------------------------------------
+  [A] PATHS
+  Notes:
+  - SFX + results audio live in: assets/audio/
+  - Sage question audio lives in: audio/questions/
+------------------------------------------------------------*/
 const SFX = { ding: "assets/audio/ding.mp3", fart: "assets/audio/fart.mp3" };
 
 const RES = {
-  r05:  document.getElementById('r05'),
-  r610: document.getElementById('r610'),
-  r1114:document.getElementById('r1114'),
-  r15:  document.getElementById('r15')
+  r05:   document.getElementById('r05'),
+  r610:  document.getElementById('r610'),
+  r1114: document.getElementById('r1114'),
+  r15:   document.getElementById('r15')
 };
 
+/*------------------------------------------------------------
+  [B] DEVICE DETECTION
+  Notes:
+  - iOS Safari blocks SpeechRecognition → tap-to-answer mode.
+------------------------------------------------------------*/
 const isIOS = /iP(hone|od|ad)/.test(navigator.userAgent) ||
   (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
 
-const $ = function(s){ return document.querySelector(s); };
-const sageBox = $('#sageBox');
-const sageText = $('#sageText');
-const studentBox = $('#studentBox');
-const eraseBtn = $('#eraseBtn');
-const statusLine = $('#statusLine');
-const optionsBox = $('#options');
-const hintBox = $('#hintBox');
-const nextBtn = $('#nextBtn');
+const $ = (s)=>document.querySelector(s);
+const sageBox     = $('#sageBox');
+const sageText    = $('#sageText');
+const studentBox  = $('#studentBox');
+const eraseBtn    = $('#eraseBtn');
+const statusLine  = $('#statusLine');
+const optionsBox  = $('#options');
+const hintBox     = $('#hintBox');
+const nextBtn     = $('#nextBtn');
 const pointsValue = $('#pointsValue');
-const counter = $('#counter');
+const counter     = $('#counter');
 
-const helpBtn = $('#helpBtn');
-const helpModal = $('#helpModal');
+const helpBtn     = $('#helpBtn');
+const helpModal   = $('#helpModal');
 
-const resultsOverlay = document.getElementById('resultsOverlay');
-const resultsScore = document.getElementById('resultsScore');
-const resultsMsg = document.getElementById('resultsMsg');
-const restartBtn = document.getElementById('restartBtn');
+const resultsOverlay = $('#resultsOverlay');
+const resultsScore   = $('#resultsScore');
+const resultsMsg     = $('#resultsMsg');
+const restartBtn     = $('#restartBtn');
 
-const iosOverlay = document.getElementById('iosOverlay');
-const iosOverlayOk = document.getElementById('iosOverlayOk');
+const iosOverlay   = $('#iosOverlay');
+const iosOverlayOk = $('#iosOverlayOk');
 
 /* Answer modal elements */
-const ansModal = document.getElementById('ansModal');
-const ansEn = document.getElementById('ansEn');
-const ansJp = document.getElementById('ansJp');
-const ansHi = document.getElementById('ansHi');
+const ansModal = $('#ansModal');
+const ansEn    = $('#ansEn');
+const ansJp    = $('#ansJp');
+const ansHi    = $('#ansHi');
 
-function setHint(jp, en){
+/*------------------------------------------------------------
+  [C] AUDIO (IMPORTANT FIX)
+  Notes:
+  - We reuse audio objects and unlock on first tap.
+------------------------------------------------------------*/
+const sfxDing = new Audio(SFX.ding);
+const sfxFart = new Audio(SFX.fart);
+sfxDing.preload = "auto";
+sfxFart.preload = "auto";
+
+/* Sage uses ONE player (reused) */
+const sagePlayer = new Audio();
+sagePlayer.preload = "auto";
+
+/* iOS: must run after user gesture */
+let audioUnlocked = false;
+function unlockAudioOnce(){
+  if(audioUnlocked) return;
+  audioUnlocked = true;
+
+  /*-------- iOS/Safari unlock trick --------*/
+  const list = [sfxDing, sfxFart, RES.r05, RES.r610, RES.r1114, RES.r15];
+  list.forEach((a)=>{
+    if(!a) return;
+    try{
+      a.muted = true;
+      const p = a.play();
+      if(p && p.then){
+        p.then(()=>{
+          try{ a.pause(); }catch(e){}
+          try{ a.currentTime = 0; }catch(e){}
+          a.muted = false;
+        }).catch(()=>{ a.muted = false; });
+      }else{
+        try{ a.pause(); }catch(e){}
+        try{ a.currentTime = 0; }catch(e){}
+        a.muted = false;
+      }
+    }catch(e){}
+  });
+}
+
+function playSfxObj(a){
+  try{
+    a.currentTime = 0;
+    const p = a.play();
+    if(p && p.catch) p.catch(()=>{});
+  }catch(e){}
+}
+
+function playAudioFile(path){
+  /*-------- Uses single reusable sagePlayer --------*/
+  return new Promise((resolve)=>{
+    try{
+      sagePlayer.onended = resolve;
+      sagePlayer.onerror = resolve;
+      sagePlayer.src = path;
+      sagePlayer.currentTime = 0;
+      const p = sagePlayer.play();
+      if(p && p.catch) p.catch(()=>resolve());
+      setTimeout(resolve, 9000);
+    }catch(e){
+      resolve();
+    }
+  });
+}
+
+/*------------------------------------------------------------
+  [D] UI HELPERS
+------------------------------------------------------------*/
+function setHint(jp,en){
   hintBox.innerHTML = jp + '<small>' + en + '</small>';
 }
 
@@ -601,32 +704,35 @@ function setMicStatus(on){
     return;
   }
   statusLine.style.display='block';
-  if(on){
-    statusLine.innerHTML = '聞いてるよ…<small>Listening...</small>';
-  } else {
-    statusLine.innerHTML = '白いボックスをタップしてスタート<small>Tap white box to start</small>';
-  }
+  statusLine.innerHTML = on
+    ? '聞いてるよ…<small>Listening...</small>'
+    : '白いボックスをタップしてスタート<small>Tap white box to start</small>';
 }
 
-/* ===== Questions ===== */
-let questions=[
-  {index1:1, q:"What is your goal this year?", a:0, answers:[
+/*------------------------------------------------------------
+  [E] QUESTIONS (base)
+  Notes:
+  - We keep q.answers in original order here.
+  - We produce a shuffled copy with q.correct preserved.
+------------------------------------------------------------*/
+const BASE_QUESTIONS = [
+  {index1:1,  q:"What is your goal this year?", a:0, answers:[
     "I want to improve my English this year.","I want to turn into a banana.","My goal is to sleep for one year.","I want to live on Mars with aliens."]},
-  {index1:2, q:"Why is it important to you?", a:0, answers:[
+  {index1:2,  q:"Why is it important to you?", a:0, answers:[
     "It is important because it helps my future.","Because my shoes told me to.","Because pizza is watching me.","I don’t know, my cat decided."]},
-  {index1:3, q:"How will you reach your goal?", a:0, answers:[
+  {index1:3,  q:"How will you reach your goal?", a:0, answers:[
     "I will study and practice every day.","I will close my eyes and hope.","I will shout my goal at the moon.","I will wait for magic."]},
-  {index1:4, q:"Who helps you stay motivated?", a:0, answers:[
+  {index1:4,  q:"Who helps you stay motivated?", a:0, answers:[
     "My family and teachers help me.","A talking sandwich helps me.","My pillow gives me advice.","Nobody, I talk to the wall."]},
-  {index1:5, q:"What habit do you want to change?", a:0, answers:[
+  {index1:5,  q:"What habit do you want to change?", a:0, answers:[
     "I want to stop procrastinating.","I want to stop breathing air.","I want to stop being human.","I want to stop existing on Mondays."]},
-  {index1:6, q:"Do you like making resolutions?", a:0, answers:[
+  {index1:6,  q:"Do you like making resolutions?", a:0, answers:[
     "Yes, I like making resolutions.","No, resolutions are scared of me.","I only make food, not resolutions.","I make resolutions for my socks."]},
-  {index1:7, q:"What do you want to try this year?", a:0, answers:[
+  {index1:7,  q:"What do you want to try this year?", a:0, answers:[
     "I want to try something new this year.","I want to try flying without wings.","I want to try eating rocks.","I want to try sleeping in class forever."]},
-  {index1:8, q:"What’s something new you learned recently?", a:0, answers:[
+  {index1:8,  q:"What’s something new you learned recently?", a:0, answers:[
     "I learned a new English word.","I learned how to talk to chairs.","I learned that water is dry.","I learned nothing since birth."]},
-  {index1:9, q:"Is it easy to keep goals?", a:0, answers:[
+  {index1:9,  q:"Is it easy to keep goals?", a:0, answers:[
     "No, it is not always easy.","Yes, goals walk by themselves.","Goals are easy because they disappear.","Goals are easy when you never try."]},
   {index1:10, q:"What happens when you don’t try?", a:0, answers:[
     "You cannot improve if you don’t try.","You turn into a potato.","The world stops spinning.","Nothing, everything does itself."]},
@@ -642,131 +748,64 @@ let questions=[
     "English can help me in my future.","English helps my shoes run faster.","English helps me talk to fish.","English has no use at all."]}
 ];
 
-function shuffle(a){
-  for(let i=a.length-1;i>0;i--){
+function shuffle(arr){
+  for(let i=arr.length-1;i>0;i--){
     const j=Math.floor(Math.random()*(i+1));
-    const tmp=a[i]; a[i]=a[j]; a[j]=tmp;
+    [arr[i],arr[j]]=[arr[j],arr[i]];
   }
-  return a;
+  return arr;
 }
 
-/* Shuffle question order + answer order (on refresh) */
-questions = shuffle(questions.map(function(q){
-  const correct = q.answers[q.a];
-  const mixed = shuffle(q.answers.slice());
-  return Object.assign({}, q, { answers:mixed, correct:correct });
-}));
+function makeShuffledQuestions(){
+  /*-------- Preserves correct answer after shuffling --------*/
+  const list = BASE_QUESTIONS.map((q)=>{
+    const correct = q.answers[q.a];
+    const mixed = shuffle(q.answers.slice());
+    return Object.assign({}, q, { answers:mixed, correct });
+  });
+  return shuffle(list);
+}
 
+let questions = makeShuffledQuestions();
+
+/*------------------------------------------------------------
+  [F] TRANSLATIONS (single strings)
+------------------------------------------------------------*/
+const ANSWER_TRANSLATIONS = {
+  1:{ en:"I want to improve my English this year.", jp:"私は今年英語を上達させたいです。", hi:"わたしは ことし えいごを じょうたつ させたいです" },
+  2:{ en:"It is important because it helps my future.", jp:"それは将来のために役に立つので大切です。", hi:"それは しょうらい の ために やくにたつ ので たいせつです" },
+  3:{ en:"I will study and practice every day.", jp:"私は毎日勉強して練習します。", hi:"わたしは まいにち べんきょうして れんしゅうします" },
+  4:{ en:"My family and teachers help me.", jp:"家族と先生が私を助けてくれます。", hi:"かぞく と せんせい が わたし を たすけて くれます" },
+  5:{ en:"I want to stop procrastinating.", jp:"私は先のばしをやめたいです。", hi:"わたしは さきのばし を やめたいです" },
+  6:{ en:"Yes, I like making resolutions.", jp:"はい、私は目標を立てるのが好きです。", hi:"はい わたしは もくひょう を たてる のが すきです" },
+  7:{ en:"I want to try something new this year.", jp:"私は今年新しいことに挑戦したいです。", hi:"わたしは ことし あたらしいこと に ちょうせん したいです" },
+  8:{ en:"I learned a new English word.", jp:"私は新しい英単語を覚えました。", hi:"わたしは あたらしい えいたんご を おぼえました" },
+  9:{ en:"No, it is not always easy.", jp:"いいえ、いつも簡単ではありません。", hi:"いいえ いつも かんたん では ありません" },
+  10:{ en:"You cannot improve if you don’t try.", jp:"挑戦しないと上達できません。", hi:"ちょうせん しないと じょうたつ できません" },
+  11:{ en:"Doing my best makes me feel proud.", jp:"全力を出すと誇らしい気持ちになります。", hi:"ぜんりょく を だすと ほこらしい きもち に なります" },
+  12:{ en:"I want to have a happy future.", jp:"私は幸せな未来にしたいです。", hi:"わたしは しあわせな みらい に したいです" },
+  13:{ en:"I stay positive by thinking positively.", jp:"私は前向きに考えて前向きでいます。", hi:"わたしは まえむきに かんがえて まえむき で います" },
+  14:{ en:"My family inspires me.", jp:"家族が私にやる気をくれます。", hi:"かぞく が わたし に やるき を くれます" },
+  15:{ en:"English can help me in my future.", jp:"英語は将来に役立ちます。", hi:"えいごは しょうらい に やくだちます" }
+};
+
+/*------------------------------------------------------------
+  [G] GAME STATE
+------------------------------------------------------------*/
 let current=0, points=0;
 let gotCorrect=false, firstAttempt=true;
 let showedAnswerPopup=false;
 
 let recog=null;
 let listening=false;
+let checkingSpeech=false; /*-------- double-final guard --------*/
 
 let iosSelectedIndex=null;
 let iosFirstAttempt=true;
 
-/* =========================================
-   Correct Answer Translations
-   (single-string sentences, no chunk commas)
-   ========================================= */
-const ANSWER_TRANSLATIONS = {
-  1:{
-    en:"I want to improve my English this year.",
-    jp:"私は今年英語を上達させたいです。",
-    hi:"わたしはことしえいごをじょうたつさせたいです。"
-  },
-  2:{
-    en:"It is important because it helps my future.",
-    jp:"それは将来のために役に立つので大切です。",
-    hi:"それはしょうらいのためにやくにたつのでたいせつです。"
-  },
-  3:{
-    en:"I will study and practice every day.",
-    jp:"私は毎日勉強して練習します。",
-    hi:"わたしはまいにちべんきょうしてれんしゅうします。"
-  },
-  4:{
-    en:"My family and teachers help me.",
-    jp:"家族と先生が私を助けてくれます。",
-    hi:"かぞくとせんせいがわたしをたすけてくれます。"
-  },
-  5:{
-    en:"I want to stop procrastinating.",
-    jp:"私は先のばしをやめたいです。",
-    hi:"わたしはさきのばしをやめたいです。"
-  },
-  6:{
-    en:"Yes I like making resolutions.",
-    jp:"はい私は目標を立てるのが好きです。",
-    hi:"はいわたしはもくひょうをたてるのがすきです。"
-  },
-  7:{
-    en:"I want to try something new this year.",
-    jp:"私は今年新しいことに挑戦したいです。",
-    hi:"わたしはことしあたらしいことにちょうせんしたいです。"
-  },
-  8:{
-    en:"I learned a new English word.",
-    jp:"私は新しい英単語を覚えました。",
-    hi:"わたしはあたらしいえいたんごをおぼえました。"
-  },
-  9:{
-    en:"No it is not always easy.",
-    jp:"いいえいつも簡単ではありません。",
-    hi:"いいえいつもかんたんではありません。"
-  },
-  10:{
-    en:"You cannot improve if you do not try.",
-    jp:"挑戦しないと上達できません。",
-    hi:"ちょうせんしないとじょうたつできません。"
-  },
-  11:{
-    en:"Doing my best makes me feel proud.",
-    jp:"全力を出すと誇らしい気持ちになります。",
-    hi:"ぜんりょくをだすとほこらしいきもちになります。"
-  },
-  12:{
-    en:"I want to have a happy future.",
-    jp:"私は幸せな未来にしたいです。",
-    hi:"わたしはしあわせなみらいにしたいです。"
-  },
-  13:{
-    en:"I stay positive by thinking positively.",
-    jp:"私は前向きに考えて前向きでいます。",
-    hi:"わたしはまえむきにかんがえてまえむきでいます。"
-  },
-  14:{
-    en:"My family inspires me.",
-    jp:"家族が私にやる気をくれます。",
-    hi:"かぞくがわたしにやるきをくれます。"
-  },
-  15:{
-    en:"English can help me in my future.",
-    jp:"英語は将来に役立ちます。",
-    hi:"えいごはしょうらいにやくだちます。"
-  }
-};
-
-
-function playSfx(path){
-  const a=new Audio(path);
-  a.preload='auto';
-  a.play().catch(function(){});
-}
-
-function playAudioFile(path){
-  return new Promise(function(resolve){
-    const a=new Audio(path);
-    a.onended=resolve;
-    a.onerror=resolve;
-    a.play().catch(function(){ resolve(); });
-    setTimeout(resolve, 9000);
-  });
-}
-
-/* Sage filename convention: q01_what_is_your_goal_this_year.mp3 */
+/*------------------------------------------------------------
+  [H] SAGE QUESTION AUDIO
+------------------------------------------------------------*/
 function qAudioFilename(qText, index1){
   const n = String(index1).padStart(2,'0');
   const slug = qText
@@ -793,18 +832,9 @@ async function playQuestionAudioForCurrent(){
   }
 }
 
-function pulsePoints(){
-  const circle=document.getElementById('pointsCircle');
-  circle.style.transform='scale(1.3)';
-  setTimeout(function(){ circle.style.transform='scale(1)'; },300);
-}
-
-function updateUI(){
-  pointsValue.textContent=points;
-  counter.textContent=(current+1) + ' / ' + questions.length;
-}
-
-/* Make rainbow question text fit */
+/*------------------------------------------------------------
+  [I] TEXT ANIMATION + FIT
+------------------------------------------------------------*/
 function fitSageText(){
   const box = sageBox;
   const el = sageText;
@@ -833,14 +863,17 @@ function animateWords(t){
     s.className='word';
     s.textContent=parts[i];
     sageText.appendChild(s);
-    (function(span,delay){ setTimeout(function(){ span.style.opacity=1; }, delay); })(s, 110*i);
+    ((span,delay)=>setTimeout(()=>{ span.style.opacity=1; }, delay))(s, 110*i);
   }
-  requestAnimationFrame(function(){
+  requestAnimationFrame(()=>{
     fitSageText();
     setTimeout(fitSageText, 250);
   });
 }
 
+/*------------------------------------------------------------
+  [J] SPEECH NORMALIZATION + MATCH
+------------------------------------------------------------*/
 function normalize(s){
   return (s||"")
     .toLowerCase()
@@ -856,23 +889,39 @@ function strictMatch(s,a){
   const ns=normalize(s), na=normalize(a);
   if(!ns||!na) return false;
   const sa=ns.split(' '), aa=na.split(' ');
-  const overlap=aa.filter(function(w){ return sa.includes(w); }).length;
-  const extra=sa.filter(function(w){ return !aa.includes(w); });
+  const overlap=aa.filter((w)=>sa.includes(w)).length;
+  const extra=sa.filter((w)=>!aa.includes(w));
   return overlap/aa.length>=0.9 && extra.length<=2;
 }
 
-function confetti(n){
-  n = n || 80;
+/*------------------------------------------------------------
+  [K] VISUAL FX
+------------------------------------------------------------*/
+function confetti(n=80){
   for(let i=0;i<n;i++){
     const c=document.createElement('div');
     c.style.cssText='position:fixed;width:10px;height:10px;left:'+(Math.random()*100)+'%;top:-10px;background:hsl('+(Math.random()*360)+',100%,70%);opacity:.9;pointer-events:none;z-index:9999;';
     document.body.appendChild(c);
     const d=900+Math.random()*1200;
     c.animate([{transform:'translateY(0)'},{transform:'translateY(100vh) rotate(720deg)'}],{duration:d,easing:'ease-out'});
-    setTimeout(function(){ c.remove(); }, d);
+    setTimeout(()=>c.remove(), d);
   }
 }
 
+function pulsePoints(){
+  const circle=document.getElementById('pointsCircle');
+  circle.style.transform='scale(1.3)';
+  setTimeout(()=>{ circle.style.transform='scale(1)'; },300);
+}
+
+function updateUI(){
+  pointsValue.textContent=points;
+  counter.textContent=(current+1) + ' / ' + questions.length;
+}
+
+/*------------------------------------------------------------
+  [L] MODE UI
+------------------------------------------------------------*/
 function setModeUI(){
   if(isIOS){
     if(statusLine) statusLine.style.display='none';
@@ -891,19 +940,22 @@ function setModeUI(){
 function renderAnswers(){
   optionsBox.innerHTML='';
   const q=currentQuestion();
-  for(let i=0;i<q.answers.length;i++){
-    const a=q.answers[i];
+
+  q.answers.forEach((a,i)=>{
     const d=document.createElement('div');
     d.className='option';
     d.dataset.index=i;
     d.textContent=a;
 
-    d.addEventListener('click',function(){
+    d.addEventListener('click', ()=>{
+      unlockAudioOnce(); /*-------- user gesture → unlock audio --------*/
+
       if(!isIOS){
         setHint('パソコン・Android は声で答えるよ。','On computers/Android, answer by speaking.');
         return;
       }
-      document.querySelectorAll('.option').forEach(function(o){ o.classList.remove('selected'); });
+
+      document.querySelectorAll('.option').forEach((o)=>o.classList.remove('selected'));
       d.classList.add('selected');
       iosSelectedIndex=i;
       studentBox.textContent=a;
@@ -911,48 +963,49 @@ function renderAnswers(){
     });
 
     optionsBox.appendChild(d);
-  }
+  });
 }
 
+/*------------------------------------------------------------
+  [M] WRONG / CORRECT
+------------------------------------------------------------*/
 async function wrongAndroidDesktop(){
   studentBox.classList.add('shake');
   studentBox.style.background='#fee2e2';
-  playSfx(SFX.fart);
+  playSfxObj(sfxFart);
   setHint('ちがう。見てから消してもう一回。','Wrong. Look, erase, and try again.');
-  await new Promise(function(r){ setTimeout(r, 320); });
+  await new Promise((r)=>setTimeout(r, 320));
   studentBox.classList.remove('shake');
 }
 
 async function wrongIOS(){
-  playSfx(SFX.fart);
+  playSfxObj(sfxFart);
   studentBox.classList.add('shake');
   studentBox.style.background='#fee2e2';
   setHint('ちがう。もう一回。','Wrong. Try again.');
-  await new Promise(function(r){ setTimeout(r, 950); });
+  await new Promise((r)=>setTimeout(r, 950));
   studentBox.classList.remove('shake');
   studentBox.style.background='#fff';
   studentBox.textContent='';
   iosSelectedIndex=null;
-  document.querySelectorAll('.option').forEach(function(o){ o.classList.remove('selected'); });
+  document.querySelectorAll('.option').forEach((o)=>o.classList.remove('selected'));
 }
 
-/* ==============================
-   Answer popup rendering
-   ============================== */
-
+/*------------------------------------------------------------
+  [N] ANSWER MODAL
+------------------------------------------------------------*/
 function openAnswerModalFor(index1){
   const t = ANSWER_TRANSLATIONS[index1];
   if(!t) return;
 
-  ansEn.textContent = t.en;
-  ansJp.textContent = t.jp;
-  ansHi.textContent = t.hi;
+  ansEn.textContent = t.en || "";
+  ansJp.textContent = t.jp || "";
+  ansHi.textContent = t.hi || "";
 
   ansModal.classList.add('show');
   ansModal.style.display = 'flex';
   ansModal.setAttribute('aria-hidden','false');
 }
-
 
 function closeAnswerModal(){
   ansModal.classList.remove('show');
@@ -961,33 +1014,33 @@ function closeAnswerModal(){
 }
 
 if(ansModal){
-  ansModal.addEventListener('click', function(e){
+  ansModal.addEventListener('click', (e)=>{
     if(e.target && e.target.hasAttribute('data-close-ans')) closeAnswerModal();
   });
-  const closeBtns = ansModal.querySelectorAll('[data-close-ans]');
-  closeBtns.forEach(function(b){ b.addEventListener('click', closeAnswerModal); });
-  document.addEventListener('keydown', function(e){
+  ansModal.querySelectorAll('[data-close-ans]').forEach((b)=>b.addEventListener('click', closeAnswerModal));
+  document.addEventListener('keydown', (e)=>{
     if(e.key==='Escape' && ansModal.classList.contains('show')) closeAnswerModal();
   });
 }
 
-/* ==============================
-   Correct / scoring
-   ============================== */
+/*------------------------------------------------------------
+  [O] SCORING
+------------------------------------------------------------*/
 function correctCommon(){
   gotCorrect=true;
-  playSfx(SFX.ding);
+  playSfxObj(sfxDing);
   confetti(70);
+
   points += firstAttempt ? 1 : 0;
   pulsePoints();
   updateUI();
+
   setHint('正解。つぎへ。','Correct. Tap Next.');
   nextBtn.style.display='inline-block';
 
   if(!showedAnswerPopup){
     showedAnswerPopup=true;
-    const q = currentQuestion();
-    openAnswerModalFor(q.index1);
+    openAnswerModalFor(currentQuestion().index1);
   }
 }
 
@@ -995,8 +1048,9 @@ async function checkIOSAnswer(){
   if(gotCorrect) return;
   const q=currentQuestion();
   if(iosSelectedIndex===null) return;
-  const answer=q.answers[iosSelectedIndex];
-  if(answer===q.correct){
+
+  const chosen=q.answers[iosSelectedIndex];
+  if(chosen===q.correct){
     if(!iosFirstAttempt) firstAttempt=false;
     correctCommon();
   } else {
@@ -1006,6 +1060,9 @@ async function checkIOSAnswer(){
   }
 }
 
+/*------------------------------------------------------------
+  [P] SPEECH RECOGNITION (Android/Desktop)
+------------------------------------------------------------*/
 function ensureRecog(){
   const R=window.SpeechRecognition||window.webkitSpeechRecognition;
   if(!R){
@@ -1019,24 +1076,24 @@ function ensureRecog(){
   recog.lang='en-US';
   recog.interimResults=true;
 
-  recog.onstart=function(){
+  recog.onstart=()=>{
     listening=true;
     studentBox.classList.add('listening');
     setMicStatus(true);
   };
 
-  recog.onend=function(){
+  recog.onend=()=>{
     listening=false;
     studentBox.classList.remove('listening');
     setMicStatus(false);
   };
 
-  recog.onerror=function(){
+  recog.onerror=()=>{
     setMicStatus(false);
     setHint('マイクを許可してね。','Please allow microphone access.');
   };
 
-  recog.onresult=function(e){
+  recog.onresult=(e)=>{
     let t='';
     for(const r of e.results){
       t += r[0].transcript + ' ';
@@ -1071,32 +1128,43 @@ function stopMic(){
 }
 
 async function checkSpeech(spoken){
-  if(isIOS || gotCorrect) return;
-  const q=currentQuestion();
+  if(isIOS || gotCorrect || checkingSpeech) return;
+  checkingSpeech=true;
+  try{
+    const q=currentQuestion();
 
-  const matchIndex=q.answers.findIndex(function(ans){ return strictMatch(spoken,ans); });
-  if(matchIndex===-1){
-    firstAttempt=false;
-    await wrongAndroidDesktop();
-    return;
-  }
+    const matchIndex=q.answers.findIndex((ans)=>strictMatch(spoken,ans));
+    if(matchIndex===-1){
+      firstAttempt=false;
+      await wrongAndroidDesktop();
+      return;
+    }
 
-  const isCorrect = strictMatch(spoken, q.correct);
-  if(isCorrect){
-    correctCommon();
-    stopMic();
-  } else {
-    firstAttempt=false;
-    await wrongAndroidDesktop();
+    const isCorrect = strictMatch(spoken, q.correct);
+    if(isCorrect){
+      correctCommon();
+      stopMic();
+    } else {
+      firstAttempt=false;
+      await wrongAndroidDesktop();
+    }
+  } finally {
+    checkingSpeech=false;
   }
 }
 
+/*------------------------------------------------------------
+  [Q] CLEAR ANSWER
+------------------------------------------------------------*/
 function clearAnswer(){
   studentBox.textContent='';
   studentBox.style.background='#fff';
   setHint('もう一回言ってね。','Say it again.');
 }
 
+/*------------------------------------------------------------
+  [R] LOAD QUESTION
+------------------------------------------------------------*/
 function loadQuestion(){
   gotCorrect=false;
   firstAttempt=true;
@@ -1117,6 +1185,9 @@ function loadQuestion(){
   setModeUI();
 }
 
+/*------------------------------------------------------------
+  [S] RESULTS
+------------------------------------------------------------*/
 function showResults(){
   stopMic();
   const total=questions.length;
@@ -1134,11 +1205,19 @@ function showResults(){
   resultsOverlay.style.display='flex';
   resultsOverlay.setAttribute('aria-hidden','false');
 
-  try{ snd.currentTime=0; snd.play(); }catch(e){}
+  unlockAudioOnce(); /*-------- ensures result audio is allowed on iOS after a tap happened --------*/
+  try{
+    snd.currentTime=0;
+    const p = snd.play();
+    if(p && p.catch) p.catch(()=>{});
+  }catch(e){}
+
   if(points===15) confetti(140);
 }
 
-/* Rainbow tap: Sage audio */
+/*------------------------------------------------------------
+  [T] EVENTS (gesture points = unlock)
+------------------------------------------------------------*/
 let audioLock=false;
 async function onTapSage(){
   if(audioLock) return;
@@ -1146,31 +1225,38 @@ async function onTapSage(){
   try{ await playQuestionAudioForCurrent(); }
   finally{ audioLock=false; }
 }
-sageBox.addEventListener('click', onTapSage);
 
-/* White box tap: toggle mic (Android/Desktop) */
-studentBox.addEventListener('click', function(){
+sageBox.addEventListener('click', (e)=>{
+  unlockAudioOnce();
+  onTapSage(e);
+});
+
+studentBox.addEventListener('click', ()=>{
+  unlockAudioOnce();
+
   if(isIOS) return;
   if(!recog) ensureRecog();
   if(!recog) return;
 
   if(listening){
     stopMic();
-    setMicStatus(false);
   } else {
     startMic();
-    setMicStatus(true);
   }
 });
 
-eraseBtn.addEventListener('click', function(){ clearAnswer(); });
+eraseBtn.addEventListener('click', ()=>{
+  unlockAudioOnce();
+  clearAnswer();
+});
 
-document.addEventListener('keydown', function(e){
+document.addEventListener('keydown', (e)=>{
   if(isIOS) return;
   if(e.key==='Backspace' || e.key==='Delete') clearAnswer();
 });
 
-nextBtn.onclick=function(){
+nextBtn.addEventListener('click', ()=>unlockAudioOnce());
+nextBtn.onclick=()=>{
   current++;
   if(current>=questions.length){
     showResults();
@@ -1179,32 +1265,36 @@ nextBtn.onclick=function(){
   loadQuestion();
 };
 
-restartBtn.onclick=function(){
+restartBtn.addEventListener('click', ()=>unlockAudioOnce());
+restartBtn.onclick=()=>{
   resultsOverlay.style.display='none';
   resultsOverlay.setAttribute('aria-hidden','true');
-  current=0; points=0;
 
-  /* reshuffle answers + question order again */
-  questions = shuffle(questions.map(function(q){
-    const mixed = shuffle(q.answers.slice());
-    return Object.assign({}, q, { answers:mixed });
-  }));
+  current=0; points=0;
+  questions = makeShuffledQuestions();
   loadQuestion();
 };
 
 /* Help modal */
 if(helpBtn && helpModal){
   const closeEls=helpModal.querySelectorAll('[data-close-help]');
-  const openHelp=function(){ helpModal.classList.add('show'); helpModal.setAttribute('aria-hidden','false'); };
-  const closeHelp=function(){ helpModal.classList.remove('show'); helpModal.setAttribute('aria-hidden','true'); };
-  helpBtn.addEventListener('click', openHelp);
-  closeEls.forEach(function(el){ el.addEventListener('click', closeHelp); });
-  helpModal.addEventListener('click', function(e){ if(e.target===helpModal) closeHelp(); });
-  document.addEventListener('keydown', function(e){ if(e.key==='Escape') closeHelp(); });
+  const openHelp=()=>{ helpModal.classList.add('show'); helpModal.setAttribute('aria-hidden','false'); };
+  const closeHelp=()=>{ helpModal.classList.remove('show'); helpModal.setAttribute('aria-hidden','true'); };
+
+  helpBtn.addEventListener('click', ()=>{
+    unlockAudioOnce();
+    openHelp();
+  });
+
+  closeEls.forEach((el)=>el.addEventListener('click', closeHelp));
+  helpModal.addEventListener('click', (e)=>{ if(e.target===helpModal) closeHelp(); });
+  document.addEventListener('keydown', (e)=>{ if(e.key==='Escape') closeHelp(); });
 }
 
-/* Init */
-window.onload=function(){
+/*------------------------------------------------------------
+  [U] INIT
+------------------------------------------------------------*/
+window.onload=()=>{
   loadQuestion();
 
   if(isIOS){
@@ -1213,7 +1303,8 @@ window.onload=function(){
       iosOverlay.style.display='flex';
       iosOverlay.setAttribute('aria-hidden','false');
       if(iosOverlayOk){
-        iosOverlayOk.addEventListener('click', function(){
+        iosOverlayOk.addEventListener('click', ()=>{
+          unlockAudioOnce();
           iosOverlay.style.display='none';
           iosOverlay.setAttribute('aria-hidden','true');
         });
