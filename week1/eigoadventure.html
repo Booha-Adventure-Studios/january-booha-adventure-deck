@@ -669,85 +669,86 @@ let iosFirstAttempt=true;
 
 /* =========================================
    Correct Answer Translations
-   (chunked so colors line up)
+   (single-string sentences, no chunk commas)
    ========================================= */
 const ANSWER_TRANSLATIONS = {
   1:{
-    en:["I want to","improve","my English","this year."],
-    jp:["私は","今年","英語を","上達させたいです。"],
-    hi:["わたしは","ことし","えいごを","じょうたつさせたいです。"]
+    en:"I want to improve my English this year.",
+    jp:"私は今年英語を上達させたいです。",
+    hi:"わたしはことしえいごをじょうたつさせたいです。"
   },
   2:{
-    en:["It is important","because","it helps","my future."],
-    jp:["それは","将来のために","役に立つので","大切です。"],
-    hi:["それは","しょうらいのために","やくにたつので","たいせつです。"]
+    en:"It is important because it helps my future.",
+    jp:"それは将来のために役に立つので大切です。",
+    hi:"それはしょうらいのためにやくにたつのでたいせつです。"
   },
   3:{
-    en:["I will","study and practice","every day."],
-    jp:["私は","毎日","勉強して練習します。"],
-    hi:["わたしは","まいにち","べんきょうしてれんしゅうします。"]
+    en:"I will study and practice every day.",
+    jp:"私は毎日勉強して練習します。",
+    hi:"わたしはまいにちべんきょうしてれんしゅうします。"
   },
   4:{
-    en:["My family and teachers","help me."],
-    jp:["家族と先生が","私を助けてくれます。"],
-    hi:["かぞくとせんせいが","わたしをたすけてくれます。"]
+    en:"My family and teachers help me.",
+    jp:"家族と先生が私を助けてくれます。",
+    hi:"かぞくとせんせいがわたしをたすけてくれます。"
   },
   5:{
-    en:["I want to stop","procrastinating."],
-    jp:["私は","先のばしをやめたいです。"],
-    hi:["わたしは","さきのばしをやめたいです。"]
+    en:"I want to stop procrastinating.",
+    jp:"私は先のばしをやめたいです。",
+    hi:"わたしはさきのばしをやめたいです。"
   },
   6:{
-    en:["Yes,","I like","making resolutions."],
-    jp:["はい、","私は","目標を立てるのが好きです。"],
-    hi:["はい、","わたしは","もくひょうをたてるのがすきです。"]
+    en:"Yes I like making resolutions.",
+    jp:"はい私は目標を立てるのが好きです。",
+    hi:"はいわたしはもくひょうをたてるのがすきです。"
   },
   7:{
-    en:["I want to try","something new","this year."],
-    jp:["私は","今年","新しいことに挑戦したいです。"],
-    hi:["わたしは","ことし","あたらしいことにちょうせんしたいです。"]
+    en:"I want to try something new this year.",
+    jp:"私は今年新しいことに挑戦したいです。",
+    hi:"わたしはことしあたらしいことにちょうせんしたいです。"
   },
   8:{
-    en:["I learned","a new","English word."],
-    jp:["私は","新しい","英単語を覚えました。"],
-    hi:["わたしは","あたらしい","えいたんごをおぼえました。"]
+    en:"I learned a new English word.",
+    jp:"私は新しい英単語を覚えました。",
+    hi:"わたしはあたらしいえいたんごをおぼえました。"
   },
   9:{
-    en:["No,","it is not always","easy."],
-    jp:["いいえ、","いつも","簡単ではありません。"],
-    hi:["いいえ、","いつも","かんたんではありません。"]
+    en:"No it is not always easy.",
+    jp:"いいえいつも簡単ではありません。",
+    hi:"いいえいつもかんたんではありません。"
   },
   10:{
-    en:["You cannot improve","if you don’t try."],
-    jp:["挑戦しないと","上達できません。"],
-    hi:["ちょうせんしないと","じょうたつできません。"]
+    en:"You cannot improve if you do not try.",
+    jp:"挑戦しないと上達できません。",
+    hi:"ちょうせんしないとじょうたつできません。"
   },
   11:{
-    en:["Doing my best","makes me feel proud."],
-    jp:["全力を出すと","誇らしい気持ちになります。"],
-    hi:["ぜんりょくをだすと","ほこらしいきもちになります。"]
+    en:"Doing my best makes me feel proud.",
+    jp:"全力を出すと誇らしい気持ちになります。",
+    hi:"ぜんりょくをだすとほこらしいきもちになります。"
   },
   12:{
-    en:["I want to have","a happy","future."],
-    jp:["私は","幸せな","未来にしたいです。"],
-    hi:["わたしは","しあわせな","みらいにしたいです。"]
+    en:"I want to have a happy future.",
+    jp:"私は幸せな未来にしたいです。",
+    hi:"わたしはしあわせなみらいにしたいです。"
   },
   13:{
-    en:["I stay positive","by thinking","positively."],
-    jp:["私は","前向きに考えて","前向きでいます。"],
-    hi:["わたしは","まえむきにかんがえて","まえむきでいます。"]
+    en:"I stay positive by thinking positively.",
+    jp:"私は前向きに考えて前向きでいます。",
+    hi:"わたしはまえむきにかんがえてまえむきでいます。"
   },
   14:{
-    en:["My family","inspires me."],
-    jp:["家族が","私にやる気をくれます。"],
-    hi:["かぞくが","わたしにやるきをくれます。"]
+    en:"My family inspires me.",
+    jp:"家族が私にやる気をくれます。",
+    hi:"かぞくがわたしにやるきをくれます。"
   },
   15:{
-    en:["English can help me","in my","future."],
-    jp:["英語は","将来に","役立ちます。"],
-    hi:["えいごは","しょうらいに","やくだちます。"]
+    en:"English can help me in my future.",
+    jp:"英語は将来に役立ちます。",
+    hi:"えいごはしょうらいにやくだちます。"
   }
 };
+
 
 function playSfx(path){
   const a=new Audio(path);
