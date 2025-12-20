@@ -690,84 +690,85 @@ let listening=false;
 let iosSelectedIndex=null;
 let iosFirstAttempt=true;
 
-/* Correct answer translations (chunk arrays) */
+/* Correct answer translations (single strings = no array commas / no artificial pauses) */
 const ANSWER_TRANSLATIONS = {
   1:{
-    en:["I wake up","at seven."],
-    jp:["私は","７時に起きます。"],
-    hi:["わたしは","７じ に おきます"]
+    en:"I wake up at seven.",
+    jp:"私は７時に起きます。",
+    hi:"わたしは ７じ に おきます"
   },
   2:{
-    en:["I do my homework","or relax."],
-    jp:["私は","宿題をしたり","リラックスします。"],
-    hi:["わたしは","しゅくだい を したり","りらっくす します"]
+    en:"I do my homework or relax.",
+    jp:"私は宿題をしたりリラックスします。",
+    hi:"わたしは しゅくだい を したり りらっくす します"
   },
   3:{
-    en:["Yes,","I help","at home."],
-    jp:["はい、","家で","手伝います。"],
-    hi:["はい、","いえ で","てつだいます"]
+    en:"Yes, I help at home.",
+    jp:"はい、家で手伝います。",
+    hi:"はい いえ で てつだいます"
   },
   4:{
-    en:["I eat breakfast","and get ready."],
-    jp:["私は","朝ごはんを食べて","準備します。"],
-    hi:["わたしは","あさごはん を たべて","じゅんび します"]
+    en:"I eat breakfast and get ready.",
+    jp:"私は朝ごはんを食べて準備します。",
+    hi:"わたしは あさごはん を たべて じゅんび します"
   },
   5:{
-    en:["I eat dinner","in the evening."],
-    jp:["私は","夜に","夕ごはんを食べます。"],
-    hi:["わたしは","よる に","ゆうごはん を たべます"]
+    en:"I eat dinner in the evening.",
+    jp:"私は夜に夕ごはんを食べます。",
+    hi:"わたしは よる に ゆうごはん を たべます"
   },
   6:{
-    en:["No,","I don’t use my phone","before bed."],
-    jp:["いいえ、","寝る前に","スマホを使いません。"],
-    hi:["いいえ、","ねる まえ に","すまほ を つかいません"]
+    en:"No, I don’t use my phone before bed.",
+    jp:"いいえ、寝る前にスマホを使いません。",
+    hi:"いいえ ねる まえ に すまほ を つかいません"
   },
   7:{
-    en:["I wake up,","eat breakfast,","and get dressed."],
-    jp:["私は","起きて","朝ごはんを食べて","服を着ます。"],
-    hi:["わたしは","おきて","あさごはん を たべて","ふく を きます"]
+    en:"I wake up, eat breakfast, and get dressed.",
+    jp:"私は起きて朝ごはんを食べて服を着ます。",
+    hi:"わたしは おきて あさごはん を たべて ふく を きます"
   },
   8:{
-    en:["My favorite part","is the evening."],
-    jp:["一番好きな時間は","夜です。"],
-    hi:["いちばん すきな じかん は","よる です"]
+    en:"My favorite part is the evening.",
+    jp:"一番好きな時間は夜です。",
+    hi:"いちばん すきな じかん は よる です"
   },
   9:{
-    en:["I do homework","after school."],
-    jp:["私は","学校のあとに","宿題をします。"],
-    hi:["わたしは","がっこう の あと に","しゅくだい を します"]
+    en:"I do homework after school.",
+    jp:"私は学校のあとに宿題をします。",
+    hi:"わたしは がっこう の あと に しゅくだい を します"
   },
   10:{
-    en:["Yes,","I study","every day."],
-    jp:["はい、","毎日","勉強します。"],
-    hi:["はい、","まいにち","べんきょう します"]
+    en:"Yes, I study every day.",
+    jp:"はい、毎日勉強します。",
+    hi:"はい まいにち べんきょう します"
   },
   11:{
-    en:["I go to bed","at ten."],
-    jp:["私は","１０時に","寝ます。"],
-    hi:["わたしは","１０じ に","ねます"]
+    en:"I go to bed at ten.",
+    jp:"私は１０時に寝ます。",
+    hi:"わたしは １０じ に ねます"
   },
   12:{
-    en:["I relax","or spend time","with my family."],
-    jp:["私は","リラックスしたり","家族と過ごします。"],
-    hi:["わたしは","りらっくす したり","かぞく と すごします"]
+    en:"I relax or spend time with my family.",
+    jp:"私はリラックスしたり家族と過ごします。",
+    hi:"わたしは りらっくす したり かぞく と すごします"
   },
- 13:{
-en:["I usually eat","cereal","for breakfast."],
-jp:["私は","たいてい","朝食に","シリアルを","食べます。"],
-hi:["わたしは","たいてい","ちょうしょくに","しりある を","たべます"]
-},
+  13:{
+    en:"I usually eat cereal for breakfast.",
+    jp:"私はたいてい朝食にシリアルを食べます。",
+    hi:"わたしは たいてい ちょうしょくに しりある を たべます"
+  },
   14:{
-    en:["I spend time","with my friends","after school."],
-    jp:["私は","放課後に","友だちと過ごします。"],
-    hi:["わたしは","ほうかご に","ともだち と すごします"]
+    en:"I spend time with my friends after school.",
+    jp:"私は放課後に友だちと過ごします。",
+    hi:"わたしは ほうかご に ともだち と すごします"
   },
   15:{
-    en:["I finish dinner","in the evening."],
-    jp:["私は","夜に","夕ごはんを終えます。"],
-    hi:["わたしは","よる に","ゆうごはん を おえます"]
+    en:"I finish dinner in the evening.",
+    jp:"私は夜に夕ごはんを終えます。",
+    hi:"わたしは よる に ゆうごはん を おえます"
   }
 };
+
 
 function playSfx(path){
   const a=new Audio(path);
