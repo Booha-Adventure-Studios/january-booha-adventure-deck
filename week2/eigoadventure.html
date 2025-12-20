@@ -543,55 +543,124 @@ footer{text-align:center;color:#fff;padding:16px 0 22px;font-family:'Cinzel',ser
 </div>
 
 <!-- Results audio (local) -->
-<audio id="r05"  src="assets/audio/result_0-5.mp3"  preload="auto"></audio>
-<audio id="r610" src="assets/audio/result_6-10.mp3" preload="auto"></audio>
-<audio id="r1114"src="assets/audio/result_11-14.mp3" preload="auto"></audio>
-<audio id="r15"  src="assets/audio/result_15.mp3"  preload="auto"></audio>
+<audio id="r05"   src="assets/audio/result_0-5.mp3"  preload="auto"></audio>
+<audio id="r610"  src="assets/audio/result_6-10.mp3" preload="auto"></audio>
+<audio id="r1114" src="assets/audio/result_11-14.mp3" preload="auto"></audio>
+<audio id="r15"   src="assets/audio/result_15.mp3"   preload="auto"></audio>
 
 <script>
-/* Booha Eigo Adventure – January Week 1 */
+/* Booha Eigo Adventure – January Week 2 */
 
+/*------------------------------------------------------------
+  [A] PATHS
+  Notes:
+  - SFX + results audio live in: assets/audio/
+  - Sage question audio lives in: audio/questions/
+------------------------------------------------------------*/
 const SFX = { ding: "assets/audio/ding.mp3", fart: "assets/audio/fart.mp3" };
 
 const RES = {
-  r05:  document.getElementById('r05'),
-  r610: document.getElementById('r610'),
-  r1114:document.getElementById('r1114'),
-  r15:  document.getElementById('r15')
+  r05:   document.getElementById('r05'),
+  r610:  document.getElementById('r610'),
+  r1114: document.getElementById('r1114'),
+  r15:   document.getElementById('r15')
 };
 
+/*------------------------------------------------------------
+  [B] DEVICE DETECTION
+  Notes:
+  - iOS Safari blocks SpeechRecognition, so we switch to tap-to-answer.
+  - We also need to "unlock" audio on iOS/Safari (user gesture requirement).
+------------------------------------------------------------*/
 const isIOS = /iP(hone|od|ad)/.test(navigator.userAgent) ||
   (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
 
 const $ = function(s){ return document.querySelector(s); };
-const sageBox = $('#sageBox');
-const sageText = $('#sageText');
-const studentBox = $('#studentBox');
-const eraseBtn = $('#eraseBtn');
-const statusLine = $('#statusLine');
-const optionsBox = $('#options');
-const hintBox = $('#hintBox');
-const nextBtn = $('#nextBtn');
+const sageBox     = $('#sageBox');
+const sageText    = $('#sageText');
+const studentBox  = $('#studentBox');
+const eraseBtn    = $('#eraseBtn');
+const statusLine  = $('#statusLine');
+const optionsBox  = $('#options');
+const hintBox     = $('#hintBox');
+const nextBtn     = $('#nextBtn');
 const pointsValue = $('#pointsValue');
-const counter = $('#counter');
+const counter     = $('#counter');
 
-const helpBtn = $('#helpBtn');
-const helpModal = $('#helpModal');
+const helpBtn     = $('#helpBtn');
+const helpModal   = $('#helpModal');
 
 const resultsOverlay = document.getElementById('resultsOverlay');
-const resultsScore = document.getElementById('resultsScore');
-const resultsMsg = document.getElementById('resultsMsg');
-const restartBtn = document.getElementById('restartBtn');
+const resultsScore   = document.getElementById('resultsScore');
+const resultsMsg     = document.getElementById('resultsMsg');
+const restartBtn     = document.getElementById('restartBtn');
 
-const iosOverlay = document.getElementById('iosOverlay');
-const iosOverlayOk = document.getElementById('iosOverlayOk');
+const iosOverlay    = document.getElementById('iosOverlay');
+const iosOverlayOk  = document.getElementById('iosOverlayOk');
 
 /* Answer modal elements */
 const ansModal = document.getElementById('ansModal');
-const ansEn = document.getElementById('ansEn');
-const ansJp = document.getElementById('ansJp');
-const ansHi = document.getElementById('ansHi');
+const ansEn    = document.getElementById('ansEn');
+const ansJp    = document.getElementById('ansJp');
+const ansHi    = document.getElementById('ansHi');
 
+/*------------------------------------------------------------
+  [C] AUDIO (IMPORTANT FIX)
+  Notes:
+  - Creating `new Audio()` inside SpeechRecognition callbacks can fail
+    on iOS/Safari (no user gesture).
+  - Fix: create reusable audio objects + "unlock" them on first tap.
+------------------------------------------------------------*/
+const sfxDing = new Audio(SFX.ding);
+const sfxFart = new Audio(SFX.fart);
+sfxDing.preload = "auto";
+sfxFart.preload = "auto";
+
+let audioUnlocked = false;
+function unlockAudioOnce(){
+  if(audioUnlocked) return;
+  audioUnlocked = true;
+
+  /*------------------------------------------
+    iOS/Safari audio unlock trick:
+    - play muted, immediately pause/reset.
+    - runs only after a real user click/tap.
+  ------------------------------------------*/
+  const list = [sfxDing, sfxFart, RES.r05, RES.r610, RES.r1114, RES.r15];
+  list.forEach(function(a){
+    if(!a) return;
+    try{
+      a.muted = true;
+      const p = a.play();
+      if(p && p.then){
+        p.then(function(){
+          try{ a.pause(); }catch(e){}
+          try{ a.currentTime = 0; }catch(e){}
+          a.muted = false;
+        }).catch(function(){
+          a.muted = false;
+        });
+      } else {
+        // older browsers
+        try{ a.pause(); }catch(e){}
+        try{ a.currentTime = 0; }catch(e){}
+        a.muted = false;
+      }
+    }catch(e){}
+  });
+}
+
+function playSfxObj(a){
+  try{
+    a.currentTime = 0;
+    const p = a.play();
+    if(p && p.catch) p.catch(function(){});
+  }catch(e){}
+}
+
+/*------------------------------------------------------------
+  [D] UI HELPERS
+------------------------------------------------------------*/
 function setHint(jp, en){
   hintBox.innerHTML = jp + '<small>' + en + '</small>';
 }
@@ -610,7 +679,11 @@ function setMicStatus(on){
   }
 }
 
-/* Questions */
+/*------------------------------------------------------------
+  [E] QUESTIONS
+  Notes:
+  - We shuffle answers but preserve the original correct string in q.correct.
+------------------------------------------------------------*/
 const BASE_QUESTIONS = [
   {index1:1, q:"What time do you wake up?", a:0, answers:[
     "I wake up at 7:00.","I wake up at pizza o’clock.","I wake up when the moon tells me.","I never wake up, ever."]},
@@ -687,102 +760,59 @@ let showedAnswerPopup=false;
 let recog=null;
 let listening=false;
 
+/* iOS state */
 let iosSelectedIndex=null;
 let iosFirstAttempt=true;
 
-/* Correct answer translations (single strings = no array commas / no artificial pauses) */
+/*------------------------------------------------------------
+  [F] CORRECT ANSWER TRANSLATIONS
+  Notes:
+  - Single strings (no arrays) so TTS/reading is always natural.
+  - FIXED: #14 now matches the actual correct answer.
+------------------------------------------------------------*/
 const ANSWER_TRANSLATIONS = {
-  1:{
-    en:"I wake up at seven.",
-    jp:"私は７時に起きます。",
-    hi:"わたしは ７じ に おきます"
-  },
-  2:{
-    en:"I do my homework or relax.",
-    jp:"私は宿題をしたりリラックスします。",
-    hi:"わたしは しゅくだい を したり りらっくす します"
-  },
-  3:{
-    en:"Yes, I help at home.",
-    jp:"はい、家で手伝います。",
-    hi:"はい いえ で てつだいます"
-  },
-  4:{
-    en:"I eat breakfast and get ready.",
-    jp:"私は朝ごはんを食べて準備します。",
-    hi:"わたしは あさごはん を たべて じゅんび します"
-  },
-  5:{
-    en:"I eat dinner in the evening.",
-    jp:"私は夜に夕ごはんを食べます。",
-    hi:"わたしは よる に ゆうごはん を たべます"
-  },
-  6:{
-    en:"No, I don’t use my phone before bed.",
-    jp:"いいえ、寝る前にスマホを使いません。",
-    hi:"いいえ ねる まえ に すまほ を つかいません"
-  },
-  7:{
-    en:"I wake up, eat breakfast, and get dressed.",
-    jp:"私は起きて朝ごはんを食べて服を着ます。",
-    hi:"わたしは おきて あさごはん を たべて ふく を きます"
-  },
-  8:{
-    en:"My favorite part is the evening.",
-    jp:"一番好きな時間は夜です。",
-    hi:"いちばん すきな じかん は よる です"
-  },
-  9:{
-    en:"I do homework after school.",
-    jp:"私は学校のあとに宿題をします。",
-    hi:"わたしは がっこう の あと に しゅくだい を します"
-  },
-  10:{
-    en:"Yes, I study every day.",
-    jp:"はい、毎日勉強します。",
-    hi:"はい まいにち べんきょう します"
-  },
-  11:{
-    en:"I go to bed at ten.",
-    jp:"私は１０時に寝ます。",
-    hi:"わたしは １０じ に ねます"
-  },
-  12:{
-    en:"I relax or spend time with my family.",
-    jp:"私はリラックスしたり家族と過ごします。",
-    hi:"わたしは りらっくす したり かぞく と すごします"
-  },
-  13:{
-    en:"I usually eat cereal for breakfast.",
-    jp:"私はたいてい朝食にシリアルを食べます。",
-    hi:"わたしは たいてい ちょうしょくに しりある を たべます"
-  },
-  14:{
-    en:"I spend time with my friends after school.",
-    jp:"私は放課後に友だちと過ごします。",
-    hi:"わたしは ほうかご に ともだち と すごします"
-  },
-  15:{
-    en:"I finish dinner in the evening.",
-    jp:"私は夜に夕ごはんを終えます。",
-    hi:"わたしは よる に ゆうごはん を おえます"
-  }
+  1:{ en:"I wake up at seven.", jp:"私は７時に起きます。", hi:"わたしは ７じ に おきます" },
+  2:{ en:"I do my homework or relax.", jp:"私は宿題をしたりリラックスします。", hi:"わたしは しゅくだい を したり りらっくす します" },
+  3:{ en:"Yes, I help at home.", jp:"はい、家で手伝います。", hi:"はい いえ で てつだいます" },
+  4:{ en:"I eat breakfast and get ready.", jp:"私は朝ごはんを食べて準備します。", hi:"わたしは あさごはん を たべて じゅんび します" },
+  5:{ en:"I eat dinner in the evening.", jp:"私は夜に夕ごはんを食べます。", hi:"わたしは よる に ゆうごはん を たべます" },
+  6:{ en:"No, I don’t use my phone before bed.", jp:"いいえ、寝る前にスマホを使いません。", hi:"いいえ ねる まえ に すまほ を つかいません" },
+  7:{ en:"I wake up, eat breakfast, and get dressed.", jp:"私は起きて朝ごはんを食べて服を着ます。", hi:"わたしは おきて あさごはん を たべて ふく を きます" },
+  8:{ en:"My favorite part is the evening.", jp:"一番好きな時間は夜です。", hi:"いちばん すきな じかん は よる です" },
+  9:{ en:"I do homework after school.", jp:"私は学校のあとに宿題をします。", hi:"わたしは がっこう の あと に しゅくだい を します" },
+  10:{ en:"Yes, I study every day.", jp:"はい、毎日勉強します。", hi:"はい まいにち べんきょう します" },
+  11:{ en:"I go to bed at ten.", jp:"私は１０時に寝ます。", hi:"わたしは １０じ に ねます" },
+  12:{ en:"I relax or spend time with my family.", jp:"私はリラックスしたり家族と過ごします。", hi:"わたしは りらっくす したり かぞく と すごします" },
+  13:{ en:"I usually eat cereal for breakfast.", jp:"私はたいてい朝食にシリアルを食べます。", hi:"わたしは たいてい ちょうしょくに しりある を たべます" },
+  14:{ en:"I spend time with my friends or family.", jp:"私は友だちや家族と過ごします。", hi:"わたしは ともだち や かぞく と すごします" },
+  15:{ en:"I finish dinner in the evening.", jp:"私は夜に夕ごはんを終えます。", hi:"わたしは よる に ゆうごはん を おえます" }
 };
 
-
-function playSfx(path){
-  const a=new Audio(path);
-  a.preload='auto';
-  a.play().catch(function(){});
-}
+/*------------------------------------------------------------
+  [G] SAGE QUESTION AUDIO
+  Notes:
+  - Uses local mp3 files: audio/questions/q01_....mp3
+  - We use a single reusable Audio instance to reduce iOS/Safari weirdness.
+------------------------------------------------------------*/
+const sagePlayer = new Audio();
+sagePlayer.preload = "auto";
 
 function playAudioFile(path){
   return new Promise(function(resolve){
-    const a=new Audio(path);
-    a.onended=resolve;
-    a.onerror=resolve;
-    a.play().catch(function(){ resolve(); });
-    setTimeout(resolve, 9000);
+    try{
+      sagePlayer.onended = resolve;
+      sagePlayer.onerror = resolve;
+      sagePlayer.src = path;
+      sagePlayer.currentTime = 0;
+
+      const p = sagePlayer.play();
+      if(p && p.catch) p.catch(function(){ resolve(); });
+
+      // safety timeout so UI never gets stuck "talking"
+      setTimeout(resolve, 9000);
+    }catch(e){
+      resolve();
+    }
   });
 }
 
@@ -813,6 +843,9 @@ async function playQuestionAudioForCurrent(){
   }
 }
 
+/*------------------------------------------------------------
+  [H] UI + TEXT ANIMATION
+------------------------------------------------------------*/
 function pulsePoints(){
   const circle=document.getElementById('pointsCircle');
   circle.style.transform='scale(1.3)';
@@ -861,36 +894,22 @@ function animateWords(t){
   });
 }
 
-///*** Speech Recognition Times:
-///***    Chrome speech often hears "7 o'clock" while answers may be "7:00".
-///***    normalize() converts BOTH formats into the same canonical form:
-///***      - "7:00"   -> "7 00"
-///***      - "7 o'clock" / "7 o clock" / "7 oclock" -> "7 00"
-///***    It also converts number words (one–twelve) into digits
-///***    so "seven o'clock" matches "7:00".
-///*** =========================================================
-  
+/*------------------------------------------------------------
+  [I] SPEECH NORMALIZATION + MATCH
+------------------------------------------------------------*/
 function normalize(s){
   let t = (s||"").toLowerCase().trim();
-
-  // unify apostrophes
   t = t.replace(/[’‘´`]/g,"'");
 
-  // convert number words (1–12) to digits (helps "seven o'clock")
   const wordNums = {
     "one":"1","two":"2","three":"3","four":"4","five":"5","six":"6",
     "seven":"7","eight":"8","nine":"9","ten":"10","eleven":"11","twelve":"12"
   };
-  t = t.replace(/\b(one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve)\b/g, (m)=>wordNums[m]);
+  t = t.replace(/\b(one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve)\b/g, function(m){ return wordNums[m]; });
 
-  // normalize "o'clock" variants -> "00"
-  // examples: "7 o'clock", "7 o clock", "7 oclock" => "7 00"
   t = t.replace(/\b(\d{1,2})\s*(?:o'?clock|o\s*clock)\b/g, "$1 00");
-
-  // normalize "7:00" -> "7 00"
   t = t.replace(/\b(\d{1,2})\s*:\s*(\d{2})\b/g, "$1 $2");
 
-  // your existing cleanup
   t = t
     .replace(/'s\b/g,"s")
     .replace(/'/g,"")
@@ -901,7 +920,6 @@ function normalize(s){
   return t;
 }
 
-
 function strictMatch(s,a){
   const ns=normalize(s), na=normalize(a);
   if(!ns||!na) return false;
@@ -911,6 +929,9 @@ function strictMatch(s,a){
   return overlap/aa.length>=0.9 && extra.length<=2;
 }
 
+/*------------------------------------------------------------
+  [J] VISUAL FX
+------------------------------------------------------------*/
 function confetti(n){
   n = n || 80;
   for(let i=0;i<n;i++){
@@ -923,6 +944,9 @@ function confetti(n){
   }
 }
 
+/*------------------------------------------------------------
+  [K] MODE UI
+------------------------------------------------------------*/
 function setModeUI(){
   if(isIOS){
     if(statusLine) statusLine.style.display='none';
@@ -949,10 +973,13 @@ function renderAnswers(){
     d.textContent=a;
 
     d.addEventListener('click',function(){
+      unlockAudioOnce(); /*---- IMPORTANT: makes iOS/Safari sounds work reliably ----*/
+
       if(!isIOS){
         setHint('パソコン・Android は声で答えるよ。','On computers/Android, answer by speaking.');
         return;
       }
+
       document.querySelectorAll('.option').forEach(function(o){ o.classList.remove('selected'); });
       d.classList.add('selected');
       iosSelectedIndex=i;
@@ -964,17 +991,22 @@ function renderAnswers(){
   }
 }
 
+/*------------------------------------------------------------
+  [L] WRONG / CORRECT HANDLERS
+  Notes:
+  - Now uses reusable SFX objects (more reliable than new Audio()).
+------------------------------------------------------------*/
 async function wrongAndroidDesktop(){
   studentBox.classList.add('shake');
   studentBox.style.background='#fee2e2';
-  playSfx(SFX.fart);
+  playSfxObj(sfxFart);
   setHint('ちがう。見てから消してもう一回。','Wrong. Look, erase, and try again.');
   await new Promise(function(r){ setTimeout(r, 320); });
   studentBox.classList.remove('shake');
 }
 
 async function wrongIOS(){
-  playSfx(SFX.fart);
+  playSfxObj(sfxFart);
   studentBox.classList.add('shake');
   studentBox.style.background='#fee2e2';
   setHint('ちがう。もう一回。','Wrong. Try again.');
@@ -986,18 +1018,13 @@ async function wrongIOS(){
   document.querySelectorAll('.option').forEach(function(o){ o.classList.remove('selected'); });
 }
 
-///*** =========================================================
-///*** Answer Translation Popup:
-///***    We changed ANSWER_TRANSLATIONS to SINGLE STRINGS (not arrays).
-///***    So openAnswerModalFor() must NOT use .join() anymore,
-///***    or the popup will crash and never appear.
-  
-/* Answer popup */
+/*------------------------------------------------------------
+  [M] ANSWER MODAL (FIXED for string translations)
+------------------------------------------------------------*/
 function openAnswerModalFor(index1){
   const t = ANSWER_TRANSLATIONS[index1];
   if(!t) return;
 
-  // single strings (no arrays)
   ansEn.textContent = t.en || "";
   ansJp.textContent = t.jp || "";
   ansHi.textContent = t.hi || "";
@@ -1006,7 +1033,6 @@ function openAnswerModalFor(index1){
   ansModal.style.display = 'flex';
   ansModal.setAttribute('aria-hidden','false');
 }
-
 
 function closeAnswerModal(){
   ansModal.classList.remove('show');
@@ -1025,10 +1051,15 @@ if(ansModal){
   });
 }
 
-/* Correct / scoring */
+/*------------------------------------------------------------
+  [N] SCORING
+  Notes:
+  - Adds +1 only if correct on first attempt.
+  - Shows answer popup once per question.
+------------------------------------------------------------*/
 function correctCommon(){
   gotCorrect=true;
-  playSfx(SFX.ding);
+  playSfxObj(sfxDing);
   confetti(70);
   points += firstAttempt ? 1 : 0;
   pulsePoints();
@@ -1057,6 +1088,13 @@ async function checkIOSAnswer(){
     await wrongIOS();
   }
 }
+
+/*------------------------------------------------------------
+  [O] SPEECH RECOGNITION (Android/Desktop)
+  Notes:
+  - Adds a guard lock to prevent double "final" events from firing SFX twice.
+------------------------------------------------------------*/
+let checkingSpeech=false;
 
 function ensureRecog(){
   const R=window.SpeechRecognition||window.webkitSpeechRecognition;
@@ -1123,32 +1161,43 @@ function stopMic(){
 }
 
 async function checkSpeech(spoken){
-  if(isIOS || gotCorrect) return;
-  const q=currentQuestion();
+  if(isIOS || gotCorrect || checkingSpeech) return;
+  checkingSpeech=true;
+  try{
+    const q=currentQuestion();
 
-  const matchIndex=q.answers.findIndex(function(ans){ return strictMatch(spoken,ans); });
-  if(matchIndex===-1){
-    firstAttempt=false;
-    await wrongAndroidDesktop();
-    return;
-  }
+    const matchIndex=q.answers.findIndex(function(ans){ return strictMatch(spoken,ans); });
+    if(matchIndex===-1){
+      firstAttempt=false;
+      await wrongAndroidDesktop();
+      return;
+    }
 
-  const isCorrect = strictMatch(spoken, q.correct);
-  if(isCorrect){
-    correctCommon();
-    stopMic();
-  } else {
-    firstAttempt=false;
-    await wrongAndroidDesktop();
+    const isCorrect = strictMatch(spoken, q.correct);
+    if(isCorrect){
+      correctCommon();
+      stopMic();
+    } else {
+      firstAttempt=false;
+      await wrongAndroidDesktop();
+    }
+  } finally {
+    checkingSpeech=false;
   }
 }
 
+/*------------------------------------------------------------
+  [P] CLEAR ANSWER
+------------------------------------------------------------*/
 function clearAnswer(){
   studentBox.textContent='';
   studentBox.style.background='#fff';
   setHint('もう一回言ってね。','Say it again.');
 }
 
+/*------------------------------------------------------------
+  [Q] LOAD QUESTION
+------------------------------------------------------------*/
 function loadQuestion(){
   gotCorrect=false;
   firstAttempt=true;
@@ -1169,6 +1218,12 @@ function loadQuestion(){
   setModeUI();
 }
 
+/*------------------------------------------------------------
+  [R] RESULTS (Scorecard + Sound)
+  Notes:
+  - Plays one of 4 result sounds.
+  - Uses unlocked audio for iOS reliability.
+------------------------------------------------------------*/
 function showResults(){
   stopMic();
   const total=questions.length;
@@ -1186,11 +1241,19 @@ function showResults(){
   resultsOverlay.style.display='flex';
   resultsOverlay.setAttribute('aria-hidden','false');
 
-  try{ snd.currentTime=0; snd.play(); }catch(e){}
+  unlockAudioOnce(); /*---- IMPORTANT: makes result audio consistent on iOS/Safari ----*/
+  try{
+    snd.currentTime=0;
+    const p = snd.play();
+    if(p && p.catch) p.catch(function(){});
+  }catch(e){}
+
   if(points===15) confetti(140);
 }
 
-/* Rainbow tap: Sage audio */
+/*------------------------------------------------------------
+  [S] EVENT HANDLERS (gesture points = audio unlock)
+------------------------------------------------------------*/
 let audioLock=false;
 async function onTapSage(){
   if(audioLock) return;
@@ -1198,28 +1261,40 @@ async function onTapSage(){
   try{ await playQuestionAudioForCurrent(); }
   finally{ audioLock=false; }
 }
-sageBox.addEventListener('click', onTapSage);
+
+/* Rainbow tap: Sage audio */
+sageBox.addEventListener('click', function(e){
+  unlockAudioOnce();
+  onTapSage(e);
+});
 
 /* White box tap: toggle mic (Android/Desktop) */
 studentBox.addEventListener('click', function(){
+  unlockAudioOnce();
+
   if(isIOS) return;
   if(!recog) ensureRecog();
   if(!recog) return;
 
   if(listening){
     stopMic();
-    setMicStatus(false);
   } else {
     startMic();
-    setMicStatus(true);
   }
 });
 
-eraseBtn.addEventListener('click', function(){ clearAnswer(); });
+eraseBtn.addEventListener('click', function(){
+  unlockAudioOnce();
+  clearAnswer();
+});
 
 document.addEventListener('keydown', function(e){
   if(isIOS) return;
   if(e.key==='Backspace' || e.key==='Delete') clearAnswer();
+});
+
+nextBtn.addEventListener('click', function(){
+  unlockAudioOnce();
 });
 
 nextBtn.onclick=function(){
@@ -1230,6 +1305,10 @@ nextBtn.onclick=function(){
   }
   loadQuestion();
 };
+
+restartBtn.addEventListener('click', function(){
+  unlockAudioOnce();
+});
 
 restartBtn.onclick=function(){
   resultsOverlay.style.display='none';
@@ -1244,13 +1323,21 @@ if(helpBtn && helpModal){
   const closeEls=helpModal.querySelectorAll('[data-close-help]');
   const openHelp=function(){ helpModal.classList.add('show'); helpModal.setAttribute('aria-hidden','false'); };
   const closeHelp=function(){ helpModal.classList.remove('show'); helpModal.setAttribute('aria-hidden','true'); };
-  helpBtn.addEventListener('click', openHelp);
+  helpBtn.addEventListener('click', function(){
+    unlockAudioOnce();
+    openHelp();
+  });
   closeEls.forEach(function(el){ el.addEventListener('click', closeHelp); });
   helpModal.addEventListener('click', function(e){ if(e.target===helpModal) closeHelp(); });
   document.addEventListener('keydown', function(e){ if(e.key==='Escape') closeHelp(); });
 }
 
-/* Init */
+/*------------------------------------------------------------
+  [T] INIT
+  Notes:
+  - We show the iOS overlay only on iOS.
+  - Audio unlock is NOT run on load (must be user gesture).
+------------------------------------------------------------*/
 window.onload=function(){
   loadQuestion();
 
@@ -1261,6 +1348,7 @@ window.onload=function(){
       iosOverlay.setAttribute('aria-hidden','false');
       if(iosOverlayOk){
         iosOverlayOk.addEventListener('click', function(){
+          unlockAudioOnce();
           iosOverlay.style.display='none';
           iosOverlay.setAttribute('aria-hidden','true');
         });
