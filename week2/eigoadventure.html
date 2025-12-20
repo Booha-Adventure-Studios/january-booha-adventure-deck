@@ -861,16 +861,46 @@ function animateWords(t){
   });
 }
 
+///*** Speech Recognition Times:
+///***    Chrome speech often hears "7 o'clock" while answers may be "7:00".
+///***    normalize() converts BOTH formats into the same canonical form:
+///***      - "7:00"   -> "7 00"
+///***      - "7 o'clock" / "7 o clock" / "7 oclock" -> "7 00"
+///***    It also converts number words (one–twelve) into digits
+///***    so "seven o'clock" matches "7:00".
+///*** =========================================================
+  
 function normalize(s){
-  return (s||"")
-    .toLowerCase()
-    .replace(/[’‘´`]/g,"'")
+  let t = (s||"").toLowerCase().trim();
+
+  // unify apostrophes
+  t = t.replace(/[’‘´`]/g,"'");
+
+  // convert number words (1–12) to digits (helps "seven o'clock")
+  const wordNums = {
+    "one":"1","two":"2","three":"3","four":"4","five":"5","six":"6",
+    "seven":"7","eight":"8","nine":"9","ten":"10","eleven":"11","twelve":"12"
+  };
+  t = t.replace(/\b(one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve)\b/g, (m)=>wordNums[m]);
+
+  // normalize "o'clock" variants -> "00"
+  // examples: "7 o'clock", "7 o clock", "7 oclock" => "7 00"
+  t = t.replace(/\b(\d{1,2})\s*(?:o'?clock|o\s*clock)\b/g, "$1 00");
+
+  // normalize "7:00" -> "7 00"
+  t = t.replace(/\b(\d{1,2})\s*:\s*(\d{2})\b/g, "$1 $2");
+
+  // your existing cleanup
+  t = t
     .replace(/'s\b/g,"s")
     .replace(/'/g,"")
     .replace(/[^a-z0-9\s]/g,' ')
     .replace(/\s+/g,' ')
     .trim();
+
+  return t;
 }
+
 
 function strictMatch(s,a){
   const ns=normalize(s), na=normalize(a);
@@ -956,19 +986,27 @@ async function wrongIOS(){
   document.querySelectorAll('.option').forEach(function(o){ o.classList.remove('selected'); });
 }
 
+///*** =========================================================
+///*** Answer Translation Popup:
+///***    We changed ANSWER_TRANSLATIONS to SINGLE STRINGS (not arrays).
+///***    So openAnswerModalFor() must NOT use .join() anymore,
+///***    or the popup will crash and never appear.
+  
 /* Answer popup */
 function openAnswerModalFor(index1){
   const t = ANSWER_TRANSLATIONS[index1];
   if(!t) return;
 
-  ansEn.textContent = (t.en || []).join(' ');
-  ansJp.textContent = (t.jp || []).join('');
-  ansHi.textContent = (t.hi || []).join(' ');
+  // single strings (no arrays)
+  ansEn.textContent = t.en || "";
+  ansJp.textContent = t.jp || "";
+  ansHi.textContent = t.hi || "";
 
   ansModal.classList.add('show');
   ansModal.style.display = 'flex';
   ansModal.setAttribute('aria-hidden','false');
 }
+
 
 function closeAnswerModal(){
   ansModal.classList.remove('show');
