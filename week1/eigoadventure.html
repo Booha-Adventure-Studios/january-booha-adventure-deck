@@ -5,15 +5,9 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
 <title>Booha Eigo Adventure – January Week 1</title>
 <meta name="theme-color" content="#0b1530" />
-
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Noto+Sans+JP:wght@500;700;900&display=swap" rel="stylesheet" />
 
-<!--========================================================
-  /*-------- PRELOAD (SFX + RESULTS) --------*/
-  Notes:
-  - Helps reduce “first play delay” on many devices.
-  - iOS still requires a user gesture to actually play audio → we handle that in JS (unlockAudioOnce()).
-=========================================================-->
+<!-- Preload results + SFX -->
 <link rel="preload" as="audio" href="assets/audio/ding.mp3" />
 <link rel="preload" as="audio" href="assets/audio/fart.mp3" />
 <link rel="preload" as="audio" href="assets/audio/result_0-5.mp3" />
@@ -282,7 +276,7 @@ footer{text-align:center;color:#fff;padding:16px 0 22px;font-family:'Cinzel',ser
   border-radius:999px;padding:6px 14px;
   border:1px solid #ffffff66;background:rgba(15,23,42,.95);
   color:#fff;font-size:.78rem;font-weight:700;letter-spacing:.04em;
-  cursor:pointer;display:flex;align-items:baseline;gap:4px;
+  cursor:pointer;display:flex;align-items:center;gap:4px;
   box-shadow:0 0 12px rgba(0,0,0,.6);backdrop-filter:blur(4px);
 }
 .top-nav-btn .jp{font-size:.72em;}
@@ -396,7 +390,7 @@ footer{text-align:center;color:#fff;padding:16px 0 22px;font-family:'Cinzel',ser
   font-weight:900;
   font-size:clamp(18px,4.8vw,26px);
   line-height:1.22;
-  color:#facc15; /* gold */
+  color:#facc15;
   text-shadow:0 0 10px rgba(250,204,21,.6);
 }
 .ans-jp{
@@ -404,7 +398,7 @@ footer{text-align:center;color:#fff;padding:16px 0 22px;font-family:'Cinzel',ser
   font-size:clamp(16px,4.3vw,22px);
   line-height:1.25;
   margin-top:8px;
-  color:#22c55e; /* green */
+  color:#22c55e;
   text-shadow:0 0 10px rgba(34,197,94,.5);
 }
 .ans-hi{
@@ -412,7 +406,7 @@ footer{text-align:center;color:#fff;padding:16px 0 22px;font-family:'Cinzel',ser
   font-size:clamp(14px,4vw,20px);
   line-height:1.25;
   margin-top:6px;
-  color:#ef4444; /* red */
+  color:#ef4444;
   text-shadow:0 0 10px rgba(239,68,68,.45);
 }
 .ans-tip{margin-top:10px;color:#e5e7f5;font-weight:900;}
@@ -431,7 +425,7 @@ footer{text-align:center;color:#fff;padding:16px 0 22px;font-family:'Cinzel',ser
 <header>
   <div class="h1">THE BOO-RICULUM</div>
   <div class="h2">Eigo Adventure – January Week 1</div>
-  <div class="h3">１月第１週 – 英語アドベンチャー</div>
+  <div class="h3">１月第1週 – 英語アドベンチャー</div>
 </header>
 
 <main>
@@ -555,21 +549,7 @@ footer{text-align:center;color:#fff;padding:16px 0 22px;font-family:'Cinzel',ser
 <audio id="r15"   src="assets/audio/result_15.mp3"   preload="auto"></audio>
 
 <script>
-/* =========================================================
-   Booha Eigo Adventure – January Week 1 (MATCHES Week 2 FIXES)
-   ---------------------------------------------------------
-   /*-------- KEY FIXES APPLIED --------*/
-   1) Audio reliability:
-      - Reusable SFX audio objects (no new Audio() spam)
-      - Single Sage player (reused)
-      - iOS/Safari audio unlock on first user gesture
-   2) Shuffle correctness:
-      - Correct answer string is preserved after shuffling
-   3) Speech double-fire guard:
-      - checkingSpeech lock prevents duplicate ding/fart
-   4) HTML structure cleanup:
-      - ansModal tags fixed (your paste had a broken closing)
-   ========================================================= */
+/* Booha Eigo Adventure – January Week 2 */
 
 /*------------------------------------------------------------
   [A] PATHS
@@ -589,12 +569,13 @@ const RES = {
 /*------------------------------------------------------------
   [B] DEVICE DETECTION
   Notes:
-  - iOS Safari blocks SpeechRecognition → tap-to-answer mode.
+  - iOS Safari blocks SpeechRecognition, so we switch to tap-to-answer.
+  - We also need to "unlock" audio on iOS/Safari (user gesture requirement).
 ------------------------------------------------------------*/
 const isIOS = /iP(hone|od|ad)/.test(navigator.userAgent) ||
   (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
 
-const $ = (s)=>document.querySelector(s);
+const $ = function(s){ return document.querySelector(s); };
 const sageBox     = $('#sageBox');
 const sageText    = $('#sageText');
 const studentBox  = $('#studentBox');
@@ -609,54 +590,58 @@ const counter     = $('#counter');
 const helpBtn     = $('#helpBtn');
 const helpModal   = $('#helpModal');
 
-const resultsOverlay = $('#resultsOverlay');
-const resultsScore   = $('#resultsScore');
-const resultsMsg     = $('#resultsMsg');
-const restartBtn     = $('#restartBtn');
+const resultsOverlay = document.getElementById('resultsOverlay');
+const resultsScore   = document.getElementById('resultsScore');
+const resultsMsg     = document.getElementById('resultsMsg');
+const restartBtn     = document.getElementById('restartBtn');
 
-const iosOverlay   = $('#iosOverlay');
-const iosOverlayOk = $('#iosOverlayOk');
+const iosOverlay    = document.getElementById('iosOverlay');
+const iosOverlayOk  = document.getElementById('iosOverlayOk');
 
 /* Answer modal elements */
-const ansModal = $('#ansModal');
-const ansEn    = $('#ansEn');
-const ansJp    = $('#ansJp');
-const ansHi    = $('#ansHi');
+const ansModal = document.getElementById('ansModal');
+const ansEn    = document.getElementById('ansEn');
+const ansJp    = document.getElementById('ansJp');
+const ansHi    = document.getElementById('ansHi');
 
 /*------------------------------------------------------------
   [C] AUDIO (IMPORTANT FIX)
   Notes:
-  - We reuse audio objects and unlock on first tap.
+  - Creating `new Audio()` inside SpeechRecognition callbacks can fail
+    on iOS/Safari (no user gesture).
+  - Fix: create reusable audio objects + "unlock" them on first tap.
 ------------------------------------------------------------*/
 const sfxDing = new Audio(SFX.ding);
 const sfxFart = new Audio(SFX.fart);
 sfxDing.preload = "auto";
 sfxFart.preload = "auto";
 
-/* Sage uses ONE player (reused) */
-const sagePlayer = new Audio();
-sagePlayer.preload = "auto";
-
-/* iOS: must run after user gesture */
 let audioUnlocked = false;
 function unlockAudioOnce(){
   if(audioUnlocked) return;
   audioUnlocked = true;
 
-  /*-------- iOS/Safari unlock trick --------*/
+  /*------------------------------------------
+    iOS/Safari audio unlock trick:
+    - play muted, immediately pause/reset.
+    - runs only after a real user click/tap.
+  ------------------------------------------*/
   const list = [sfxDing, sfxFart, RES.r05, RES.r610, RES.r1114, RES.r15];
-  list.forEach((a)=>{
+  list.forEach(function(a){
     if(!a) return;
     try{
       a.muted = true;
       const p = a.play();
       if(p && p.then){
-        p.then(()=>{
+        p.then(function(){
           try{ a.pause(); }catch(e){}
           try{ a.currentTime = 0; }catch(e){}
           a.muted = false;
-        }).catch(()=>{ a.muted = false; });
-      }else{
+        }).catch(function(){
+          a.muted = false;
+        });
+      } else {
+        // older browsers
         try{ a.pause(); }catch(e){}
         try{ a.currentTime = 0; }catch(e){}
         a.muted = false;
@@ -669,31 +654,14 @@ function playSfxObj(a){
   try{
     a.currentTime = 0;
     const p = a.play();
-    if(p && p.catch) p.catch(()=>{});
+    if(p && p.catch) p.catch(function(){});
   }catch(e){}
-}
-
-function playAudioFile(path){
-  /*-------- Uses single reusable sagePlayer --------*/
-  return new Promise((resolve)=>{
-    try{
-      sagePlayer.onended = resolve;
-      sagePlayer.onerror = resolve;
-      sagePlayer.src = path;
-      sagePlayer.currentTime = 0;
-      const p = sagePlayer.play();
-      if(p && p.catch) p.catch(()=>resolve());
-      setTimeout(resolve, 9000);
-    }catch(e){
-      resolve();
-    }
-  });
 }
 
 /*------------------------------------------------------------
   [D] UI HELPERS
 ------------------------------------------------------------*/
-function setHint(jp,en){
+function setHint(jp, en){
   hintBox.innerHTML = jp + '<small>' + en + '</small>';
 }
 
@@ -704,72 +672,152 @@ function setMicStatus(on){
     return;
   }
   statusLine.style.display='block';
-  statusLine.innerHTML = on
-    ? '聞いてるよ…<small>Listening...</small>'
-    : '白いボックスをタップしてスタート<small>Tap white box to start</small>';
+  if(on){
+    statusLine.innerHTML = '聞いてるよ…<small>Listening...</small>';
+  } else {
+    statusLine.innerHTML = '白いボックスをタップしてスタート<small>Tap white box to start</small>';
+  }
 }
 
-/*------------------------------------------------------------
-  [E] QUESTIONS (base)
+/*-/*------------------------------------------------------------
+  [E] QUESTIONS (Week 1 / January)
   Notes:
-  - We keep q.answers in original order here.
-  - We produce a shuffled copy with q.correct preserved.
+  - Keep q.answers in original order here.
+  - The game will shuffle answers later, but will preserve q.correct.
+  - Keep the *correct* answer as answers[a].
 ------------------------------------------------------------*/
 const BASE_QUESTIONS = [
-  {index1:1,  q:"What is your goal this year?", a:0, answers:[
-    "I want to improve my English this year.","I want to turn into a banana.","My goal is to sleep for one year.","I want to live on Mars with aliens."]},
-  {index1:2,  q:"Why is it important to you?", a:0, answers:[
-    "It is important because it helps my future.","Because my shoes told me to.","Because pizza is watching me.","I don’t know, my cat decided."]},
-  {index1:3,  q:"How will you reach your goal?", a:0, answers:[
-    "I will study and practice every day.","I will close my eyes and hope.","I will shout my goal at the moon.","I will wait for magic."]},
-  {index1:4,  q:"Who helps you stay motivated?", a:0, answers:[
-    "My family and teachers help me.","A talking sandwich helps me.","My pillow gives me advice.","Nobody, I talk to the wall."]},
-  {index1:5,  q:"What habit do you want to change?", a:0, answers:[
-    "I want to stop procrastinating.","I want to stop breathing air.","I want to stop being human.","I want to stop existing on Mondays."]},
-  {index1:6,  q:"Do you like making resolutions?", a:0, answers:[
-    "Yes, I like making resolutions.","No, resolutions are scared of me.","I only make food, not resolutions.","I make resolutions for my socks."]},
-  {index1:7,  q:"What do you want to try this year?", a:0, answers:[
-    "I want to try something new this year.","I want to try flying without wings.","I want to try eating rocks.","I want to try sleeping in class forever."]},
-  {index1:8,  q:"What’s something new you learned recently?", a:0, answers:[
-    "I learned a new English word.","I learned how to talk to chairs.","I learned that water is dry.","I learned nothing since birth."]},
-  {index1:9,  q:"Is it easy to keep goals?", a:0, answers:[
-    "No, it is not always easy.","Yes, goals walk by themselves.","Goals are easy because they disappear.","Goals are easy when you never try."]},
-  {index1:10, q:"What happens when you don’t try?", a:0, answers:[
-    "You cannot improve if you don’t try.","You turn into a potato.","The world stops spinning.","Nothing, everything does itself."]},
-  {index1:11, q:"What makes you feel proud?", a:0, answers:[
-    "Doing my best makes me feel proud.","Eating ten cakes makes me proud.","Falling asleep in class makes me proud.","Forgetting everything makes me proud."]},
-  {index1:12, q:"What’s your dream for the future?", a:0, answers:[
-    "I want to have a happy future.","I want to be a rock.","I want to live inside a video game.","I want to disappear forever."]},
-  {index1:13, q:"How do you stay positive?", a:0, answers:[
-    "I stay positive by thinking positively.","I stay positive by yelling at clouds.","I stay positive by running away.","I don’t, I hide under a desk."]},
-  {index1:14, q:"Who inspires you?", a:0, answers:[
-    "My family inspires me.","A flying spoon inspires me.","A random tree inspires me.","Nobody, inspiration is scary."]},
-  {index1:15, q:"How can English help your goals?", a:0, answers:[
-    "English can help me in my future.","English helps my shoes run faster.","English helps me talk to fish.","English has no use at all."]}
+  { index1:1,  q:"What is your goal this year?", a:0, answers:[
+    "I want to improve my English this year.",
+    "I want to turn into a banana.",
+    "My goal is to sleep for one year.",
+    "I want to live on Mars with aliens."
+  ]},
+  { index1:2,  q:"Why is it important to you?", a:0, answers:[
+    "It is important because it helps my future.",
+    "Because my shoes told me to.",
+    "Because pizza is watching me.",
+    "I don’t know, my cat decided."
+  ]},
+  { index1:3,  q:"How will you reach your goal?", a:0, answers:[
+    "I will study and practice every day.",
+    "I will close my eyes and hope.",
+    "I will shout my goal at the moon.",
+    "I will wait for magic."
+  ]},
+  { index1:4,  q:"Who helps you stay motivated?", a:0, answers:[
+    "My family and teachers help me.",
+    "A talking sandwich helps me.",
+    "My pillow gives me advice.",
+    "Nobody, I talk to the wall."
+  ]},
+  { index1:5,  q:"What habit do you want to change?", a:0, answers:[
+    "I want to stop procrastinating.",
+    "I want to stop breathing air.",
+    "I want to stop being human.",
+    "I want to stop existing on Mondays."
+  ]},
+  { index1:6,  q:"Do you like making resolutions?", a:0, answers:[
+    "Yes, I like making resolutions.",
+    "No, resolutions are scared of me.",
+    "I only make food, not resolutions.",
+    "I make resolutions for my socks."
+  ]},
+  { index1:7,  q:"What do you want to try this year?", a:0, answers:[
+    "I want to try something new this year.",
+    "I want to try flying without wings.",
+    "I want to try eating rocks.",
+    "I want to try sleeping in class forever."
+  ]},
+  { index1:8,  q:"What’s something new you learned recently?", a:0, answers:[
+    "I learned a new English word.",
+    "I learned how to talk to chairs.",
+    "I learned that water is dry.",
+    "I learned nothing since birth."
+  ]},
+  { index1:9,  q:"Is it easy to keep goals?", a:0, answers:[
+    "No, it is not always easy.",
+    "Yes, goals walk by themselves.",
+    "Goals are easy because they disappear.",
+    "Goals are easy when you never try."
+  ]},
+  { index1:10, q:"What happens when you don’t try?", a:0, answers:[
+    "You cannot improve if you don’t try.",
+    "You turn into a potato.",
+    "The world stops spinning.",
+    "Nothing, everything does itself."
+  ]},
+  { index1:11, q:"What makes you feel proud?", a:0, answers:[
+    "Doing my best makes me feel proud.",
+    "Eating ten cakes makes me proud.",
+    "Falling asleep in class makes me proud.",
+    "Forgetting everything makes me proud."
+  ]},
+  { index1:12, q:"What’s your dream for the future?", a:0, answers:[
+    "I want to have a happy future.",
+    "I want to be a rock.",
+    "I want to live inside a video game.",
+    "I want to disappear forever."
+  ]},
+  { index1:13, q:"How do you stay positive?", a:0, answers:[
+    "I stay positive by thinking positively.",
+    "I stay positive by yelling at clouds.",
+    "I stay positive by running away.",
+    "I don’t, I hide under a desk."
+  ]},
+  { index1:14, q:"Who inspires you?", a:0, answers:[
+    "My family inspires me.",
+    "A flying spoon inspires me.",
+    "A random tree inspires me.",
+    "Nobody, inspiration is scary."
+  ]},
+  { index1:15, q:"How can English help your goals?", a:0, answers:[
+    "English can help me in my future.",
+    "English helps my shoes run faster.",
+    "English helps me talk to fish.",
+    "English has no use at all."
+  ]}
 ];
 
-function shuffle(arr){
-  for(let i=arr.length-1;i>0;i--){
+function shuffle(a){
+  for(let i=a.length-1;i>0;i--){
     const j=Math.floor(Math.random()*(i+1));
-    [arr[i],arr[j]]=[arr[j],arr[i]];
+    const tmp=a[i]; a[i]=a[j]; a[j]=tmp;
   }
-  return arr;
+  return a;
 }
 
 function makeShuffledQuestions(){
-  /*-------- Preserves correct answer after shuffling --------*/
-  const list = BASE_QUESTIONS.map((q)=>{
+  const list = BASE_QUESTIONS.map(function(q){
     const correct = q.answers[q.a];
     const mixed = shuffle(q.answers.slice());
-    return Object.assign({}, q, { answers:mixed, correct });
+    return Object.assign({}, q, {
+      answers: mixed,
+      correct: correct
+    });
   });
   return shuffle(list);
 }
 
 let questions = makeShuffledQuestions();
 
+let current=0, points=0;
+let gotCorrect=false, firstAttempt=true;
+let showedAnswerPopup=false;
+
+let recog=null;
+let listening=false;
+
+/* iOS state */
+let iosSelectedIndex=null;
+let iosFirstAttempt=true;
+
 /*------------------------------------------------------------
-  [F] TRANSLATIONS (single strings)
+  [F] TRANSLATIONS (Week 1 / single strings)
+  Notes:
+  - Keys MUST match index1 above (1..15).
+  - en MUST match the correct sentence exactly.
+  - jp = Japanese, hi = hiragana (space-separated is OK).
 ------------------------------------------------------------*/
 const ANSWER_TRANSLATIONS = {
   1:{ en:"I want to improve my English this year.", jp:"私は今年英語を上達させたいです。", hi:"わたしは ことし えいごを じょうたつ させたいです" },
@@ -789,23 +837,36 @@ const ANSWER_TRANSLATIONS = {
   15:{ en:"English can help me in my future.", jp:"英語は将来に役立ちます。", hi:"えいごは しょうらい に やくだちます" }
 };
 
-/*------------------------------------------------------------
-  [G] GAME STATE
-------------------------------------------------------------*/
-let current=0, points=0;
-let gotCorrect=false, firstAttempt=true;
-let showedAnswerPopup=false;
-
-let recog=null;
-let listening=false;
-let checkingSpeech=false; /*-------- double-final guard --------*/
-
-let iosSelectedIndex=null;
-let iosFirstAttempt=true;
 
 /*------------------------------------------------------------
-  [H] SAGE QUESTION AUDIO
+  [G] SAGE QUESTION AUDIO
+  Notes:
+  - Uses local mp3 files: audio/questions/q01_....mp3
+  - We use a single reusable Audio instance to reduce iOS/Safari weirdness.
 ------------------------------------------------------------*/
+const sagePlayer = new Audio();
+sagePlayer.preload = "auto";
+
+function playAudioFile(path){
+  return new Promise(function(resolve){
+    try{
+      sagePlayer.onended = resolve;
+      sagePlayer.onerror = resolve;
+      sagePlayer.src = path;
+      sagePlayer.currentTime = 0;
+
+      const p = sagePlayer.play();
+      if(p && p.catch) p.catch(function(){ resolve(); });
+
+      // safety timeout so UI never gets stuck "talking"
+      setTimeout(resolve, 9000);
+    }catch(e){
+      resolve();
+    }
+  });
+}
+
+/* Sage filename convention: q01_what_is_your_goal_this_year.mp3 */
 function qAudioFilename(qText, index1){
   const n = String(index1).padStart(2,'0');
   const slug = qText
@@ -833,8 +894,20 @@ async function playQuestionAudioForCurrent(){
 }
 
 /*------------------------------------------------------------
-  [I] TEXT ANIMATION + FIT
+  [H] UI + TEXT ANIMATION
 ------------------------------------------------------------*/
+function pulsePoints(){
+  const circle=document.getElementById('pointsCircle');
+  circle.style.transform='scale(1.3)';
+  setTimeout(function(){ circle.style.transform='scale(1)'; },300);
+}
+
+function updateUI(){
+  pointsValue.textContent=points;
+  counter.textContent=(current+1) + ' / ' + questions.length;
+}
+
+/* Make rainbow question text fit */
 function fitSageText(){
   const box = sageBox;
   const el = sageText;
@@ -863,64 +936,66 @@ function animateWords(t){
     s.className='word';
     s.textContent=parts[i];
     sageText.appendChild(s);
-    ((span,delay)=>setTimeout(()=>{ span.style.opacity=1; }, delay))(s, 110*i);
+    (function(span,delay){ setTimeout(function(){ span.style.opacity=1; }, delay); })(s, 110*i);
   }
-  requestAnimationFrame(()=>{
+  requestAnimationFrame(function(){
     fitSageText();
     setTimeout(fitSageText, 250);
   });
 }
 
 /*------------------------------------------------------------
-  [J] SPEECH NORMALIZATION + MATCH
+  [I] SPEECH NORMALIZATION + MATCH
 ------------------------------------------------------------*/
 function normalize(s){
-  return (s||"")
-    .toLowerCase()
-    .replace(/[’‘´`]/g,"'")
+  let t = (s||"").toLowerCase().trim();
+  t = t.replace(/[’‘´`]/g,"'");
+
+  const wordNums = {
+    "one":"1","two":"2","three":"3","four":"4","five":"5","six":"6",
+    "seven":"7","eight":"8","nine":"9","ten":"10","eleven":"11","twelve":"12"
+  };
+  t = t.replace(/\b(one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve)\b/g, function(m){ return wordNums[m]; });
+
+  t = t.replace(/\b(\d{1,2})\s*(?:o'?clock|o\s*clock)\b/g, "$1 00");
+  t = t.replace(/\b(\d{1,2})\s*:\s*(\d{2})\b/g, "$1 $2");
+
+  t = t
     .replace(/'s\b/g,"s")
     .replace(/'/g,"")
     .replace(/[^a-z0-9\s]/g,' ')
     .replace(/\s+/g,' ')
     .trim();
+
+  return t;
 }
 
 function strictMatch(s,a){
   const ns=normalize(s), na=normalize(a);
   if(!ns||!na) return false;
   const sa=ns.split(' '), aa=na.split(' ');
-  const overlap=aa.filter((w)=>sa.includes(w)).length;
-  const extra=sa.filter((w)=>!aa.includes(w));
+  const overlap=aa.filter(function(w){ return sa.includes(w); }).length;
+  const extra=sa.filter(function(w){ return !aa.includes(w); });
   return overlap/aa.length>=0.9 && extra.length<=2;
 }
 
 /*------------------------------------------------------------
-  [K] VISUAL FX
+  [J] VISUAL FX
 ------------------------------------------------------------*/
-function confetti(n=80){
+function confetti(n){
+  n = n || 80;
   for(let i=0;i<n;i++){
     const c=document.createElement('div');
     c.style.cssText='position:fixed;width:10px;height:10px;left:'+(Math.random()*100)+'%;top:-10px;background:hsl('+(Math.random()*360)+',100%,70%);opacity:.9;pointer-events:none;z-index:9999;';
     document.body.appendChild(c);
     const d=900+Math.random()*1200;
     c.animate([{transform:'translateY(0)'},{transform:'translateY(100vh) rotate(720deg)'}],{duration:d,easing:'ease-out'});
-    setTimeout(()=>c.remove(), d);
+    setTimeout(function(){ c.remove(); }, d);
   }
 }
 
-function pulsePoints(){
-  const circle=document.getElementById('pointsCircle');
-  circle.style.transform='scale(1.3)';
-  setTimeout(()=>{ circle.style.transform='scale(1)'; },300);
-}
-
-function updateUI(){
-  pointsValue.textContent=points;
-  counter.textContent=(current+1) + ' / ' + questions.length;
-}
-
 /*------------------------------------------------------------
-  [L] MODE UI
+  [K] MODE UI
 ------------------------------------------------------------*/
 function setModeUI(){
   if(isIOS){
@@ -940,22 +1015,22 @@ function setModeUI(){
 function renderAnswers(){
   optionsBox.innerHTML='';
   const q=currentQuestion();
-
-  q.answers.forEach((a,i)=>{
+  for(let i=0;i<q.answers.length;i++){
+    const a=q.answers[i];
     const d=document.createElement('div');
     d.className='option';
     d.dataset.index=i;
     d.textContent=a;
 
-    d.addEventListener('click', ()=>{
-      unlockAudioOnce(); /*-------- user gesture → unlock audio --------*/
+    d.addEventListener('click',function(){
+      unlockAudioOnce(); /*---- IMPORTANT: makes iOS/Safari sounds work reliably ----*/
 
       if(!isIOS){
         setHint('パソコン・Android は声で答えるよ。','On computers/Android, answer by speaking.');
         return;
       }
 
-      document.querySelectorAll('.option').forEach((o)=>o.classList.remove('selected'));
+      document.querySelectorAll('.option').forEach(function(o){ o.classList.remove('selected'); });
       d.classList.add('selected');
       iosSelectedIndex=i;
       studentBox.textContent=a;
@@ -963,18 +1038,20 @@ function renderAnswers(){
     });
 
     optionsBox.appendChild(d);
-  });
+  }
 }
 
 /*------------------------------------------------------------
-  [M] WRONG / CORRECT
+  [L] WRONG / CORRECT HANDLERS
+  Notes:
+  - Now uses reusable SFX objects (more reliable than new Audio()).
 ------------------------------------------------------------*/
 async function wrongAndroidDesktop(){
   studentBox.classList.add('shake');
   studentBox.style.background='#fee2e2';
   playSfxObj(sfxFart);
   setHint('ちがう。見てから消してもう一回。','Wrong. Look, erase, and try again.');
-  await new Promise((r)=>setTimeout(r, 320));
+  await new Promise(function(r){ setTimeout(r, 320); });
   studentBox.classList.remove('shake');
 }
 
@@ -983,16 +1060,16 @@ async function wrongIOS(){
   studentBox.classList.add('shake');
   studentBox.style.background='#fee2e2';
   setHint('ちがう。もう一回。','Wrong. Try again.');
-  await new Promise((r)=>setTimeout(r, 950));
+  await new Promise(function(r){ setTimeout(r, 950); });
   studentBox.classList.remove('shake');
   studentBox.style.background='#fff';
   studentBox.textContent='';
   iosSelectedIndex=null;
-  document.querySelectorAll('.option').forEach((o)=>o.classList.remove('selected'));
+  document.querySelectorAll('.option').forEach(function(o){ o.classList.remove('selected'); });
 }
 
 /*------------------------------------------------------------
-  [N] ANSWER MODAL
+  [M] ANSWER MODAL (FIXED for string translations)
 ------------------------------------------------------------*/
 function openAnswerModalFor(index1){
   const t = ANSWER_TRANSLATIONS[index1];
@@ -1014,33 +1091,36 @@ function closeAnswerModal(){
 }
 
 if(ansModal){
-  ansModal.addEventListener('click', (e)=>{
+  ansModal.addEventListener('click', function(e){
     if(e.target && e.target.hasAttribute('data-close-ans')) closeAnswerModal();
   });
-  ansModal.querySelectorAll('[data-close-ans]').forEach((b)=>b.addEventListener('click', closeAnswerModal));
-  document.addEventListener('keydown', (e)=>{
+  const closeBtns = ansModal.querySelectorAll('[data-close-ans]');
+  closeBtns.forEach(function(b){ b.addEventListener('click', closeAnswerModal); });
+  document.addEventListener('keydown', function(e){
     if(e.key==='Escape' && ansModal.classList.contains('show')) closeAnswerModal();
   });
 }
 
 /*------------------------------------------------------------
-  [O] SCORING
+  [N] SCORING
+  Notes:
+  - Adds +1 only if correct on first attempt.
+  - Shows answer popup once per question.
 ------------------------------------------------------------*/
 function correctCommon(){
   gotCorrect=true;
   playSfxObj(sfxDing);
   confetti(70);
-
   points += firstAttempt ? 1 : 0;
   pulsePoints();
   updateUI();
-
   setHint('正解。つぎへ。','Correct. Tap Next.');
   nextBtn.style.display='inline-block';
 
   if(!showedAnswerPopup){
     showedAnswerPopup=true;
-    openAnswerModalFor(currentQuestion().index1);
+    const q = currentQuestion();
+    openAnswerModalFor(q.index1);
   }
 }
 
@@ -1048,9 +1128,8 @@ async function checkIOSAnswer(){
   if(gotCorrect) return;
   const q=currentQuestion();
   if(iosSelectedIndex===null) return;
-
-  const chosen=q.answers[iosSelectedIndex];
-  if(chosen===q.correct){
+  const answer=q.answers[iosSelectedIndex];
+  if(answer===q.correct){
     if(!iosFirstAttempt) firstAttempt=false;
     correctCommon();
   } else {
@@ -1061,8 +1140,12 @@ async function checkIOSAnswer(){
 }
 
 /*------------------------------------------------------------
-  [P] SPEECH RECOGNITION (Android/Desktop)
+  [O] SPEECH RECOGNITION (Android/Desktop)
+  Notes:
+  - Adds a guard lock to prevent double "final" events from firing SFX twice.
 ------------------------------------------------------------*/
+let checkingSpeech=false;
+
 function ensureRecog(){
   const R=window.SpeechRecognition||window.webkitSpeechRecognition;
   if(!R){
@@ -1076,24 +1159,24 @@ function ensureRecog(){
   recog.lang='en-US';
   recog.interimResults=true;
 
-  recog.onstart=()=>{
+  recog.onstart=function(){
     listening=true;
     studentBox.classList.add('listening');
     setMicStatus(true);
   };
 
-  recog.onend=()=>{
+  recog.onend=function(){
     listening=false;
     studentBox.classList.remove('listening');
     setMicStatus(false);
   };
 
-  recog.onerror=()=>{
+  recog.onerror=function(){
     setMicStatus(false);
     setHint('マイクを許可してね。','Please allow microphone access.');
   };
 
-  recog.onresult=(e)=>{
+  recog.onresult=function(e){
     let t='';
     for(const r of e.results){
       t += r[0].transcript + ' ';
@@ -1133,7 +1216,7 @@ async function checkSpeech(spoken){
   try{
     const q=currentQuestion();
 
-    const matchIndex=q.answers.findIndex((ans)=>strictMatch(spoken,ans));
+    const matchIndex=q.answers.findIndex(function(ans){ return strictMatch(spoken,ans); });
     if(matchIndex===-1){
       firstAttempt=false;
       await wrongAndroidDesktop();
@@ -1154,7 +1237,7 @@ async function checkSpeech(spoken){
 }
 
 /*------------------------------------------------------------
-  [Q] CLEAR ANSWER
+  [P] CLEAR ANSWER
 ------------------------------------------------------------*/
 function clearAnswer(){
   studentBox.textContent='';
@@ -1163,7 +1246,7 @@ function clearAnswer(){
 }
 
 /*------------------------------------------------------------
-  [R] LOAD QUESTION
+  [Q] LOAD QUESTION
 ------------------------------------------------------------*/
 function loadQuestion(){
   gotCorrect=false;
@@ -1186,7 +1269,10 @@ function loadQuestion(){
 }
 
 /*------------------------------------------------------------
-  [S] RESULTS
+  [R] RESULTS (Scorecard + Sound)
+  Notes:
+  - Plays one of 4 result sounds.
+  - Uses unlocked audio for iOS reliability.
 ------------------------------------------------------------*/
 function showResults(){
   stopMic();
@@ -1205,18 +1291,18 @@ function showResults(){
   resultsOverlay.style.display='flex';
   resultsOverlay.setAttribute('aria-hidden','false');
 
-  unlockAudioOnce(); /*-------- ensures result audio is allowed on iOS after a tap happened --------*/
+  unlockAudioOnce(); /*---- IMPORTANT: makes result audio consistent on iOS/Safari ----*/
   try{
     snd.currentTime=0;
     const p = snd.play();
-    if(p && p.catch) p.catch(()=>{});
+    if(p && p.catch) p.catch(function(){});
   }catch(e){}
 
   if(points===15) confetti(140);
 }
 
 /*------------------------------------------------------------
-  [T] EVENTS (gesture points = unlock)
+  [S] EVENT HANDLERS (gesture points = audio unlock)
 ------------------------------------------------------------*/
 let audioLock=false;
 async function onTapSage(){
@@ -1226,12 +1312,14 @@ async function onTapSage(){
   finally{ audioLock=false; }
 }
 
-sageBox.addEventListener('click', (e)=>{
+/* Rainbow tap: Sage audio */
+sageBox.addEventListener('click', function(e){
   unlockAudioOnce();
   onTapSage(e);
 });
 
-studentBox.addEventListener('click', ()=>{
+/* White box tap: toggle mic (Android/Desktop) */
+studentBox.addEventListener('click', function(){
   unlockAudioOnce();
 
   if(isIOS) return;
@@ -1245,18 +1333,21 @@ studentBox.addEventListener('click', ()=>{
   }
 });
 
-eraseBtn.addEventListener('click', ()=>{
+eraseBtn.addEventListener('click', function(){
   unlockAudioOnce();
   clearAnswer();
 });
 
-document.addEventListener('keydown', (e)=>{
+document.addEventListener('keydown', function(e){
   if(isIOS) return;
   if(e.key==='Backspace' || e.key==='Delete') clearAnswer();
 });
 
-nextBtn.addEventListener('click', ()=>unlockAudioOnce());
-nextBtn.onclick=()=>{
+nextBtn.addEventListener('click', function(){
+  unlockAudioOnce();
+});
+
+nextBtn.onclick=function(){
   current++;
   if(current>=questions.length){
     showResults();
@@ -1265,11 +1356,13 @@ nextBtn.onclick=()=>{
   loadQuestion();
 };
 
-restartBtn.addEventListener('click', ()=>unlockAudioOnce());
-restartBtn.onclick=()=>{
+restartBtn.addEventListener('click', function(){
+  unlockAudioOnce();
+});
+
+restartBtn.onclick=function(){
   resultsOverlay.style.display='none';
   resultsOverlay.setAttribute('aria-hidden','true');
-
   current=0; points=0;
   questions = makeShuffledQuestions();
   loadQuestion();
@@ -1278,23 +1371,24 @@ restartBtn.onclick=()=>{
 /* Help modal */
 if(helpBtn && helpModal){
   const closeEls=helpModal.querySelectorAll('[data-close-help]');
-  const openHelp=()=>{ helpModal.classList.add('show'); helpModal.setAttribute('aria-hidden','false'); };
-  const closeHelp=()=>{ helpModal.classList.remove('show'); helpModal.setAttribute('aria-hidden','true'); };
-
-  helpBtn.addEventListener('click', ()=>{
+  const openHelp=function(){ helpModal.classList.add('show'); helpModal.setAttribute('aria-hidden','false'); };
+  const closeHelp=function(){ helpModal.classList.remove('show'); helpModal.setAttribute('aria-hidden','true'); };
+  helpBtn.addEventListener('click', function(){
     unlockAudioOnce();
     openHelp();
   });
-
-  closeEls.forEach((el)=>el.addEventListener('click', closeHelp));
-  helpModal.addEventListener('click', (e)=>{ if(e.target===helpModal) closeHelp(); });
-  document.addEventListener('keydown', (e)=>{ if(e.key==='Escape') closeHelp(); });
+  closeEls.forEach(function(el){ el.addEventListener('click', closeHelp); });
+  helpModal.addEventListener('click', function(e){ if(e.target===helpModal) closeHelp(); });
+  document.addEventListener('keydown', function(e){ if(e.key==='Escape') closeHelp(); });
 }
 
 /*------------------------------------------------------------
-  [U] INIT
+  [T] INIT
+  Notes:
+  - We show the iOS overlay only on iOS.
+  - Audio unlock is NOT run on load (must be user gesture).
 ------------------------------------------------------------*/
-window.onload=()=>{
+window.onload=function(){
   loadQuestion();
 
   if(isIOS){
@@ -1303,7 +1397,7 @@ window.onload=()=>{
       iosOverlay.style.display='flex';
       iosOverlay.setAttribute('aria-hidden','false');
       if(iosOverlayOk){
-        iosOverlayOk.addEventListener('click', ()=>{
+        iosOverlayOk.addEventListener('click', function(){
           unlockAudioOnce();
           iosOverlay.style.display='none';
           iosOverlay.setAttribute('aria-hidden','true');
