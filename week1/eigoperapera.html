@@ -3,7 +3,23 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-<title>Booha Eigo Pera Pera – January Week 1</title>
+
+<!-- =========================================================
+█████████████████████████████████████████████████████████████
+✅✅✅ CHANGE 1/6: Page <title> (Week name)
+- This appears on the browser tab + iPad app switcher.
+█████████████████████████████████████████████████████████████
+========================================================= -->
+<title>Booha Eigo Pera Pera – Januuary Week 1</title>
+
+<!-- =========================================================
+█████████████████████████████████████████████████████████████
+✅ OPTIONAL: ICONS
+█████████████████████████████████████████████████████████████
+========================================================= -->
+<link rel="icon" type="image/png" sizes="32x32" href="BoohaYellow.png">
+<link rel="apple-touch-icon" href="BoohaYellow.png">
+
 <meta name="theme-color" content="#0b1530" />
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Noto+Sans+JP:wght@500;700&display=swap" rel="stylesheet" />
 
@@ -320,15 +336,22 @@ opacity:.95;
 <header>
 <div class="h1">THE BOO-RICULUM</div>
 <div class="h2">EIGO PERA PERA</div>
-<div class="h3">January Week 1 – Speaking Practice</div>
-<div class="h4">１月第１週 – スピーキング練習</div>
+
+<!-- =========================================================
+█████████████████████████████████████████████████████████████
+✅✅✅ CHANGE 2/6: Header week label (EN/JP)
+- These are the big labels on the page.
+█████████████████████████████████████████████████████████████
+========================================================= -->
+<div id="weekLabelEn" class="h3">January Week 1 – Speaking Practice</div>
+<div id="weekLabelJp" class="h4">1月第1週 – スピーキング練習</div>
 </header>
 
 <div class="wrap">
 <div class="panel">
 <div class="card">
 <div id="sweep" class="sweep"></div>
-<button id="playBtn" class="playBtn">▶</button>
+<button id="playBtn" class="playBtn" type="button">▶</button>
 <div id="en" class="en">Press スタート to start</div>
 </div>
 <div id="jp" class="jp"></div>
@@ -343,9 +366,9 @@ opacity:.95;
 </div>
 
 <div class="btnRow">
-<button id="beginBtn" class="btn begin">スタート<br><small>Start</small></button>
-<button id="retryBtn" class="btn retry" style="display:none">もう一回<br><small>Retry</small></button>
-<button id="nextBtn" class="btn next" style="display:none">つぎへ<br><small>Next</small></button>
+<button id="beginBtn" class="btn begin" type="button">スタート<br><small>Start</small></button>
+<button id="retryBtn" class="btn retry" type="button" style="display:none">もう一回<br><small>Retry</small></button>
+<button id="nextBtn" class="btn next" type="button" style="display:none">つぎへ<br><small>Next</small></button>
 </div>
 <div id="scoreBox" class="scoreBox" style="display:none"></div>
 </div>
@@ -363,9 +386,9 @@ opacity:.95;
 <ul>
 <li><strong>スタート</strong>で、1つ目の英文が出ます。</li>
 <li><strong>金色の ▶</strong>で、Sage の音声を聞けます。</li>
-<li>まんなかが <strong>聞き取り中</strong> のあいだ、英文を声に出して読みます。</li>
-<li><strong>100%</strong> なら正解：大きいハート ＋ ding。</li>
-<li><strong>100%</strong> じゃなければ間違い：大きいおなら ＋ fart。</li>
+<li><strong>3→2→1 のあと</strong>、まんなかが <strong>聞き取り中</strong> になったら、英文を声に出して読みます。</li>
+<li>（Android / パソコンのみ）ある程度できていれば OK：大きいハート ＋ ding。</li>
+<li>まだ足りないとき：大きいおなら ＋ fart。</li>
 <li>正解のときは、ding のあとに <strong>つぎへ</strong> が出ます。</li>
 </ul>
 
@@ -373,9 +396,9 @@ opacity:.95;
 <ul>
 <li>Tap <strong>Start</strong> to show the first sentence.</li>
 <li>Tap the <strong>gold ▶</strong> to hear Sage read it.</li>
-<li>While the center says <strong>聞き取り中</strong>, read the sentence aloud.</li>
-<li><strong>100%</strong> is correct: big heart + ding.</li>
-<li>Not <strong>100%</strong> is wrong: big fart + fart sound.</li>
+<li>After <strong>3→2→1</strong>, when the center shows <strong>聞き取り中</strong>, read the sentence aloud.</li>
+<li>(Android/Desktop) Good enough = big heart + ding.</li>
+<li>Not enough = big fart + fart sound.</li>
 <li>On correct, <strong>Next</strong> appears after the ding.</li>
 </ul>
 </div>
@@ -404,58 +427,160 @@ iPad / iPhone 版は、
 
 <footer>Bryan’s English School</footer>
 
-<!-- RESULT PAGES (same as before) -->
+<!-- RESULT PAGES (Android/Desktop scoring only) -->
 <div id="resRed" class="resultPage"><div class="resultInner glowRed">
-<header><div class="h1">THE BOO-RICULUM</div><div class="h2">EIGO PERA PERA</div><div class="h3">January Week 1 – Speaking Practice</div></header>
+<header>
+  <div class="h1">THE BOO-RICULUM</div>
+  <div class="h2">EIGO PERA PERA</div>
+  <div class="h3" data-week-en>January Week 1 – Speaking Practice</div>
+</header>
 <div class="resultCenter"><div>
 <div id="msgRed" class="resultMsg">ブーリキュラム見てないでしょ！</div>
 <div id="scoreRed" class="resultScore">0/15（0%）</div>
-<div><button class="btnSmall btnRestart" data-restart>もう一度</button><a class="btnSmall btnMenu" href="index.html">メニューへ</a></div>
+<div><button class="btnSmall btnRestart" data-restart type="button">もう一度</button><a class="btnSmall btnMenu" href="index.html">メニューへ</a></div>
 </div></div>
 <footer>Bryan’s English School</footer>
 </div></div>
 
 <div id="resOrange" class="resultPage"><div class="resultInner glowOrange">
-<header><div class="h1">THE BOO-RICULUM</div><div class="h2">EIGO PERA PERA</div><div class="h3">January Week 1 – Speaking Practice</div></header>
+<header>
+  <div class="h1">THE BOO-RICULUM</div>
+  <div class="h2">EIGO PERA PERA</div>
+  <div class="h3" data-week-en>February Week 1 – Speaking Practice</div>
+</header>
 <div class="resultCenter"><div>
 <div id="msgOrange" class="resultMsg">YouTube見すぎ！ブーリキュラムもやろう！</div>
 <div id="scoreOrange" class="resultScore">0/15（0%）</div>
-<div><button class="btnSmall btnRestart" data-restart>もう一度</button><a class="btnSmall btnMenu" href="index.html">メニューへ</a></div>
+<div><button class="btnSmall btnRestart" data-restart type="button">もう一度</button><a class="btnSmall btnMenu" href="index.html">メニューへ</a></div>
 </div></div>
 <footer>Bryan’s English School</footer>
 </div></div>
 
 <div id="resBlue" class="resultPage"><div class="resultInner glowBlue">
-<header><div class="h1">THE BOO-RICULUM</div><div class="h2">EIGO PERA PERA</div><div class="h3">January Week 1 – Speaking Practice</div></header>
+<header>
+  <div class="h1">THE BOO-RICULUM</div>
+  <div class="h2">EIGO PERA PERA</div>
+  <div class="h3" data-week-en>January Week 1 – Speaking Practice</div>
+</header>
 <div class="resultCenter"><div>
 <div id="msgBlue" class="resultMsg">いいね！あと少しでパーフェクト！</div>
 <div id="scoreBlue" class="resultScore">0/15（0%）</div>
-<div><button class="btnSmall btnRestart" data-restart>もう一度</button><a class="btnSmall btnMenu" href="index.html">メニューへ</a></div>
+<div><button class="btnSmall btnRestart" data-restart type="button">もう一度</button><a class="btnSmall btnMenu" href="index.html">メニューへ</a></div>
 </div></div>
 <footer>Bryan’s English School</footer>
 </div></div>
 
 <div id="resGold" class="resultPage"><div class="resultInner glowGold">
-<header><div class="h1">THE BOO-RICULUM</div><div class="h2">EIGO PERA PERA</div><div class="h3">January Week 1 – Speaking Practice</div></header>
+<header>
+  <div class="h1">THE BOO-RICULUM</div>
+  <div class="h2">EIGO PERA PERA</div>
+  <div class="h3" data-week-en>Januart Week 1 – Speaking Practice</div>
+</header>
 <div class="resultCenter"><div>
 <div id="msgGold" class="resultMsg">すごい！あなたは地球で一番頭がいい！</div>
 <div id="scoreGold" class="resultScore">15/15（100%）</div>
-<div><button class="btnSmall btnRestart" data-restart>もう一度</button><a class="btnSmall btnMenu" href="index.html">メニューへ</a></div>
+<div><button class="btnSmall btnRestart" data-restart type="button">もう一度</button><a class="btnSmall btnMenu" href="index.html">メニューへ</a></div>
 </div></div>
 <footer>Bryan’s English School</footer>
 </div></div>
 
-<!-- Final result sounds -->
+<!-- Final result sounds (Android/Desktop only) -->
 <audio id="a_r05" src="assets/audio/result_0-5.mp3" preload="auto"></audio>
 <audio id="a_r610" src="assets/audio/result_6-10.mp3" preload="auto"></audio>
 <audio id="a_r1114" src="assets/audio/result_11-14.mp3" preload="auto"></audio>
 <audio id="a_r15" src="assets/audio/result_15.mp3" preload="auto"></audio>
 
 <script>
-const DUR_MS = 7500;
+/* =========================================================
+█████████████████████████████████████████████████████████████
+✅✅✅ CHANGE 3/6: WEEK LABELS (edit each week)
+█████████████████████████████████████████████████████████████
+========================================================= */
+const WEEK_LABEL = {
+  title: "Booha Eigo Pera Pera – January Week 1",
+  headerEn: "January Week 1 – Speaking Practice",
+  headerJp: "2月第1週 – スピーキング練習"
+};
+
+/* =========================================================
+█████████████████████████████████████████████████████████████
+✅✅✅ CHANGE 4/6: ROUND + MIC SETTINGS (tuning)
+█████████████████████████████████████████████████████████████
+========================================================= */
+const SETTINGS = {
+  DUR_MS: 7500,
+  WARMUP_MS: 650,          // SpeechRecognition warm-up (NOT audio warmup)
+  GO_DELAY_MS: 120,
+
+  PASS_SCORE: 88,
+  GRACE_MS: 280,
+  EXTRA_END_MS: 140,
+  MAX_FUZZY_TOKEN: 1,
+
+  // audio
+  SAGE_VOL: 1.00,
+  SFX_VOL: 0.95,
+  RESULT_VOL: 1.00,
+  UNLOCK_RETRY_MS: 120
+};
+
+/* =========================================================
+█████████████████████████████████████████████████████████████
+✅✅✅ CHANGE 5/6: WEEK SENTENCES (15 items)
+- audio files: audio/sentences/<filename>
+█████████████████████████████████████████████████████████████
+========================================================= */
+const ITEMS_SRC = [
+  { en:"I will study every day.", jp:"毎日勉強します。", hira:"(まいにち べんきょう します)", audio:"s01_i_will_study_every_day.mp3" },
+
+  { en:"I’m going to try something new.", jp:"何か新しいことに挑戦します。", hira:"(なにか あたらしい こと に ちょうせん します)", audio:"s02_im_going_to_try_something_new.mp3" },
+
+  { en:"I will do my best this year.", jp:"今年はベストを尽くします。", hira:"(ことし は べすと を つくします)", audio:"s03_i_will_do_my_best_this_year.mp3" },
+
+  { en:"I will make a new friend.", jp:"新しい友だちを作ります。", hira:"(あたらしい ともだち を つくります)", audio:"s04_i_will_make_a_new_friend.mp3" },
+
+  { en:"I will not be late anymore.", jp:"もう遅刻しません。", hira:"(もう ちこく しません)", audio:"s05_i_will_not_be_late_anymore.mp3" },
+
+  { en:"I will help my classmates.", jp:"クラスメイトを手伝います。", hira:"(くらすめいと を てつだいます)", audio:"s06_i_will_help_my_classmates.mp3" },
+
+  { en:"I will clean my desk today.", jp:"今日机をきれいにします。", hira:"(きょう つくえ を きれい に します)", audio:"s07_i_will_clean_my_desk_today.mp3" },
+
+  { en:"I will read more books.", jp:"もっと本を読みます。", hira:"(もっと ほん を よみます)", audio:"s08_i_will_read_more_books.mp3" },
+
+  { en:"I will start a good habit.", jp:"良い習慣を始めます。", hira:"(よい しゅうかん を はじめます)", audio:"s09_i_will_start_a_good_habit.mp3" },
+
+  { en:"I will speak more English.", jp:"もっと英語を話します。", hira:"(もっと えいご を はなします)", audio:"s10_i_will_speak_more_english.mp3" },
+
+  { en:"I will write in my diary every week.", jp:"毎週日記を書きます。", hira:"(まいしゅう にっき を かきます)", audio:"s11_i_will_write_in_my_diary_every_week.mp3" },
+
+  { en:"I will wake up earlier.", jp:"もっと早く起きます。", hira:"(もっと はやく おきます)", audio:"s12_i_will_wake_up_earlier.mp3" },
+
+  { en:"I will listen carefully in class.", jp:"授業でよく聞きます。", hira:"(じゅぎょう で よく ききます)", audio:"s13_i_will_listen_carefully_in_class.mp3" },
+
+  { en:"I will smile more.", jp:"もっと笑います。", hira:"(もっと わらいます)", audio:"s14_i_will_smile_more.mp3" },
+
+  { en:"I will enjoy learning.", jp:"学ぶことを楽しみます。", hira:"(まなぶ こと を たのしみます)", audio:"s15_i_will_enjoy_learning.mp3" }
+];
+
+/* =========================================================
+█████████████████████████████████████████████████████████████
+✅✅✅ CHANGE 6/6 (OPTIONAL): iOS Practice Finish Message (JP)
+█████████████████████████████████████████████████████████████
+========================================================= */
+const IOS_FINISH_MESSAGE_JP =
+  "練習おわり！\n\n" +
+  "よくできました。\n" +
+  "メーターが動いているあいだ、\n" +
+  "英文を大きい声で読めばOK！";
+
+/* =========================================================
+///*** [0] INTERNAL (do not change)
+========================================================= */
 let idx = 0, SR = null, listening = false, streamAllowed = false, isBusy = false;
 const firstScores = new Array(15).fill(null);
 let firstPerfectCount = 0;
+let collecting = false;
+let collectingStartTs = 0;
 
 function $(sel){ return document.querySelector(sel); }
 const enEl = $('#en'), jpEl = $('#jp'), hiraEl = $('#hira');
@@ -469,80 +594,222 @@ const isIpad = /iPad/.test(ua) || (platform === 'MacIntel' && navigator.maxTouch
 const isIOSPhone = /iPhone|iPod/.test(ua);
 const isIOS = isIpad || isIOSPhone;
 
+/* Apply week labels everywhere (future-proof) */
+(function applyWeekLabels(){
+  document.title = WEEK_LABEL.title;
+  const hEn = document.getElementById('weekLabelEn');
+  const hJp = document.getElementById('weekLabelJp');
+  if(hEn) hEn.textContent = WEEK_LABEL.headerEn;
+  if(hJp) hJp.textContent = WEEK_LABEL.headerJp;
+  document.querySelectorAll('[data-week-en]').forEach(el=>el.textContent=WEEK_LABEL.headerEn);
+})();
+
+/* =========================================================
+🎧 AUDIO (CLEANED)
+- iOS fix: DO NOT "warm up" by silently playing multiple sounds.
+- Only do a ONE-TIME silent unlock (single sound) on first user gesture.
+- Sage never runs during unlock.
+========================================================= */
+let audioUnlocked = false;
+
+function setAudioProps(a, vol){
+  if(!a) return;
+  a.preload = 'auto';
+  a.playsInline = true;
+  a.volume = vol;
+  try{ a.load(); }catch(e){}
+}
+
 const SFX = {
   ding: new Audio('assets/audio/ding.mp3'),
   fart: new Audio('assets/audio/fart.mp3')
 };
-Object.values(SFX).forEach(a => { a.preload = 'auto'; try{ a.load(); }catch(e){} });
+setAudioProps(SFX.ding, SETTINGS.SFX_VOL);
+setAudioProps(SFX.fart, SETTINGS.SFX_VOL);
 
-const RES = { red:$('#a_r05'), orange:$('#a_r610'), blue:$('#a_r1114'), gold:$('#a_r15') };
+const RES = {
+  red:$('#a_r05'),
+  orange:$('#a_r610'),
+  blue:$('#a_r1114'),
+  gold:$('#a_r15')
+};
+Object.values(RES).forEach(a=>setAudioProps(a, SETTINGS.RESULT_VOL));
 
-const ITEMS = [
-  { en:"I will study every day.", jp:"毎日勉強します。", hira:"(まいにち べんきょう します)", audio:"s01_i_will_study_every_day.mp3" },
-  { en:"I’m going to try something new.", jp:"何か新しいことに挑戦します。", hira:"(なにか あたらしい こと に ちょうせん します)", audio:"s02_im_going_to_try_something_new.mp3" },
-  { en:"I will do my best this year.", jp:"今年はベストを尽くします。", hira:"(ことし は べすと を つくします)", audio:"s03_i_will_do_my_best_this_year.mp3" },
-  { en:"I will make a new friend.", jp:"新しい友だちを作ります。", hira:"(あたらしい ともだち を つくります)", audio:"s04_i_will_make_a_new_friend.mp3" },
-  { en:"I will not be late anymore.", jp:"もう遅刻しません。", hira:"(もう ちこく しません)", audio:"s05_i_will_not_be_late_anymore.mp3" },
-  { en:"I will help my classmates.", jp:"クラスメイトを手伝います。", hira:"(くらすめいと を てつだいます)", audio:"s06_i_will_help_my_classmates.mp3" },
-  { en:"I will clean my desk today.", jp:"今日机をきれいにします。", hira:"(きょう つくえ を きれい に します)", audio:"s07_i_will_clean_my_desk_today.mp3" },
-  { en:"I will read more books.", jp:"もっと本を読みます。", hira:"(もっと ほん を よみます)", audio:"s08_i_will_read_more_books.mp3" },
-  { en:"I will start a good habit.", jp:"良い習慣を始めます。", hira:"(よい しゅうかん を はじめます)", audio:"s09_i_will_start_a_good_habit.mp3" },
-  { en:"I will speak more English.", jp:"もっと英語を話します。", hira:"(もっと えいご を はなします)", audio:"s10_i_will_speak_more_english.mp3" },
-  { en:"I will write in my diary every week.", jp:"毎週日記を書きます。", hira:"(まいしゅう にっき を かきます)", audio:"s11_i_will_write_in_my_diary_every_week.mp3" },
-  { en:"I will wake up earlier.", jp:"もっと早く起きます。", hira:"(もっと はやく おきます)", audio:"s12_i_will_wake_up_earlier.mp3" },
-  { en:"I will listen carefully in class.", jp:"授業でよく聞きます。", hira:"(じゅぎょう で よく ききます)", audio:"s13_i_will_listen_carefully_in_class.mp3" },
-  { en:"I will smile more.", jp:"もっと笑います。", hira:"(もっと わらいます)", audio:"s14_i_will_smile_more.mp3" },
-  { en:"I will enjoy learning.", jp:"学ぶことを楽しみます。", hira:"(まなぶ こと を たのしみます)", audio:"s15_i_will_enjoy_learning.mp3" }
-].sort(()=>Math.random()-0.5);
+/* Shuffle ITEMS once */
+const ITEMS = ITEMS_SRC.slice().sort(()=>Math.random()-0.5);
 
-/* Preload Sage */
+/* Sage bank (preloaded) */
 const sageBank = {};
 ITEMS.forEach(it=>{
   const a = new Audio('audio/sentences/' + it.audio);
-  a.preload = 'auto';
-  try{ a.load(); }catch(e){}
+  setAudioProps(a, SETTINGS.SAGE_VOL);
   sageBank[it.audio] = a;
 });
 
 const sleep = ms => new Promise(r=>setTimeout(r, ms));
-function normalize(s){return s.toLowerCase().replace(/[’‘´`]/g,"'").replace(/[^a-z0-9'\s]/g,' ').replace(/\s+/g,' ').trim();}
-function toSet(s){return new Set(normalize(s).split(' ').filter(Boolean));}
 
-function mountWords(t){ enEl.innerHTML = t.split(/\s+/).map(w=>`<span class="word">${w}</span>`).join(' '); }
+async function safePlay(a){
+  if(!a) return false;
+  try{
+    a.pause();
+    a.currentTime = 0;
+  }catch(e){}
+  try{
+    const p = a.play();
+    if(p && p.then){
+      await p;
+    }
+    return true;
+  }catch(e){
+    // iOS/Safari: a second try after a tiny delay sometimes helps
+    await sleep(SETTINGS.UNLOCK_RETRY_MS);
+    try{
+      const p2 = a.play();
+      if(p2 && p2.then) await p2;
+      return true;
+    }catch(e2){
+      return false;
+    }
+  }
+}
+
+function waitEnded(a, fallbackMs){
+  return new Promise(resolve=>{
+    if(!a){ resolve(); return; }
+    let done = false;
+    const finish = ()=>{ if(done) return; done=true; a.removeEventListener('ended', finish); resolve(); };
+    a.addEventListener('ended', finish, {once:true});
+    setTimeout(finish, fallbackMs);
+  });
+}
+
+async function playAndWait(a, volOverride){
+  if(!a) return;
+  await ensureAudioReady(); // unlock only (no multi-play warmup)
+  if(typeof volOverride === 'number') a.volume = volOverride;
+
+  // tiny offset can reduce Safari clipping on some devices
+  try{
+    a.pause();
+    a.currentTime = (a === SFX.ding) ? 0.03 : 0;
+  }catch(e){}
+
+  const ok = await safePlay(a);
+  if(!ok) return;
+
+  const ms = Math.max(900, ((a.duration || 1.2) * 1000) + 250);
+  await waitEnded(a, ms);
+}
+
+async function ensureAudioReady(){
+  if(audioUnlocked) return true;
+
+  // SINGLE silent unlock: only ding at volume 0, pause immediately.
+  try{
+    const a = SFX.ding;
+    const oldVol = a.volume;
+    a.volume = 0;
+
+    const ok = await safePlay(a);
+    await sleep(40);
+    try{ a.pause(); a.currentTime = 0; }catch(e){}
+    a.volume = oldVol;
+
+    audioUnlocked = !!ok;
+    return audioUnlocked;
+  }catch(e){
+    audioUnlocked = false;
+    return false;
+  }
+}
+
+/* =========================================================
+///*** Text + scoring helpers (less strict, smoother)
+========================================================= */
+function normalize(s){
+  return (s||"")
+    .toLowerCase()
+    .replace(/[’‘´`]/g,"'")
+    .replace(/[^a-z0-9'\s]/g,' ')
+    .replace(/\s+/g,' ')
+    .trim();
+}
+
+function normalizeToken(t){
+  let s = normalize(t);
+  if(s.endsWith("s") && s.length>3) s = s.slice(0,-1);
+  if(s.endsWith("ing") && s.length>5) s = s.slice(0,-3);
+  return s;
+}
+
+function tokensOf(s){
+  return normalize(s).split(' ').map(normalizeToken).filter(Boolean);
+}
+
+function tokenSet(s){
+  return new Set(tokensOf(s));
+}
+
+function mountWords(t){
+  enEl.innerHTML = t.split(/\s+/).map(w=>`<span class="word">${w}</span>`).join(' ');
+}
+
 function markSpoken(sp){
-  const set = toSet(sp);
+  const set = tokenSet(sp);
   enEl.querySelectorAll('.word').forEach(w=>{
-    const v = normalize(w.textContent);
+    const v = normalizeToken(w.textContent);
     if(set.has(v) && !w.classList.contains('blue')) w.classList.add('blue');
   });
 }
-function finalizeColors(){ enEl.querySelectorAll('.word').forEach(w=>{ if(!w.classList.contains('blue')) w.classList.add('red'); }); }
-function keywordScore(t, sp){
-  const k = toSet(t), said = toSet(sp);
-  let hit=0,total=0;
-  k.forEach(x=>{ if(x.length>2){ total++; if(said.has(x)) hit++; }});
-  return total ? Math.round((hit/total)*100) : 0;
+
+function finalizeColors(){
+  enEl.querySelectorAll('.word').forEach(w=>{
+    if(!w.classList.contains('blue')) w.classList.add('red');
+  });
 }
 
+function keywordScore(target, spoken){
+  const tgt = tokensOf(target).filter(x=>x.length>=2);
+  const said = tokenSet(spoken);
+
+  let total = 0;
+  let hit = 0;
+
+  for(const t of tgt){
+    if(t === "a" || t === "an" || t === "the") continue;
+    total++;
+    if(said.has(t)) hit++;
+  }
+
+  if(!total) return 0;
+
+  const miss = total - hit;
+  const forgiven = Math.min(miss, SETTINGS.MAX_FUZZY_TOKEN);
+  const adjHit = hit + forgiven;
+
+  return Math.round((adjHit / total) * 100);
+}
+
+/* UI helpers */
 function setReady(){
   meterText.innerHTML = 'Ready<br><small>スタンバイ</small>';
 }
-
 function setListening(){
-  // Android / Desktop
   if(!isIOS){
     meterText.textContent = '聞き取り中';
     return;
   }
-
-  // iPad / iPhone (smaller text)
   meterText.innerHTML = '<span style="font-size:0.75em">大きい声で！</span>';
 }
-
-function setFinished(){ meterText.innerHTML='Finished<br><small>おわり！</small>'; }
+function setArming(){
+  meterText.innerHTML = '<span style="font-size:.7em">準備中…<br><small>Wait…</small></span>';
+}
+function setFinished(){
+  meterText.innerHTML='Finished<br><small>おわり！</small>';
+}
 
 function startSweep(){
-  sweep.style.setProperty('--dur', DUR_MS + 'ms');
+  sweep.style.setProperty('--dur', SETTINGS.DUR_MS + 'ms');
   sweep.classList.remove('run'); void sweep.offsetWidth; sweep.classList.add('run');
 }
 function stopSweep(){ sweep.classList.remove('run'); }
@@ -578,31 +845,17 @@ function makeRecognizer(){
   return r;
 }
 
-function playAudioWithWait(a){
-  return new Promise(resolve=>{
-    if(!a){ resolve(); return; }
-    try{ a.pause(); a.currentTime=0; }catch(e){}
-    const done=()=>{ a.onended=null; resolve(); };
-    const tryPlay=()=>{
-      const p=a.play();
-      if(p&&p.then){ p.then(()=>{}).catch(()=>setTimeout(tryPlay,120)); }
-    };
-    const safety=setTimeout(()=>{ a.onended=null; resolve(); }, Math.max(2500,(a.duration||2.5)*1000+200));
-    a.addEventListener('ended',()=>clearTimeout(safety),{once:true});
-    a.onended=done;
-    tryPlay();
-  });
-}
-
 function disableControls(disabled){
   [beginBtn,retryBtn,nextBtn,playBtn].forEach(b=>{ if(b) b.disabled=disabled; });
 }
+
 function resetVisuals(){
   stopSweep(); void sweep.offsetWidth;
   enEl.querySelectorAll('.word').forEach(w=>w.classList.remove('blue','red'));
   scoreBox.style.display='none';
   setReady();
 }
+
 function showItem(){
   const it=ITEMS[idx];
   mountWords(it.en);
@@ -616,17 +869,17 @@ function showBurst(kind){
   const el=document.createElement('div');
   el.className='burst ' + (kind==='ok'?'ok':'ng');
   if(kind==='ok'){
-    // ✅ Big Heart for correct
-    el.innerHTML = `<div class="big">♥</div><div class="label">Perfect</div>`;
+    el.innerHTML = `<div class="big">♥</div><div class="label">Good!</div>`;
   }else{
-    // ✅ Big "fart" visual
     el.innerHTML = `<div class="big">💨</div><div class="label">Try Again</div>`;
   }
   document.body.appendChild(el);
   setTimeout(()=>el.remove(),1100);
 }
 
-/* iOS practice mode */
+/* =========================================================
+🍎 iOS PRACTICE MODE (NO SCORE)
+========================================================= */
 async function beginRoundIOS(){
   if(isBusy) return;
   isBusy=true;
@@ -634,13 +887,16 @@ async function beginRoundIOS(){
   resetVisuals();
   disableControls(true);
 
+  // unlock only (no warm-up multi-play)
+  await ensureAudioReady();
+
   await countdown321();
   meterText.innerHTML=`<span class="popNum flashGo" style="color:#fff680">GO!</span>`;
-  await sleep(120);
+  await sleep(SETTINGS.GO_DELAY_MS);
 
   setListening();
   startSweep();
-  await sleep(DUR_MS);
+  await sleep(SETTINGS.DUR_MS);
 
   setFinished();
   stopSweep();
@@ -654,7 +910,12 @@ async function beginRoundIOS(){
   isBusy=false;
 }
 
-/* Android/Desktop mic mode */
+/* =========================================================
+🤖 ANDROID/DESKTOP MIC MODE
+- Correct: ding (wait)
+- Wrong: fart (wait)
+- No rushing / no overlap
+========================================================= */
 async function beginRound(){
   if(isIOS) return beginRoundIOS();
   if(isBusy) return;
@@ -666,6 +927,9 @@ async function beginRound(){
     isBusy=false;
     return;
   }
+
+  await ensureAudioReady();
+
   if(!streamAllowed){
     await ensureMicPermission();
     if(!streamAllowed){ isBusy=false; return; }
@@ -674,16 +938,18 @@ async function beginRound(){
   resetVisuals();
   disableControls(true);
 
-  await countdown321();
+  let heard = "";
+  listening = true;
+  collecting = false;
 
-  meterText.innerHTML=`<span class="popNum flashGo" style="color:#fff680">GO!</span>`;
+  setArming();
 
-  let heard="";
-  listening=true;
-  SR=makeRecognizer();
-
+  SR = makeRecognizer();
   if(SR){
     SR.onresult=(e)=>{
+      if(!collecting) return;
+      if(Date.now() - collectingStartTs < SETTINGS.GRACE_MS) return;
+
       let txt="";
       for(let i=e.resultIndex;i<e.results.length;i++){
         txt+=e.results[i][0].transcript+" ";
@@ -695,43 +961,56 @@ async function beginRound(){
     try{ SR.start(); }catch(e){}
   }
 
-  await sleep(120);
+  await sleep(SETTINGS.WARMUP_MS);
+
+  await countdown321();
+
+  meterText.innerHTML=`<span class="popNum flashGo" style="color:#fff680">GO!</span>`;
+  heard = "";
+  collecting = true;
+  collectingStartTs = Date.now();
+
+  await sleep(SETTINGS.GO_DELAY_MS);
+
   setListening();
   startSweep();
 
-  await sleep(DUR_MS);
+  await sleep(SETTINGS.DUR_MS);
 
+  await sleep(SETTINGS.EXTRA_END_MS);
+
+  collecting = false;
   listening=false;
   try{ SR && SR.stop(); }catch(e){}
   setFinished();
   stopSweep();
   finalizeColors();
 
-  const s=keywordScore(ITEMS[idx].en,heard);
-  scoreBox.textContent='スコア：'+s+'％';
-  scoreBox.style.display='block';
+  const s = keywordScore(ITEMS[idx].en, heard);
+
+  scoreBox.textContent = 'スコア：' + s + '％';
+  scoreBox.style.display = 'block';
 
   if(firstScores[idx]===null){
     firstScores[idx]=s;
-    if(s===100) firstPerfectCount++;
+    if(s>=SETTINGS.PASS_SCORE) firstPerfectCount++;
   }
 
-  // ✅ Correct: big heart + ding, then Next appears (no fart)
-  // ✅ Wrong: big fart + fart.mp3
-  if(s===100){
-    showBurst('ok');
-    await playAudioWithWait(SFX.ding);
+  beginBtn.style.display='none';
 
-    nextBtn.style.display='inline-block';
+  if(s>=SETTINGS.PASS_SCORE){
+    showBurst('ok');
     retryBtn.style.display='none';
-    beginBtn.style.display='none';
+    nextBtn.style.display='inline-block';
+
+    await playAndWait(SFX.ding, SETTINGS.SFX_VOL);
+
   }else{
     showBurst('ng');
-    await playAudioWithWait(SFX.fart);
-
-    retryBtn.style.display='inline-block';
     nextBtn.style.display='none';
-    beginBtn.style.display='none';
+    retryBtn.style.display='inline-block';
+
+    await playAndWait(SFX.fart, SETTINGS.SFX_VOL);
   }
 
   disableControls(false);
@@ -753,20 +1032,11 @@ function hideAllResults(){
 async function showResults(){
   if(isIOS){
     hideAllResults();
-    const msgBlue=document.getElementById('msgBlue');
-    const scoreBlue=document.getElementById('scoreBlue');
-    if(msgBlue){
-      msgBlue.textContent=
-        "おつかれさま！\n\n" +
-        "このゲームのフル版（マイクで判定）は、Android と パソコンだけです。\n\n" +
-        "iPad / iPhone は、れんしゅう版として遊びます。\n" +
-        "メーターが動いているあいだ、英文を大きい声で読めばOK。\n\n" +
-        "いつか Android / パソコン で遊ぶと、\n" +
-        "マイク判定つきの本気モードもできます。";
-    }
-    if(scoreBlue) scoreBlue.textContent="";
+    const msgBlue = document.getElementById('msgBlue');
+    const scoreBlue = document.getElementById('scoreBlue');
+    if(msgBlue) msgBlue.textContent = IOS_FINISH_MESSAGE_JP;
+    if(scoreBlue) scoreBlue.textContent = "";
     $('#resBlue').style.display='block';
-    await playAudioWithWait(RES.blue);
     return;
   }
 
@@ -783,7 +1053,8 @@ async function showResults(){
 
   hideAllResults();
   $('#'+page).style.display='block';
-  await playAudioWithWait(snd);
+
+  await playAndWait(snd, SETTINGS.RESULT_VOL);
 
   if(page==='resGold'){
     for(let i=0;i<160;i++){
@@ -802,6 +1073,8 @@ async function showResults(){
 
 /* Buttons */
 beginBtn.addEventListener('click', async()=>{
+  await ensureAudioReady();
+
   if(isIOS){
     showItem();
     beginRound();
@@ -812,11 +1085,16 @@ beginBtn.addEventListener('click', async()=>{
   showItem();
   beginRound();
 });
-retryBtn.addEventListener('click', ()=>{
+
+retryBtn.addEventListener('click', async ()=>{
+  await ensureAudioReady();
   showItem();
   beginRound();
 });
-nextBtn.addEventListener('click', ()=>{
+
+nextBtn.addEventListener('click', async ()=>{
+  await ensureAudioReady();
+
   if(isBusy) return;
   idx++;
   if(idx>=ITEMS.length){
@@ -832,22 +1110,30 @@ nextBtn.addEventListener('click', ()=>{
   beginBtn.style.display='inline-block';
 });
 
-/* Sage: play only when NOT listening / busy */
+/* Sage: ONLY when you tap ▶ */
 let sageNow=null;
 playBtn.addEventListener('click', async()=>{
   if(isBusy || listening) return;
+
+  await ensureAudioReady();
+
   const it=ITEMS[idx];
   const a=sageBank[it.audio] || new Audio('audio/sentences/' + it.audio);
+  setAudioProps(a, SETTINGS.SAGE_VOL);
+
   if(sageNow && sageNow!==a){
     try{ sageNow.pause(); }catch(e){}
     try{ sageNow.currentTime=0; }catch(e){}
   }
   sageNow=a;
-  await playAudioWithWait(a);
+
+  await playAndWait(a, SETTINGS.SAGE_VOL);
 });
 
 /* Restart */
-Array.from(document.querySelectorAll('[data-restart]')).forEach(b=>b.addEventListener('click', ()=>{
+Array.from(document.querySelectorAll('[data-restart]')).forEach(b=>b.addEventListener('click', async ()=>{
+  await ensureAudioReady();
+
   hideAllResults();
   for(let i=0;i<firstScores.length;i++) firstScores[i]=null;
   firstPerfectCount=0;
@@ -880,11 +1166,17 @@ const iosNoticeBtn=document.getElementById('iosNoticeBtn');
 if(isIOS && iosNotice && iosNoticeBtn){
   iosNotice.classList.add('show');
   iosNotice.setAttribute('aria-hidden','false');
-  iosNoticeBtn.addEventListener('click', ()=>{
+
+  // IMPORTANT: overlay tap ONLY unlocks. No warmup multi-play.
+  iosNoticeBtn.addEventListener('click', async ()=>{
     iosNotice.classList.remove('show');
     iosNotice.setAttribute('aria-hidden','true');
-  });
+    await ensureAudioReady();
+  }, {once:true});
 }
+
+/* Extra: unlock on first real gesture anywhere (ONE silent ding only) */
+window.addEventListener('pointerdown', ()=>{ ensureAudioReady(); }, {once:true});
 </script>
 </body>
 </html>
